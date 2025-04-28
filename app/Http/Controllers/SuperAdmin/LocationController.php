@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Location;
 use Illuminate\Http\Request;
 use App\Models\Site;
+use App\Models\Room;
 use App\Models\Floor;
 
 
@@ -126,68 +127,54 @@ public function updateType(Request $request, $id)
  
  
 
- public function addroom($location)
- {
-     $location = Location::findOrFail($location);
-     return view('superadmin.locations.addroom', compact('location'));
- }
- 
- public function storeRoom(Request $request, $location)
- {
-     $request->validate([
-         'name' => 'required|string|max:255',
-         'code' => 'required|string|max:50|unique:rooms,code',
-         'type' => 'required|string|in:Office,Storage,Meeting',
-     ]);
- 
-     try {
-         \App\Models\Room::create([
-             'name' => $request->name,
-             'code' => $request->code,
-             'type' => $request->type,
-             'location_id' => $location
-         ]);
- 
-         return redirect()->route('superadmin.locations.rooms', ['location' => $location])
-                ->with('success', 'Room added successfully.');
-     } catch (\Exception $e) {
-         return back()->withInput()->with('error', 'Error creating room: ' . $e->getMessage());
-     }
- }
+ public function addroom(Location $location)
+    {
+        return view('superadmin.locations.addroom', compact('location'));
+    }
+
+    public function storeRoom(Request $request, Location $location)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:rooms,code',
+            'type' => 'required|string|in:Office,Storage,Meeting',
+        ], [
+            'code.unique' => 'This room code already exists.',
+            'type.in' => 'Please select a valid room type.',
+        ]);
+
+        try {
+            Room::create([
+                'name' => $request->name,
+                'code' => $request->code,
+                'type' => $request->type,
+                'location_id' => $location->id
+            ]);
+
+            return redirect()->route('superadmin.locations.rooms', $location)
+                   ->with('success', 'Room added successfully.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error creating room: ' . $e->getMessage());
+        }
+    }
+
     
 
- public function storeRoom(Request $request, $location)
+ public function updateRoomType(Request $request, Location $location, Room $room)
  {
      $request->validate([
-         'name' => 'required',
-         'code' => 'required|unique:rooms,code',
-         'type' => 'required',
-     ]);
-
-     Room::create([
-         'name' => $request->name,
-         'code' => $request->code,
-         'type' => $request->type,
-         'location_id' => $location
-     ]);
-
-     return redirect()->route('superadmin.locations.rooms', ['location' => $location])
-            ->with('success', 'Room added successfully.');
- }
-
- public function updateRoomType(Request $request, $location, Room $room)
- {
-     $request->validate([
-         'type' => 'required|string|max:255',
+         'type' => 'required|string|in:Office,Storage,Meeting',
      ]);
 
      $room->update(['type' => $request->type]);
+     
      return back()->with('success', 'Room type updated.');
  }
 
- public function destroyRoom($location, Room $room)
+ public function destroyRoom(Location $location, Room $room)
  {
      $room->delete();
      return back()->with('success', 'Room deleted successfully.');
  }
 }
+

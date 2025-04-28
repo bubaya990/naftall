@@ -26,18 +26,18 @@
             @endif
 
             <!-- Form -->
-            <form action="{{ route('superadmin.locations.storeRoom', ['location' => $location->id]) }}" method="POST" class="space-y-6">
+            <form action="{{ route('superadmin.locations.storeRoom', $location) }}" method="POST" class="space-y-6">
                 @csrf
 
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Room Name</label>
-                    <input type="text" name="name" id="name" required
+                    <input type="text" name="name" id="name" required value="{{ old('name') }}"
                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div>
                     <label for="code" class="block text-sm font-medium text-gray-700 mb-1">Room Code</label>
-                    <input type="text" name="code" id="code" required
+                    <input type="text" name="code" id="code" required value="{{ old('code') }}"
                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
@@ -46,14 +46,14 @@
                     <select name="type" id="type" required
                             class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Select Type</option>
-                        <option value="Office">Bureau</option>
-                        <option value="Storage">Salle réunion</option>
-                        <option value="Meeting">Salle Réseau</option>
+                        <option value="Office" @selected(old('type') == 'Office')>Bureau</option>
+                        <option value="Storage" @selected(old('type') == 'Storage')>Salle réunion</option>
+                        <option value="Meeting" @selected(old('type') == 'Meeting')>Salle Réseau</option>
                     </select>
                 </div>
 
                 <div class="flex justify-end space-x-4 pt-4">
-                    <a href="{{ route('superadmin.locations.index', ['location' => $location->id]) }}"
+                    <a href="{{ route('superadmin.locations.rooms', $location) }}"
                        class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
                         Cancel
                     </a>

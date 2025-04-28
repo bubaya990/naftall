@@ -125,22 +125,18 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         Route::get('/gestion-localite', [LocationController::class, 'gestionLocalite'])->name('gestion-localite');
         Route::get('/create', [LocationController::class, 'create'])->name('create');
         Route::post('/store', [LocationController::class, 'store'])->name('store');
-        Route::get('/{id}/edit-type', [LocationController::class, 'editType'])->name('edit-type');
-        Route::put('/{id}/update-type', [LocationController::class, 'updateType'])->name('update-type');
-        Route::get('/store', [LocationController::class, 'showStore']);
-        // Room management routes (nested under locations)
+        Route::get('/{location}/edit-type', [LocationController::class, 'editType'])->name('edit-type');
+        Route::put('/{location}/update-type', [LocationController::class, 'updateType'])->name('update-type');
         Route::delete('/{location}', [LocationController::class, 'destroy'])->name('destroy');
-            Route::get('{id}/rooms', [LocationController::class, 'rooms'])->name('rooms');
-            Route::get('{location}/addroom', [LocationController::class, 'addroom'])->name('addroom');
-            Route::post('{location}/rooms', [LocationController::class, 'storeRoom'])->name('storeRoom');
-            Route::put('/{room}/update-type', [LocationController::class, 'updateRoomType'])->name('update-type');
-            Route::delete('/{room}', [LocationController::class, 'destroyRoom'])->name('destroyRoom');
-            Route::get('/{location}/rooms', [LocationController::class, 'rooms'])->name('rooms');
-            Route::get('/{location}/addroom', [LocationController::class, 'addroom'])->name('addroom');
-            Route::post('/{location}/rooms', [LocationController::class, 'storeRoom'])->name('storeRoom');
-            Route::put('/{location}/rooms/{room}/update-type', [LocationController::class, 'updateRoomType'])->name('updateRoomType');
-            Route::delete('/{location}/rooms/{room}', [LocationController::class, 'destroyRoom'])->name('destroyRoom');
-       
+        
+        // Room management routes
+        Route::get('/{location}/rooms', [LocationController::class, 'rooms'])->name('rooms');
+        Route::get('/{location}/addroom', [LocationController::class, 'addroom'])->name('addroom');
+        Route::post('/{location}/rooms', [LocationController::class, 'storeRoom'])->name('storeRoom');
+        Route::put('/{location}/rooms/{room}/update-type', [LocationController::class, 'updateRoomType'])->name('updateRoomType');
+        Route::delete('/{location}/rooms/{room}', [LocationController::class, 'destroyRoom'])->name('destroyRoom');
+        Route::get('{location}/addroom', [LocationController::class, 'addroom'])->name('addroom');
+        Route::post('{location}/rooms', [LocationController::class, 'storeRoom'])->name('storeRoom');
     });
 Route::prefix('superadmin/materials')->group(function () {
     // Main dashboard
