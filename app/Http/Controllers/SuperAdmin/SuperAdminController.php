@@ -62,23 +62,25 @@ class SuperAdminController extends Controller
             'branche_name' => 'required|in:carburant,commercial', // Validation par nom
         ]);
 
-        // Trouve la branche correspondant au nom (première occurrence)
-    $branche = Branche::where('name', $request->branche_name)->first();
+       // Trouve la branche correspondant au nom (première occurrence)
+       $branche = Branche::where('name', $request->branche_name)->first();
 
-        // Create the user and insert into the database
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'site_id' => $request->site_id, // assuming 'site_id' is the foreign key
-            'password' => bcrypt('defaultpassword'), // Setting a default password (change as needed)
-            'branche_id' => $branche->id, // Utilise l'ID de la branche trouvée
-        ]);
+       // Create the user and insert into the database
+       User::create([
+           'name' => $request->name,
+           'email' => $request->email,
+           'role' => $request->role,
+           'site_id' => $request->site_id, // assuming 'site_id' is the foreign key
+           'password' => bcrypt('defaultpassword'), // Setting a default password (change as needed)
+           'branche_id' => $branche->id, // Utilise l'ID de la branche trouvée
+       ]);
 
-        // Redirect back with success message
-        return redirect()->route('superadmin.utilisateurs')
-                         ->with('success', 'User created successfully.');
-    }
+       // Redirect back with success message
+       return redirect()->route('superadmin.utilisateurs')
+                        ->with('success', 'User created successfully.');
+   }
+
+ 
 
     /**
      * Show the form for editing the specified user.
@@ -207,28 +209,48 @@ class SuperAdminController extends Controller
     }
 
     //the site in dashboard
-    public function cbr() {
-        // logic for CBR page
-        return view('superadmin.cbr');
-    }
+   // For Commercial page
+public function com()
+{
+    $commercialBranches = Branche::with(['children.children.children'])
+        ->where('name', 'commercial')
+        ->get();
     
-    public function com() {
-        // logic for COM page
-        return view('superadmin.com');
-    }
+    return view('superadmin.com', compact('commercialBranches'));
+}
+
+// For Carburant page
+public function cbr()
+{
+    $carburantBranches = Branche::with('site')
+        ->where('name', 'carburant')
+        ->get();
+    
+    return view('superadmin.cbr', compact('carburantBranches'));
+}
     public function showCom()
     {
-        // Get branches with their associated site where the name is 'commercial'
-        $branches = Branche::with('site')->where('name', 'commercial')->get();
-        
-        return view('superadmin.com', compact('branches'));
+        try {
+            $commercialBranches = Branche::with(['children.children.children'])
+                ->where('name', 'commercial')
+                ->get();
+                
+            return view('superadmin.com', compact('commercialBranches'));
+            
+        } catch (\Exception $e) {
+            logger()->error($e->getMessage());
+            abort(500, 'Could not load commercial branches');
+        }
     }
+    
     
     public function showCbr()
     {
-        // Get branches with their associated site where the name is 'carburant'
-        $branches = Branche::with('site')->where('name', 'carburant')->get();
-        return view('superadmin.cbr', compact('branches'));
+        $carburantBranches = Branche::where('name', 'carburant')
+            ->with('site') // Make sure this relationship exists in your Branche model
+            ->get();
+        
+        return view('superadmin.cbr', compact('carburantBranches'));
     }
     
 

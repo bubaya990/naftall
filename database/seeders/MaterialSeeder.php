@@ -27,7 +27,7 @@ class MaterialSeeder extends Seeder
             return;
         }
 
-        $states = ['bon', 'dÃ©fectueux', 'hors_service'];
+        $states = ['bon', 'défectueux', 'hors_service'];
 
         // Create computer with material
         $computer = Computer::create([

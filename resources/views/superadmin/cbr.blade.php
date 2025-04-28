@@ -14,18 +14,20 @@
 
             <div class="mb-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
                 <div class="p-4 border-b border-gray-200/50 bg-white/50">
-                    <h2 class="font-semibold text-blue-900">Carburant</h2>
+                    <h2 class="font-semibold text-blue-900">Sites avec Branche Carburant</h2>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        @foreach ($branches as $branche)
-                        <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center h-full transition-all duration-300 transform hover:scale-105 relative overflow-hidden group">
-                            <div class="absolute -top-4 -right-4 h-16 w-16 rounded-full bg-white/10 transform rotate-45 translate-x-8 translate-y-8 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500"></div>
-                            <div class="h-16 w-16 bg-white/20 rounded-full flex items-center justify-center mb-4 transform group-hover:scale-110 transition-all duration-300 z-10">
-                                <i class="fas fa-map-marker-alt text-2xl text-white"></i>
-                            </div>
-                            <h3 class="text-lg font-semibold tracking-wide text-center z-10">{{ $branche->site->name }}</h3>
-                        </div>
+                        @foreach ($carburantBranches as $branche)
+                            @if($branche->site)
+                                <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center h-full transition-all duration-300 transform hover:scale-105 relative overflow-hidden group">
+                                    <div class="absolute -top-4 -right-4 h-16 w-16 rounded-full bg-white/10 transform rotate-45 translate-x-8 translate-y-8 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500"></div>
+                                    <div class="h-16 w-16 bg-white/20 rounded-full flex items-center justify-center mb-4 transform group-hover:scale-110 transition-all duration-300 z-10">
+                                        <i class="fas fa-gas-pump text-2xl text-white"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold tracking-wide text-center z-10">{{ $branche->site->name }}</h3>
+                                </div>
+                            @endif
                         @endforeach
                     </div>
                 </div>

@@ -16,10 +16,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     
 ];
 
+
 public function material()
 {
     return $this->morphOne(Material::class, 'materialable');
 }
+
 
 
 

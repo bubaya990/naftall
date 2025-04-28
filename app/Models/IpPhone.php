@@ -14,10 +14,12 @@ class IpPhone extends Model
         
       
 ];
+
 public function material()
 {
     return $this->morphOne(Material::class, 'materialable');
 }
+
 
 
     // Définir la relation avec le modèle Room

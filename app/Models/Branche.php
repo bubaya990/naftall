@@ -9,19 +9,27 @@ class Branche extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-    'site_id',
-    'name',
-     ];
+    protected $fillable = ['name', 'site_id', 'parent_id'];
 
-     
     public function site()
+    {
+        return $this->belongsTo(Site::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Branche::class, 'parent_id');
+    }
+
+   // Branche.php
+
+public function children()
 {
-    return $this->belongsTo(Site::class, 'site_id');
+    return $this->hasMany(Branche::class, 'parent_id')->with('children'); // Recursive
 }
-public function user()
+
+    public function user()
 {
     return $this->belongsTo(User::class,'user_id');
 }
-
 }

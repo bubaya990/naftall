@@ -14,14 +14,11 @@ use App\Http\Controllers\Leader\LeaderController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\MaterialController;
 use App\Http\Controllers\SuperAdmin\LocationController;
+use App\Http\Controllers\SuperAdmin\BrancheController;
 use App\Http\Controllers\MaterielController;
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdmin\SuperAdminDashboardController;
-use App\Http\Controllers\SuperAdmin\IpPhoneController;
-use App\Http\Controllers\SuperAdmin\ComputerController;
-use App\Http\Controllers\SuperAdmin\HotSpotController;
-use App\Http\Controllers\SuperAdmin\PrinterController;
 
 use App\Models\Floor;
 
@@ -78,7 +75,7 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/materials/ip-phones', [MaterialController::class, 'ipPhones'])->name('materials.ip-phones');
     Route::get('/materials/site/{site}/{type}', [MaterialController::class, 'siteMaterials'])->name('materials.site');
     Route::get('/materials/ipphone/create', [IpPhoneController::class, 'create'])->name('materials.ipphone.create');
-    Route::post('/ipphones', [IpPhoneController::class, 'store'])->name('ipphones.store');
+    Route::get('/materials/list/{type}', [MaterialController::class, 'list'])->name('superadmin.materials.list');
     // Reclamations
     Route::get('/reclamations/reclamations', [SuperAdminController::class, 'reclamations'])->name('superadmin.reclamations');   
      Route::get('/reclamations/addreclamation', [SuperAdminController::class, 'addreclamation'])->name('reclamations.addreclamation');
@@ -138,6 +135,11 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
             Route::post('{location}/rooms', [LocationController::class, 'storeRoom'])->name('storeRoom');
             Route::put('/{room}/update-type', [LocationController::class, 'updateRoomType'])->name('update-type');
             Route::delete('/{room}', [LocationController::class, 'destroyRoom'])->name('destroyRoom');
+            Route::get('/{location}/rooms', [LocationController::class, 'rooms'])->name('rooms');
+            Route::get('/{location}/addroom', [LocationController::class, 'addroom'])->name('addroom');
+            Route::post('/{location}/rooms', [LocationController::class, 'storeRoom'])->name('storeRoom');
+            Route::put('/{location}/rooms/{room}/update-type', [LocationController::class, 'updateRoomType'])->name('updateRoomType');
+            Route::delete('/{location}/rooms/{room}', [LocationController::class, 'destroyRoom'])->name('destroyRoom');
        
     });
 Route::prefix('superadmin/materials')->group(function () {
@@ -145,41 +147,19 @@ Route::prefix('superadmin/materials')->group(function () {
     Route::get('/', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'index'])
         ->name('superadmin.materials.index');
     
-    // Material type lists
-    Route::get('/computers', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'computers'])
-        ->name('superadmin.materials.computers');
-    Route::get('/printers', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'printers'])
-        ->name('superadmin.materials.printers');
-    Route::get('/hotspots', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'hotspots'])
-        ->name('superadmin.materials.hotspots');
-    Route::get('/ip-phones', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'ipPhones'])
-        ->name('superadmin.materials.ip-phones');
-        Route::get('/printers', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'printers'])
-        ->name('printers.index');
-        Route::get('/printercreate', [\App\Http\Controllers\SuperAdmin\PrinterController::class, 'create'])
-        ->name('printercreate');
-        Route::get('printers/create', [PrinterController::class, 'create'])->name('printercreate');
-    Route::post('printers', [PrinterController::class, 'store'])->name('printers.store');
-    Route::post('/printers', [\App\Http\Controllers\SuperAdmin\PrinterController::class, 'store'])
-        ->name('printers.store');
-        Route::post('printers', [PrinterController::class, 'store'])->name('printers.store');
+
+ 
        // Site-specific materials
     Route::get('/sites/{site}/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'siteMaterials'])
         ->name('superadmin.materials.site');
-        Route::get('printers/create', [PrinterController::class, 'create'])->name('printers.create');
-        Route::post('printers', [PrinterController::class, 'store'])->name('printers.store');
-        Route::get('printers', [PrinterController::class, 'index'])->name('printers.index');
-        Route::get('printers/{printer}/edit', [PrinterController::class, 'edit'])->name('printers.edit');
-        Route::put('printers/{printer}', [PrinterController::class, 'update'])->name('printers.update');
-        Route::delete('printers/{printer}', [PrinterController::class, 'destroy'])->name('printers.destroy');
+
     
     // CRUD operations
     Route::get('/{type}/create', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'create'])
         ->name('superadmin.materials.create');
     Route::post('/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'store'])
         ->name('superadmin.materials.store');
-    Route::get('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'show'])
-        ->name('superadmin.materials.show');
+ 
     Route::get('/{type}/{material}/edit', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'edit'])
         ->name('superadmin.materials.edit');
     Route::put('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'update'])
@@ -201,21 +181,66 @@ Route::post('/superadmin/reclamations/add-reclamation', [SuperAdminController::c
     Route::get('/superadmin/reclamations', [SuperAdminController::class, 'showReclamations'])->name('superadmin.reclamations');
     Route::delete('/superadmin/reclamations/{id}', [SuperAdminController::class, 'destroyReclamation'])->name('superadmin.reclamations.destroy');
 
-    // Resources
-    Route::resource('computers', \App\Http\Controllers\ComputerController::class);
-    Route::resource('printers', \App\Http\Controllers\PrinterController::class);
-    Route::resource('ip-phones', \App\Http\Controllers\IpPhoneController::class);
-    Route::resource('hotspots', \App\Http\Controllers\HotspotController::class);
-    Route::get('/superadmin/computers/create', [ComputerController::class, 'create'])->name('superadmin.computers.create');
-Route::post('/superadmin/computers', [ComputerController::class, 'store'])->name('superadmin.computers.store');
-Route::get('/superadmin/printers/create', [App\Http\Controllers\SuperAdmin\PrinterController::class, 'create'])->name('superadmin.printers.create');
-Route::get('/superadmin/materials/ipphone/create', [IpPhoneController::class, 'create'])->name('superadmin.materials.ipphone.create');
-Route::get('superadmin/materials/hotspotcreate', [IpPhoneController::class, 'create'])->name('superadmin.materials.hotspotcreate');
-Route::get('/superadmin/materials/printers/create', [PrinterController::class, 'create'])
-    ->name('superadmin.materials.printercreate');
+;
 // Display the printer creation form
-Route::get('superadmin/materials/printers/create', [PrinterController::class, 'create'])->name('superadmin.materials.printers.create');
+// IP Phone routes
+// routes/web.php
 
+
+Route::prefix('superadmin/materials')->group(function () {
+    // Dashboard route
+    Route::get('/', [MaterialController::class, 'index'])->name('superadmin.materials.index');
+    
+    // Material type routes
+    Route::prefix('{type}')->group(function () {
+        // List materials by type
+        Route::get('/', [MaterialController::class, 'list'])->name('superadmin.materials.list');
+        
+        // Add material form
+        Route::get('/add', [MaterialController::class, 'create'])->name('superadmin.materials.create');
+        
+        // Store new material
+        Route::post('/store', [MaterialController::class, 'store'])->name('superadmin.materials.store');
+        
+        // Edit material form
+        Route::get('/{id}/edit', [MaterialController::class, 'edit'])->name('superadmin.materials.edit');
+        
+        // Update material
+        Route::put('/{id}/update', [MaterialController::class, 'update'])->name('superadmin.materials.update');
+        
+        // Delete material
+        Route::delete('/{id}/delete', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
+    });
+    Route::get('superadmin/materials/{type}/add', [MaterialController::class, 'create'])->name('superadmin.materials.create');
+    Route::get('superadmin/materials/{type}/{id}/delete', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
+    Route::get('superadmin/materials/{type}/{id}/delete', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
+    Route::delete('/superadmin/materials/{type}/{id}', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
+// For the materials overview page
+Route::get('/superadmin/materials', [MaterialController::class, 'index'])->name('superadmin.materials.index');
+
+
+// For creating materials
+Route::get('/superadmin/materials/{type}/create', [MaterialController::class, 'create'])->name('superadmin.materials.create');
+
+// For storing materials
+Route::post('/superadmin/materials/{type}', [MaterialController::class, 'store'])->name('superadmin.materials.store');
+
+// For deleting materials
+Route::delete('/superadmin/materials/{type}/{id}', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
+Route::get('/superadmin/materials/', [MaterialController::class, 'index'])->name('superadmin.materials.index');
+
+// For listing materials by type (this is the important one)
+Route::get('/superadmin/materials/{type}', [MaterialController::class, 'list'])
+    ->where('type', 'computers|printers|ip-phones|hotspots')
+    ->name('superadmin.materials.list');
+    Route::get('/superadmin/materials/{type}', [MaterialController::class, 'list'])->name('superadmin.materials.list');
+    // AJAX routes for dynamic dropdowns
+    Route::get('/get-locations/{siteId}', [MaterialController::class, 'getLocationsBySite'])->name('superadmin.materials.getLocations');
+    Route::get('/get-rooms/{locationId}', [MaterialController::class, 'getRoomsByLocation'])->name('superadmin.materials.getRooms');
+    Route::get('/get-corridors/{locationId}', [MaterialController::class, 'getCorridorsByLocation'])->name('superadmin.materials.getCorridors');
+});
 // Store the new printer
+Route::get('/superadmin/cbr', [BrancheController::class, 'carburantSites'])->name('superadmin.cbr');
+
     Route::post('/superadmin/reclamations/store', [SuperAdminController::class, 'storeReclamation'])->name('storeReclamation');
     require __DIR__.'/auth.php';

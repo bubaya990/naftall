@@ -9,15 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('site_id')->constrained('sites')->onDelete('cascade'); 
-            $table->string('name'); // "carburant" ou "commercial"        
+            $table->string('name');
+            $table->foreignId('site_id')->constrained()->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->constrained('branches')->onDelete('cascade');
             $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.
@@ -34,4 +36,3 @@ return new class extends Migration
         Schema::enableForeignKeyConstraints();
     }
 };
-   

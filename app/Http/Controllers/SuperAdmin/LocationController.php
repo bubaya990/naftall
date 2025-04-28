@@ -130,7 +130,30 @@ public function updateType(Request $request, $id)
  {
      $location = Location::findOrFail($location);
      return view('superadmin.locations.addroom', compact('location'));
+ }
+ 
+ public function storeRoom(Request $request, $location)
+ {
+     $request->validate([
+         'name' => 'required|string|max:255',
+         'code' => 'required|string|max:50|unique:rooms,code',
+         'type' => 'required|string|in:Office,Storage,Meeting',
+     ]);
+ 
+     try {
+         \App\Models\Room::create([
+             'name' => $request->name,
+             'code' => $request->code,
+             'type' => $request->type,
+             'location_id' => $location
+         ]);
+ 
+         return redirect()->route('superadmin.locations.rooms', ['location' => $location])
+                ->with('success', 'Room added successfully.');
+     } catch (\Exception $e) {
+         return back()->withInput()->with('error', 'Error creating room: ' . $e->getMessage());
      }
+ }
     
 
  public function storeRoom(Request $request, $location)

@@ -19,10 +19,12 @@ class Computer extends Model
 
   protected $appends = ['total_ram'];
 
-  public function material()
-    {
-        return $this->morphOne(Material::class, 'materialable');
-    }
+  // In the Computer model
+public function material()
+{
+    return $this->morphOne(Material::class, 'materialable');
+}
+
   
 
     public function rams()

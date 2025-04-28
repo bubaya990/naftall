@@ -16,7 +16,7 @@ class Site extends Model
     
     public function locations()
     {
-        return $this->hasMany(Location::class,'site_id');
+        return $this->hasMany(Location::class, 'site_id');
     }
     public function user()
     {

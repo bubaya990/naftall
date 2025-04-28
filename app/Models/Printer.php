@@ -14,10 +14,12 @@ class Printer extends Model
     'printer_model',
   
 ];
+
 public function material()
 {
     return $this->morphOne(Material::class, 'materialable');
 }
+
 
  
 

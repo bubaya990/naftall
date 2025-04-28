@@ -2,30 +2,106 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Branche;
 use App\Models\Site;
-
+use App\Models\Branche;
 
 class BrancheSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {   
-        $sites = Site::all();
-        foreach ($sites as $site) {
-        Branche::firstOrCreate([
-            'name' => 'carburant',
-            'site_id' => $site->id,
+    public function run()
+    {
+        // Find sites
+        $siege = Site::where('name', 'Siege')->first();
+        $chiffa = Site::where('name', 'Chiffa')->first();
+        $ainOussara = Site::where('name', 'Ain-Oussara')->first();
+        $djelfa = Site::where('name', 'Djelfa')->first();
+
+        // Create Branches for Siege
+        $siegeCommercial = Branche::create([
+            'name' => 'Commercial',
+            'site_id' => $siege->id,
+            'parent_id' => null,
         ]);
-    
-        Branche::firstOrCreate([
-            'name' => 'commercial',
-            'site_id' => $site->id,
+
+        $siegeCarburant = Branche::create([
+            'name' => 'Carburant',
+            'site_id' => $siege->id,
+            'parent_id' => null,
+        ]);
+
+        // Under Commercial -> Agence
+        $agence = Branche::create([
+            'name' => 'Agence',
+            'site_id' => $siege->id,
+            'parent_id' => $siegeCommercial->id,
+        ]);
+
+        // Under Agence -> GD
+        $gd = Branche::create([
+            'name' => 'GD',
+            'site_id' => $siege->id,
+            'parent_id' => $agence->id,
+        ]);
+
+        // Stations under GD
+        for ($i = 1; $i <= 12; $i++) {
+            Branche::create([
+                'name' => 'Station ' . $i,
+                'site_id' => $siege->id,
+                'parent_id' => $gd->id,
+            ]);
+        }
+
+        // Create Branches for Chiffa
+        $chiffaCommercial = Branche::create([
+            'name' => 'Commercial',
+            'site_id' => $chiffa->id,
+            'parent_id' => null,
+        ]);
+
+        $chiffaCarburant = Branche::create([
+            'name' => 'Carburant',
+            'site_id' => $chiffa->id,
+            'parent_id' => null,
+        ]);
+
+        // Under Chiffa Commercial -> LP and CDD
+        Branche::create([
+            'name' => 'LP',
+            'site_id' => $chiffa->id,
+            'parent_id' => $chiffaCommercial->id,
+        ]);
+
+        Branche::create([
+            'name' => 'CDD',
+            'site_id' => $chiffa->id,
+            'parent_id' => $chiffaCommercial->id,
+        ]);
+
+        // Create Branches for Ain-Oussara
+        Branche::create([
+            'name' => 'Commercial',
+            'site_id' => $ainOussara->id,
+            'parent_id' => null,
+        ]);
+
+        Branche::create([
+            'name' => 'Carburant',
+            'site_id' => $ainOussara->id,
+            'parent_id' => null,
+        ]);
+
+        // Create Branches for Djelfa
+        Branche::create([
+            'name' => 'Commercial',
+            'site_id' => $djelfa->id,
+            'parent_id' => null,
+        ]);
+
+        Branche::create([
+            'name' => 'Carburant',
+            'site_id' => $djelfa->id,
+            'parent_id' => null,
         ]);
     }
-}
 }

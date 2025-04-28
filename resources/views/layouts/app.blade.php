@@ -195,6 +195,7 @@
         </div>
     </div>
 </div>
+<script src="//unpkg.com/alpinejs" defer></script>
 
 <script>
     const toggleBtn = document.getElementById('sidebar-toggle');
@@ -229,6 +230,7 @@
             }
         });
     });
+    
 </script>
 </body>
 </html>

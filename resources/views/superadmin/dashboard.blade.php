@@ -153,7 +153,7 @@
                     <!-- COM Button -->
                     <a href="{{ route('superadmin.com') }}"
                        class="w-full md:w-1/2 text-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-12 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1 text-xl">
-                        COM
+                        COMM
                     </a>
 
                     <!-- CBR Button -->
