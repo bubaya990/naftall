@@ -21,80 +21,94 @@ class MaterialController extends Controller
 {
     // Display dashboard
     public function index()
-    {
-        // Count materials by type (global totals)
-        $totalComputers = Computer::count();
-        $totalPrinters = Printer::count();
-        $totalIpPhones = IpPhone::count();
-        $totalHotspots = Hotspot::count();
+{
+    // Count materials by type (global totals)
+    $totalComputers = Material::where('materialable_type', Computer::class)->count();
+    $totalPrinters = Material::where('materialable_type', Printer::class)->count();
+    $totalIpPhones = Material::where('materialable_type', IpPhone::class)->count();
+    $totalHotspots = Material::where('materialable_type', Hotspot::class)->count();
 
-        $materialableType = Material::first()?->materialable_type;
-        $type = $materialableType;
-        $materials = Material::paginate(10);
+    $materialableType = Material::first()?->materialable_type;
+    $type = $materialableType;
+    $materials = Material::paginate(10);
 
-        // Get all sites
-        $sites = Site::with('locations.rooms.materials', 'locations.corridors.materials')->get();
+    // Get all sites with their materials counts
+    $siteMaterialCounts = Site::with(['locations.rooms.materials', 'locations.corridors.materials'])
+        ->get()
+        ->map(function($site) {
+            // Initialize counters
+            $counts = [
+                'computers' => 0,
+                'printers' => 0,
+                'ipPhones' => 0,
+                'hotspots' => 0
+            ];
 
-        // Prepare counts per site
-        $siteMaterialCounts = [];
-
-        foreach ($sites as $site) {
-            $computers = 0;
-            $printers = 0;
-            $ipPhones = 0;
-            $hotspots = 0;
+            // Track seen material IDs to prevent duplicates
+            $seenMaterialIds = [];
 
             foreach ($site->locations as $location) {
+                // Count materials in rooms
                 foreach ($location->rooms as $room) {
                     foreach ($room->materials as $material) {
-                        if ($material->materialable_type === Computer::class) {
-                            $computers++;
-                        } elseif ($material->materialable_type === Printer::class) {
-                            $printers++;
-                        } elseif ($material->materialable_type === IpPhone::class) {
-                            $ipPhones++;
-                        } elseif ($material->materialable_type === Hotspot::class) {
-                            $hotspots++;
+                        if (!in_array($material->id, $seenMaterialIds)) {
+                            $seenMaterialIds[] = $material->id;
+                            $this->incrementMaterialCount($counts, $material->materialable_type);
                         }
                     }
                 }
 
+                // Count materials in corridors
                 foreach ($location->corridors as $corridor) {
                     foreach ($corridor->materials as $material) {
-                        if ($material->materialable_type === Computer::class) {
-                            $computers++;
-                        } elseif ($material->materialable_type === Printer::class) {
-                            $printers++;
-                        } elseif ($material->materialable_type === IpPhone::class) {
-                            $ipPhones++;
-                        } elseif ($material->materialable_type === Hotspot::class) {
-                            $hotspots++;
+                        if (!in_array($material->id, $seenMaterialIds)) {
+                            $seenMaterialIds[] = $material->id;
+                            $this->incrementMaterialCount($counts, $material->materialable_type);
                         }
                     }
                 }
             }
 
-            $siteMaterialCounts[$site->id] = [
+            return [
                 'site_name' => $site->name,
-                'computers' => $computers,
-                'printers' => $printers,
-                'ipPhones' => $ipPhones,
-                'hotspots' => $hotspots,
+                'computers' => $counts['computers'],
+                'printers' => $counts['printers'],
+                'ipPhones' => $counts['ipPhones'],
+                'hotspots' => $counts['hotspots'],
             ];
-        }
+        })
+        ->values()
+        ->toArray();
 
-        return view('superadmin.materials.gestion-material', compact(
-            'totalComputers',
-            'totalPrinters',
-            'totalIpPhones',
-            'totalHotspots',
-            'sites',
-            'siteMaterialCounts',
-            'type',
-            'materials'
-        ));
+    return view('superadmin.materials.gestion-material', compact(
+        'totalComputers',
+        'totalPrinters',
+        'totalIpPhones',
+        'totalHotspots',
+        'siteMaterialCounts',
+        'type',
+        'materials'
+    ));
+}
+
+// Helper method to increment the correct counter
+private function incrementMaterialCount(&$counts, $materialableType)
+{
+    switch ($materialableType) {
+        case Computer::class:
+            $counts['computers']++;
+            break;
+        case Printer::class:
+            $counts['printers']++;
+            break;
+        case IpPhone::class:
+            $counts['ipPhones']++;
+            break;
+        case Hotspot::class:
+            $counts['hotspots']++;
+            break;
     }
-
+}
     // Store a new material
     public function store(Request $request, $type)
     {
@@ -343,4 +357,5 @@ class MaterialController extends Controller
             return back()->with('error', 'Échec de la suppression: ' . $e->getMessage());
         }
     }
+    
 }

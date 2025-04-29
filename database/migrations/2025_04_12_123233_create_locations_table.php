@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->string('type'); 
+            $table->string('name');
+            $table->enum('type', ['Poste police', 'Rez-de-chaussee', 'Étage']);
             $table->foreignId('site_id')->constrained('sites')->onDelete('cascade');
             $table->unsignedBigInteger('floor_id')->nullable();
             $table->timestamps();

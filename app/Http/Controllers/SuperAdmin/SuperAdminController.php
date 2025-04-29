@@ -39,46 +39,40 @@ class SuperAdminController extends Controller
     public function create()
     {
         $sites = Site::all(); // Get all sites from the database
-        // Récupère uniquement les noms de branches uniques
-    $branches = Branche::select('name')
-    ->distinct()
-    ->get();
         
-      
+        // Get only 'Commercial' and 'Carburant' branches
+        $branches = Branche::whereIn('name', ['Commercial', 'Carburant'])->get();
+        
         return view('superadmin.utilisateurs.create', compact('sites', 'branches'));
     }
+    
 
     /**
      * Store a newly created user in storage.
      */
     public function store(Request $request)
     {
-        // Validate the incoming data
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email', // Unique email constraint
+            'email' => 'required|email|unique:users,email',
             'role' => 'required|in:admin,utilisateur,superadmin,leader',
-            'site_id' => 'required|exists:sites,id', // Ensure site exists
-            'branche_name' => 'required|in:carburant,commercial', // Validation par nom
+            'site_id' => 'required|exists:sites,id',
+            'branche_id' => 'required|exists:branches,id', // Validate branche_id
         ]);
-
-       // Trouve la branche correspondant au nom (première occurrence)
-       $branche = Branche::where('name', $request->branche_name)->first();
-
-       // Create the user and insert into the database
-       User::create([
-           'name' => $request->name,
-           'email' => $request->email,
-           'role' => $request->role,
-           'site_id' => $request->site_id, // assuming 'site_id' is the foreign key
-           'password' => bcrypt('defaultpassword'), // Setting a default password (change as needed)
-           'branche_id' => $branche->id, // Utilise l'ID de la branche trouvée
-       ]);
-
-       // Redirect back with success message
-       return redirect()->route('superadmin.utilisateurs')
-                        ->with('success', 'User created successfully.');
-   }
+    
+        // Create the user with the selected branche_id
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+            'site_id' => $request->site_id,
+            'password' => bcrypt('defaultpassword'),
+            'branche_id' => $request->branche_id,
+        ]);
+    
+        return redirect()->route('superadmin.utilisateurs')->with('success', 'User created successfully.');
+    }
+    
 
  
 
@@ -289,7 +283,7 @@ public function storeReclamation(Request $request)
         'message' => $request->message,
         'user_id' => $request->user_id,
         'receiver_id' => $request->receiver_id,
-        'state' => 'pending', // Default value for the state
+        'state' => 'nouvelle', // Default value for the state
     ]);
 
     $reclamation->save();
@@ -300,11 +294,7 @@ public function storeReclamation(Request $request)
 /**
  * Display the specified reclamation.
  */
-public function showReclamation($id)
-{
-    $reclamation = Reclamation::with(['user', 'messages'])->findOrFail($id);
-    return view('superadmin.reclamations.reclamations', compact('reclamation'));
-}
+
 public function destroyReclamation($id)
 {
     $reclamation = Reclamation::find($id);
@@ -322,25 +312,7 @@ public function destroyReclamation($id)
 /**
  * Add a message to a reclamation.
  */
-public function storeMessage(Request $request, $reclamationId)
-{
-    $request->validate([
-        'message' => 'required|string',
-    ]);
 
-    $reclamation = Reclamation::findOrFail($reclamationId);
-
-    Message::create([
-        'message' => $request->message,
-        'reclamation_id' => $reclamation->id,
-        'sender_id' => Auth::id(),
-        'receiver_id' => $reclamation->user_id,
-        'seen' => false,
-    ]);
-
-    return redirect()->back()
-        ->with('success', 'Message envoyé avec succès!');
-}
 public function showReclamations()
 {
     $reclamations = Reclamation::with('user')->latest()->paginate(10);
@@ -365,4 +337,74 @@ public function getUnreadCount()
     $count = Auth::user()->unreadMessages()->count();
     return response()->json(['count' => $count]);
 }  
+/**
+ * Display the specified reclamation.
+ */
+public function showReclamation($id)
+{
+    $reclamation = Reclamation::with(['user', 'messages', 'messages.sender', 'handler'])
+        ->findOrFail($id);
+    
+    return view('superadmin.reclamations.view', compact('reclamation'));
+}
+/**
+ * Update the status of a reclamation.
+ */
+// In app/Http/Controllers/SuperAdmin/SuperAdminController.php
+
+public function updateStatus(Request $request, $id, $status)
+{
+    $validStatuses = ['nouvelle', 'en_cours', 'traitée'];
+    
+    if (!in_array($status, $validStatuses)) {
+        return redirect()->back()->with('error', 'Statut invalide');
+    }
+
+    $reclamation = Reclamation::findOrFail($id);
+    
+    if ($reclamation->state === 'nouvelle' && $status === 'en_cours') {
+        $reclamation->update([
+            'state' => 'en_cours',
+            'handler_id' => auth()->id(),
+            'handled_at' => now()
+        ]);
+    }
+    elseif ($reclamation->state === 'en_cours' && $status === 'traitée' && $reclamation->handler_id === auth()->id()) {
+        $reclamation->update([
+            'state' => 'traitée',
+            'completed_at' => now()
+        ]);
+    } else {
+        return redirect()->back()->with('error', 'Action non autorisée');
+    }
+
+    return redirect()->back()->with('success', 'Statut mis à jour avec succès');
+}
+/**
+ * Store a message for a reclamation.
+ */
+public function storeMessage(Request $request, $reclamationId)
+{
+    $reclamation = Reclamation::findOrFail($reclamationId);
+    
+    if ($reclamation->state === 'traitée') {
+        return redirect()->back()->with('error', 'Impossible d\'ajouter un message à une réclamation traitée');
+    }
+
+    $request->validate([
+        'message' => 'required|string',
+    ]);
+
+    Message::create([
+        'message' => $request->message,
+        'reclamation_id' => $reclamation->id,
+        'sender_id' => Auth::id(),
+        'receiver_id' => $reclamation->user_id,
+        'seen' => false,
+    ]);
+
+    return redirect()->back()->with('success', 'Message envoyé avec succès');
+}
+
+
 }

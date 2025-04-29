@@ -13,78 +13,89 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($commercialBranches as $commercial)
-                    @foreach($commercial->children as $child)
-                        @if($child->name === 'Agence')
-                            <!-- Agence Card -->
-                            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
-                                    <div class="flex items-center justify-center mb-2">
-                                        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                            <i class="fas fa-building text-white text-2xl"></i>
-                                        </div>
-                                    </div>
-                                    <h2 class="text-xl font-bold text-white text-center">Agence</h2>
-                                </div>
-                                <div class="p-4">
-                                    @foreach($child->children as $subChild)
-                                        @if($subChild->name !== 'GD')
-                                            <div class="mb-2 last:mb-0">
-                                                <div class="bg-blue-50 text-blue-600 rounded-lg p-3 text-center">
-                                                    {{ $subChild->name }}
+                <!-- Agence, LP, CDD Cards in a single row -->
+                <div class="col-span-1 md:col-span-2 lg:col-span-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        @foreach($commercialBranches as $commercial)
+                            @foreach($commercial->children as $child)
+                                @if($child->name === 'Agence')
+                                    <!-- Agence Card -->
+                                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
+                                            <div class="flex items-center justify-center mb-2">
+                                                <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                                    <i class="fas fa-building text-white text-2xl"></i>
                                                 </div>
                                             </div>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        @elseif($child->name === 'LP')
-                            <!-- LP Card -->
-                            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                                <div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
-                                    <div class="flex items-center justify-center mb-2">
-                                        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                            <i class="fas fa-gas-pump text-white text-2xl"></i>
+                                            <h2 class="text-xl font-bold text-white text-center">Agence</h2>
                                         </div>
-                                    </div>
-                                    <h2 class="text-xl font-bold text-white text-center">LP</h2>
-                                </div>
-                                <div class="p-4">
-                                    @foreach($child->children as $subChild)
-                                        <div class="mb-2 last:mb-0">
-                                            <div class="bg-green-50 text-green-600 rounded-lg p-3 text-center">
-                                                {{ $subChild->name }}
+                                        <div class="p-4">
+                                            <div class="flex flex-wrap gap-2">
+                                                @foreach($child->children as $subChild)
+                                                    @if($subChild->name !== 'GD')
+                                                        <div class="flex-1 min-w-[120px]">
+                                                            <div class="bg-blue-50 text-blue-600 rounded-lg p-3 text-center">
+                                                                {{ $subChild->name }}
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
                                             </div>
                                         </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @elseif($child->name === 'CDD')
-                            <!-- CDD Card -->
-                            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                                <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-4">
-                                    <div class="flex items-center justify-center mb-2">
-                                        <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                                            <i class="fas fa-store text-white text-2xl"></i>
-                                        </div>
                                     </div>
-                                    <h2 class="text-xl font-bold text-white text-center">CDD</h2>
-                                </div>
-                                <div class="p-4">
-                                    @foreach($child->children as $subChild)
-                                        <div class="mb-2 last:mb-0">
-                                            <div class="bg-yellow-50 text-yellow-600 rounded-lg p-3 text-center">
-                                                {{ $subChild->name }}
+                                @elseif($child->name === 'LP')
+                                    <!-- LP Card -->
+                                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                                        <div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
+                                            <div class="flex items-center justify-center mb-2">
+                                                <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                                    <i class="fas fa-gas-pump text-white text-2xl"></i>
+                                                </div>
+                                            </div>
+                                            <h2 class="text-xl font-bold text-white text-center">LP</h2>
+                                        </div>
+                                        <div class="p-4">
+                                            <div class="flex flex-wrap gap-2">
+                                                @foreach($child->children as $subChild)
+                                                    <div class="flex-1 min-w-[120px]">
+                                                        <div class="bg-green-50 text-green-600 rounded-lg p-3 text-center">
+                                                            {{ $subChild->name }}
+                                                        </div>
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                @endforeach
+                                    </div>
+                                @elseif($child->name === 'CDD')
+                                    <!-- CDD Card -->
+                                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                                        <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-4">
+                                            <div class="flex items-center justify-center mb-2">
+                                                <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                                    <i class="fas fa-store text-white text-2xl"></i>
+                                                </div>
+                                            </div>
+                                            <h2 class="text-xl font-bold text-white text-center">CDD</h2>
+                                        </div>
+                                        <div class="p-4">
+                                            <div class="flex flex-wrap gap-2">
+                                                @foreach($child->children as $subChild)
+                                                    <div class="flex-1 min-w-[120px]">
+                                                        <div class="bg-yellow-50 text-yellow-600 rounded-lg p-3 text-center">
+                                                            {{ $subChild->name }}
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endforeach
+                    </div>
+                </div>
 
-                <!-- GD Card with Dropdown (only for GD) -->
+                <!-- GD Card with Dropdown -->
                 @foreach($commercialBranches as $commercial)
                     @foreach($commercial->children as $child)
                         @if($child->name === 'Agence')
@@ -107,7 +118,7 @@
                                             </div>
                                         </div>
                                         <div x-show="isOpen" x-transition class="p-4 bg-purple-50">
-                                            <div class="grid grid-cols-2 gap-2">
+                                            <div class="flex flex-col gap-2">
                                                 @foreach($subChild->children as $station)
                                                     <div class="bg-white text-purple-600 rounded-lg p-2 text-center text-sm shadow-sm">
                                                         {{ $station->name }}

@@ -7,9 +7,9 @@
 
     <!-- Foreground content -->
     <div class="relative z-10 min-h-screen p-6 pb-16">
-        <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-3xl mx-auto mt-10 animate-fadeIn">
+        <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-3xl mx-auto mt-10 animate-fadeIn 
+                  border-b-4 border-l-4 border-blue-800/90 shadow-[5px_5px_15px_rgba(30,58,138,0.3)]">
             <h1 class="text-2xl md:text-3xl font-bold text-blue-900 mb-8 animate-slideInLeft">
-                <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
                 Nouvelle Réclamation
             </h1>
 
@@ -27,22 +27,16 @@
                 <!-- Definition -->
                 <div>
                     <label for="definition" class="block text-blue-900 font-medium mb-2">Sujet de Réclamation</label>
-                    <select name="definition" id="definition" 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-blue-200 bg-white/90 backdrop-blur-sm" required>
-                        <option value="">-- Sélectionnez un sujet --</option>
-                        <option value="Problème technique" {{ old('definition') == 'Problème technique' ? 'selected' : '' }}>Problème technique</option>
-                        <option value="Réclamation administrative" {{ old('definition') == 'Réclamation administrative' ? 'selected' : '' }}>Réclamation administrative</option>
-                        <option value="Problème de service" {{ old('definition') == 'Problème de service' ? 'selected' : '' }}>Problème de service</option>
-                        <option value="Autre" {{ old('definition') == 'Autre' ? 'selected' : '' }}>Autre</option>
-                    </select>
+                    <input type="text" name="definition" id="definition"value="{{ old('definition') }}"class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-blue-200 bg-white/90 backdrop-blur-sm"placeholder="Entrez le sujet de votre réclamation" required>
                     @error('definition')
-                        <p class="text-red-500 text-sm mt-2 animate-pulse">{{ $message }}</p>
-                    @enderror
+                          <p class="text-red-500 text-sm mt-2 animate-pulse">{{ $message }}</p>
+                     @enderror
                 </div>
+
 
                 <!-- Initial Message -->
                 <div>
-                    <label for="message" class="block text-blue-900 font-medium mb-2">Détails de la Réclamation</label>
+                    <label for="message" class="block text-blue-900 font-medium mb-2">Entrez votre message</label>
                     <textarea id="message" name="message" rows="5"
                               class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-blue-200 bg-white/90 backdrop-blur-sm"
                               placeholder="Décrivez votre réclamation en détail..." required>{{ old('message') }}</textarea>
@@ -50,27 +44,6 @@
                         <p class="text-red-500 text-sm mt-2 animate-pulse">{{ $message }}</p>
                     @enderror
                 </div>
-
-                <!-- Receiver Selection (if applicable) -->
-                @if(auth()->check() && auth()->user()->role === 'superadmin')
-
-                <div>
-                    <label for="receiver_id" class="block text-blue-900 font-medium mb-2">Destinataire</label>
-                    <select name="receiver_id" id="receiver_id"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-blue-200 bg-white/90 backdrop-blur-sm">
-                        <option value="">-- Sélectionnez un destinataire --</option>
-                        @foreach($users as $user)
-    <option value="{{ $user->id }}" {{ old('receiver_id') == $user->id ? 'selected' : '' }}>
-        {{ $user->name }} ({{ $user->email }})
-    </option>
-@endforeach
-
-                    </select>
-                    @error('receiver_id')
-                        <p class="text-red-500 text-sm mt-2 animate-pulse">{{ $message }}</p>
-                    @enderror
-                </div>
-                @endif
 
                 <!-- Form Actions -->
                 <div class="pt-4 flex items-center justify-between">
@@ -80,7 +53,7 @@
                     </button>
                     
                     <a href="{{ route('superadmin.reclamations') }}"
-                       class="ml-4 px-6 py-3 text-gray-600 hover:text-gray-800 transition duration-200 rounded-xl border border-gray-300 hover:border-gray-400">
+                       class="ml-4 px-6 py-3 text-black-600 hover:text-gray-800 transition duration-200 rounded-xl border border-gray-300 hover:border-gray-400">
                         <i class="fas fa-times mr-2"></i> Annuler
                     </a>
                 </div>

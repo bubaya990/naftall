@@ -103,18 +103,16 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-span-1">
-    <label class="block text-sm md:text-base font-bold text-gray-900 mb-2" for="branche">Branche </label>
-    <select name="branche_name"
-            class="block w-full px-4 py-3 border-2 border-blue-400 rounded-xl bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
-            required>
-            <option value="">Sélectionnez une branche</option>
-            @foreach ($branches as $branche) 
-            <option value="{{ $branche->name }}">{{ ucfirst($branche->name) }}</option>
-        @endforeach
 
-    </select>
-</div>
+<!-- Branche Selection -->
+<select name="branche_id" id="branche_id" class="block w-full px-4 py-3 border-2 border-blue-400 rounded-xl bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800" required>
+    <option value="">Sélectionnez une branche</option>
+    <option value="1" {{ old('branche_id') == 1 ? 'selected' : '' }}>Commercial</option>
+    <option value="2" {{ old('branche_id') == 2 ? 'selected' : '' }}>Carburant</option>
+</select>
+
+
+
                       
                        
                     </div>
@@ -133,30 +131,34 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const siteSelect = document.getElementById('site_id');
     const brancheDisplay = document.getElementById('branche-display');
-    
-    // Get all sites data from the options
-    const sites = {};
-    @foreach($sites as $site)
-        sites[{{ $site->id }}] = '{{ ucfirst($site->branche) }}';
-    @endforeach
+    const brancheInput = document.getElementById('branche_name');
 
-    // Update branche display when site selection changes
+    const sites = {
+        @foreach($sites as $site)
+            {{ $site->id }}: '{{ ucfirst($site->branche) }}',
+        @endforeach
+    };
+
+    function updateBranche(siteId) {
+        const branche = sites[siteId] || 'Sélectionnez un site pour voir sa branche';
+        brancheDisplay.textContent = branche;
+        brancheInput.value = branche;
+    }
+
     siteSelect.addEventListener('change', function() {
-        const selectedSiteId = this.value;
-        if (selectedSiteId && sites[selectedSiteId]) {
-            brancheDisplay.textContent = sites[selectedSiteId];
-        } else {
-            brancheDisplay.textContent = 'Sélectionnez un site pour voir sa branche';
-        }
+        updateBranche(this.value);
     });
 
-    // Initialize display if there's already a selected site
     if (siteSelect.value) {
-        brancheDisplay.textContent = sites[siteSelect.value] || 'Sélectionnez un site pour voir sa branche';
+        updateBranche(siteSelect.value);
     }
 });
+
+
+
+
 </script>
 @endsection

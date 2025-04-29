@@ -41,19 +41,24 @@
                             <td class="px-4 py-3">{{ $reclamation->user->name }}</td>
                             <td class="px-4 py-3 truncate max-w-xs">{{ Str::limit($reclamation->message, 50) }}</td>
                             <td class="px-4 py-3">
-                                @php
-                                    $status = $reclamation->messages->count() > 0 ? 'Traité' : 'En attente';
-                                    $statusClass = $status === 'Traité' ? 'bg-green-600' : 'bg-yellow-500';
-                                @endphp
-                                <span class="px-3 py-1.5 text-xs font-bold rounded-full text-white {{ $statusClass }}">
-                                    {{ $status }}
-                                </span>
+                                        @php
+                                            $status = $reclamation->state;
+                                            $statusClass = match($status) {
+                                                'nouvelle' => 'bg-red-500',
+                                                'en_cours' => 'bg-yellow-500',
+                                                'traitée' => 'bg-green-500',
+                                                default => 'bg-gray-500'
+                                            };
+                                        @endphp
+                                        <span class="px-3 py-1.5 text-xs font-bold rounded-full text-white {{ $statusClass }}">
+                                            {{ ucfirst($status) }}
+                                        </span>
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex justify-center space-x-2">
-                                    <a href="#" class="text-blue-600 hover:text-blue-800 transition" title="Voir">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                <a href="{{ route('superadmin.reclamations.show', $reclamation->id) }}" class="text-blue-600 hover:text-blue-800 transition" title="Voir">
+                                      <i class="fas fa-eye"></i>
+                                </a>
                                     <a href="#" class="text-yellow-500 hover:text-yellow-700 transition" title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </a>

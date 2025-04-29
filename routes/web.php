@@ -74,7 +74,6 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/materials/hotspots', [MaterialController::class, 'hotspots'])->name('materials.hotspots');
     Route::get('/materials/ip-phones', [MaterialController::class, 'ipPhones'])->name('materials.ip-phones');
     Route::get('/materials/site/{site}/{type}', [MaterialController::class, 'siteMaterials'])->name('materials.site');
-    Route::get('/materials/ipphone/create', [IpPhoneController::class, 'create'])->name('materials.ipphone.create');
     Route::get('/materials/list/{type}', [MaterialController::class, 'list'])->name('superadmin.materials.list');
     // Reclamations
     Route::get('/reclamations/reclamations', [SuperAdminController::class, 'reclamations'])->name('superadmin.reclamations');   
@@ -162,9 +161,7 @@ Route::prefix('superadmin/materials')->group(function () {
         ->name('superadmin.materials.update');
     Route::delete('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'destroy'])
         ->name('superadmin.materials.destroy');
-        Route::prefix('computers')->group(function () {
-            Route::get('/create', [ComputerController::class, 'create'])->name('computers.create');
-            Route::post('/', [ComputerController::class, 'store'])->name('computers.store');});
+        
 });
 
 Route::get('/superadmin/cbr', [SuperAdminController::class, 'cbr'])->name('superadmin.cbr');
@@ -239,4 +236,20 @@ Route::get('/superadmin/materials/{type}', [MaterialController::class, 'list'])
 Route::get('/superadmin/cbr', [BrancheController::class, 'carburantSites'])->name('superadmin.cbr');
 
     Route::post('/superadmin/reclamations/store', [SuperAdminController::class, 'storeReclamation'])->name('storeReclamation');
+   // Show reclamation details
+Route::get('/superadmin/reclamations/{id}', [SuperAdminController::class, 'showReclamation'])->name('superadmin.reclamations.show');
+
+// Update reclamation status
+Route::patch('/superadmin/reclamations/{id}/status/{status}', [SuperAdminController::class, 'updateStatus'])
+->name('superadmin.reclamations.update-status');
+
+// Store message
+Route::post('/superadmin/reclamations/{reclamationId}/messages', [SuperAdminController::class, 'storeMessage'])
+->name('superadmin.reclamations.store-message');
+Route::patch('/superadmin/reclamations/{id}/status/{status}', [SuperAdminController::class, 'updateStatus'])
+    ->name('superadmin.reclamations.update-status');
+
+Route::post('/superadmin/reclamations/{reclamationId}/messages', [SuperAdminController::class, 'storeMessage'])
+    ->name('superadmin.reclamations.store-message');
+   
     require __DIR__.'/auth.php';

@@ -10,6 +10,7 @@ class Location extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'type',
         'site_id',
         'floor_id',
@@ -35,8 +36,9 @@ public function rooms()
 // App\Models\Location.php
 public static function getTypes()
 {
-    return ['Post Police', 'Rez-de-chaussée', 'Étage'];
+    return ['Poste police', 'Rez-de-chaussee', 'Étage'];
 }
+
 
 
 }

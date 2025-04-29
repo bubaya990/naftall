@@ -68,7 +68,8 @@ public function store(Request $request)
     
 
     $floor = null;
-    
+    $locationName = '';
+
     if ($request->type === 'Étage') {
         // Handle floor creation without site reference
         $floorNumber = $request->floor_number;
@@ -90,6 +91,7 @@ public function store(Request $request)
         'site_id' => $request->site_id,
         'type' => $request->type,
         'floor_id' => $floor?->id, // Null if not 'Étage'
+        'name' => $locationName,
     ]);
 
     return redirect()->route('superadmin.locations.gestion-localite')

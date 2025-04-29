@@ -40,6 +40,7 @@
                                 <table class="w-full text-left">
                                     <thead class="bg-blue-50/50">
                                         <tr>
+                                            <th class="px-6 py-3 text-blue-900 font-medium">Nom</th>
                                             <th class="px-6 py-3 text-blue-900 font-medium">Type</th>
                                             <th class="px-6 py-3 text-blue-900 font-medium">Etage</th>
                                             <th class="px-6 py-3 text-blue-900 font-medium">Actions</th>
@@ -48,6 +49,7 @@
                                     <tbody class="divide-y divide-gray-200/50">
                                         @foreach($site->locations as $location)
                                             <tr class="hover:bg-blue-50/30 transition-colors duration-200">
+                                                <td class="px-6 py-4">{{ $location->name ?? '—' }}</td>
                                                 <td class="px-6 py-4">{{ $location->type }}</td>
                                                 <td class="px-6 py-4">{{ $location->floor->floor_number ?? '—' }}</td>
                                                 <td class="px-6 py-4 space-x-3">
@@ -58,14 +60,15 @@
                                                     <a href="{{ route('superadmin.locations.edit-type', $location->id) }}" class="text-yellow-600 hover:text-yellow-800 transition-colors duration-200">
                                                         <i class="fas fa-edit mr-1"></i> Changer le type
                                                     </a>
+
                                                     <form action="{{ route('superadmin.locations.destroy', $location->id) }}" method="POST" class="inline">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="text-red-600 hover:text-red-900" 
-            onclick="return confirm('Are you sure you want to delete this location?')">
-        <i class="fas fa-trash"></i> Delete
-    </button>
-</form>
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900" 
+                                                                onclick="return confirm('Are you sure you want to delete this location?')">
+                                                            <i class="fas fa-trash"></i> Delete
+                                                        </button>
+                                                    </form>
 
                                                 </td>
                                             </tr>

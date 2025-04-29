@@ -44,7 +44,7 @@ class BrancheSeeder extends Seeder
         ]);
 
         // Stations under GD
-        for ($i = 1; $i <= 12; $i++) {
+        for ($i = 1; $i <= 11; $i++) {
             Branche::create([
                 'name' => 'Station ' . $i,
                 'site_id' => $siege->id,

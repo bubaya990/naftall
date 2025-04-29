@@ -13,9 +13,19 @@ class Reclamation extends Model
         'num_R',
         'date_R',
         'definition',
-        'state',
         'message',
+        'state',
         'user_id',
+        'handler_id',
+        'handled_at',
+        'completed_at'
+    ];
+    
+    protected $dates = [
+        'handled_at',
+        'completed_at',
+        'created_at',
+        'updated_at'
     ];
     public function messages()
     {
@@ -25,5 +35,9 @@ class Reclamation extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+// Add this to your Reclamation model
+public function handler()
+{
+    return $this->belongsTo(User::class, 'handler_id');
+}
 }
