@@ -135,37 +135,52 @@ public function updateType(Request $request, $id)
     }
 
     public function storeRoom(Request $request, Location $location)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:rooms,code',
-            'type' => 'required|string|in:Office,Storage,Meeting',
-        ], [
-            'code.unique' => 'This room code already exists.',
-            'type.in' => 'Please select a valid room type.',
-        ]);
+{
+    // Debug: show all input + location ID
+    \Log::debug('Room creation attempt', [
+        'input' => $request->all(),
+        'location_id' => $location->id
+    ]);
 
-        try {
-            Room::create([
-                'name' => $request->name,
-                'code' => $request->code,
-                'type' => $request->type,
-                'location_id' => $location->id
-            ]);
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'code' => 'required|string|max:50|unique:rooms,code',
+        'type' => 'required|string|in:Bureau,Salle reunion,Salle reseau',
+    ]);
 
-            return redirect()->route('superadmin.locations.rooms', $location)
-                   ->with('success', 'Room added successfully.');
-        } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error creating room: ' . $e->getMessage());
+    try {
+        $room = new Room();
+        $room->name = $validated['name'];
+        $room->code = $validated['code'];
+        $room->type = $validated['type'];
+        $room->location_id = $location->id;
+        
+        if ($room->save()) {
+            \Log::debug('Room saved successfully', $room->toArray());
+            return redirect()
+                ->route('superadmin.locations.rooms', $location)
+                ->with('success', 'Room created!');
+        } else {
+            \Log::error('Room failed to save silently');
+            return back()->with('error', 'Room failed to save (no error thrown)');
         }
-    }
 
+    } catch (\Exception $e) {
+        \Log::error('Room save error', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return back()
+            ->withInput()
+            ->with('error', 'Error: ' . $e->getMessage());
+    }
+}
     
 
  public function updateRoomType(Request $request, Location $location, Room $room)
  {
      $request->validate([
-         'type' => 'required|string|in:Office,Storage,Meeting',
+         'type' => 'required|string|in:Bureau,Salle reunion,Salle reseau',
      ]);
 
      $room->update(['type' => $request->type]);

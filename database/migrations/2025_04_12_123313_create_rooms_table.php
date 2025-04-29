@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code')->unique();
-            $table->enum('type', ['Salle reunion', 'Salle reseau', 'Bureau']);
+            $table->enum('type', ['Bureau', 'Salle reunion', 'Salle reseau']);
             $table->foreignId('location_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

@@ -14,9 +14,8 @@ class Room extends Model
         'name',
         'code',
         'type',
-        'location_id',
+        'location_id'
     ];
-
      // Définir la relation avec les autres modèles (Printers, Computers, IPPhones)
      public function materials()
      {
