@@ -140,6 +140,12 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/{location}/addcorridor', [LocationController::class, 'addcorridor'])->name('addcorridor');
     Route::post('/{location}/corridors', [LocationController::class, 'storeCorridor'])->name('storeCorridor');
     Route::delete('/{location}/corridors/{corridor}', [LocationController::class, 'destroyCorridor'])->name('destroyCorridor');
+    Route::get('/{location}/rooms/{room}/materials', [LocationController::class, 'viewRoomMaterials'])
+        ->name('rooms.materials');
+
+    // View materials for a corridor
+    Route::get('/{location}/corridors/{corridor}/materials', [LocationController::class, 'viewCorridorMaterials'])
+        ->name('corridors.materials');
     });
 Route::prefix('superadmin/materials')->group(function () {
     // Main dashboard

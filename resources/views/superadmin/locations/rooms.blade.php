@@ -68,15 +68,21 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <form action="{{ route('superadmin.locations.destroyRoom', ['location' => $locationId, 'room' => $room->id]) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button onclick="return confirm('Are you sure you want to delete this room?')" 
-                                                class="text-red-600 hover:text-red-800 transition-colors duration-200">
-                                            <i class="fas fa-trash-alt mr-1"></i> Delete
-                                        </button>
-                                    </form>
-                                </td>
+    <div class="flex space-x-3">
+        <a href="{{ route('superadmin.locations.rooms.materials', ['location' => $locationId, 'room' => $room->id]) }}" 
+           class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+            <i class="fas fa-eye mr-1"></i> Voir Matériel
+        </a>
+        <form action="{{ route('superadmin.locations.destroyRoom', ['location' => $locationId, 'room' => $room->id]) }}" method="POST" class="inline">
+            @csrf
+            @method('DELETE')
+            <button onclick="return confirm('Are you sure you want to delete this room?')" 
+                    class="text-red-600 hover:text-red-800 transition-colors duration-200">
+                <i class="fas fa-trash-alt mr-1"></i> Delete
+            </button>
+        </form>
+    </div>
+</td>
                             </tr>
                             @endforeach
                         </tbody>

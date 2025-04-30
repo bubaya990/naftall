@@ -233,6 +233,33 @@ public function updateType(Request $request, $id)
      return response()->json(['success' => true]);
  }
 
- 
+ public function viewRoomMaterials(Location $location, Room $room)
+{
+    $materials = $room->materials()->with('materialable')->get();
+    
+    return view('superadmin.locations.view', [
+        'location' => $location,
+        'entity' => $room,
+        'materials' => $materials,
+        'entityType' => 'room'
+    ]);
+}
+
+public function viewCorridorMaterials(Location $location, Corridor $corridor)
+{
+    $materials = $corridor->materials()->with('materialable')->get();
+    
+    return view('superadmin.locations.view', [
+        'location' => $location,
+        'entity' => $corridor,
+        'materials' => $materials,
+        'entityType' => 'corridor'
+    ]);
+}
+
+
+
+
+
 }
 

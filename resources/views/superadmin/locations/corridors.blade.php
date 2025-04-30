@@ -45,15 +45,19 @@
                                         <td class="px-6 py-4">#{{ $corridor->id }}</td>
                                         <td class="px-6 py-4">{{ $corridor->name ?? 'Non spécifié' }}</td>
                                         <td class="px-6 py-4 space-x-3">
-                                            <form action="{{ route('superadmin.locations.destroyCorridor', [$location->id, $corridor->id]) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900" 
-                                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce couloir?')">
-                                                    <i class="fas fa-trash"></i> Supprimer
-                                                </button>
-                                            </form>
-                                        </td>
+    <a href="{{ route('superadmin.locations.corridors.materials', ['location' => $location->id, 'corridor' => $corridor->id]) }}" 
+       class="text-blue-600 hover:text-blue-800">
+        <i class="fas fa-eye mr-1"></i> Voir Matériel
+    </a>
+    <form action="{{ route('superadmin.locations.destroyCorridor', [$location->id, $corridor->id]) }}" method="POST" class="inline">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="text-red-600 hover:text-red-900" 
+                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce couloir?')">
+            <i class="fas fa-trash"></i> Supprimer
+        </button>
+    </form>
+</td>
                                     </tr>
                                 @endforeach
                             </tbody>
