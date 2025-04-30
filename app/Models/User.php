@@ -81,6 +81,6 @@ public function messages()
 
 public function unreadMessages()
 {
-    return $this->messages()->where('seen', false);
+    return $this->hasMany(Message::class, 'receiver_id')->where('seen', false);
 }
 }           

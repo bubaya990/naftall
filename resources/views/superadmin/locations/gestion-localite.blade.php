@@ -9,18 +9,21 @@
     <div class="relative z-10 min-h-screen p-6 pb-16">
         <!-- Dashboard content with glassmorphism effect -->
         <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-7xl mx-auto mt-8 transition-all duration-500 transform hover:scale-[1.01]">
-            <!-- Header -->
+            <!-- Header section -->
             <div class="mb-8">
-                <div class="animate-slideInLeft">
-                    <h1 class="text-2xl md:text-3xl font-bold text-blue-900">Gestion des localités</h1>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <!-- Title in top left -->
+                    <div class="animate-slideInLeft">
+                        <h1 class="text-2xl md:text-3xl font-bold text-blue-900">Gestion des localités</h1>
+                    </div>
+                    
+                    <!-- Create button -->
+                    <div class="animate-slideInRight w-full sm:w-auto">
+                        <a href="{{ route('superadmin.locations.create') }}" class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center justify-center w-full sm:w-auto">
+                            <i class="fas fa-plus-circle mr-2"></i> Nouvelle localité
+                        </a>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Create button with animation -->
-            <div class="mb-8 animate-slideInRight">
-                <a href="{{ route('superadmin.locations.create') }}" class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
-                    <i class="fas fa-plus-circle mr-2"></i>  Nouvelle localité
-                </a>
             </div>
 
             <!-- Sites and Locations -->
@@ -52,24 +55,39 @@
                                                 <td class="px-6 py-4">{{ $location->name ?? '—' }}</td>
                                                 <td class="px-6 py-4">{{ $location->type }}</td>
                                                 <td class="px-6 py-4">{{ $location->floor->floor_number ?? '—' }}</td>
-                                                <td class="px-6 py-4 space-x-3">
-                                                    <a href="{{ route('superadmin.locations.rooms', $location->id) }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                                                        <i class="fas fa-door-open mr-1"></i> Voir la salle
-                                                    </a>
-
-                                                    <a href="{{ route('superadmin.locations.edit-type', $location->id) }}" class="text-yellow-600 hover:text-yellow-800 transition-colors duration-200">
-                                                        <i class="fas fa-edit mr-1"></i> Changer le type
-                                                    </a>
-
-                                                    <form action="{{ route('superadmin.locations.destroy', $location->id) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:text-red-900" 
-                                                                onclick="return confirm('Are you sure you want to delete this location?')">
-                                                            <i class="fas fa-trash"></i> Delete
-                                                        </button>
-                                                    </form>
-
+                                                <td class="px-6 py-4">
+                                                    <div class="flex justify-between items-center w-full">
+                                                        <!-- Room button on left -->
+                                                        <div class="flex-1">
+                                                            <a href="{{ route('superadmin.locations.rooms', $location->id) }}" 
+                                                               class="text-blue-600 hover:text-blue-800 transition-colors duration-200 inline-flex items-center">
+                                                                <i class="fas fa-door-open mr-1"></i> Salle
+                                                            </a>
+                                                        </div>
+                                                        
+                                                        <!-- Corridor button centered -->
+                                                        <div class="flex-1 text-center">
+                                                            @if(in_array($location->type, ['Rez-de-chaussee', 'Étage']))
+                                                            <a href="{{ route('superadmin.locations.corridors', $location->id) }}" 
+                                                               class="text-green-600 hover:text-green-800 transition-colors duration-200 inline-flex items-center justify-center">
+                                                                <i class="fas fa-route mr-1"></i> Couloir
+                                                            </a>
+                                                            @endif
+                                                        </div>
+                                                        
+                                                        <!-- Delete button on right -->
+                                                        <div class="flex-1 text-right">
+                                                            <form action="{{ route('superadmin.locations.destroy', $location->id) }}" method="POST" class="inline">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" 
+                                                                        class="text-red-600 hover:text-red-900 inline-flex items-center justify-end"
+                                                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette localité?')">
+                                                                    <i class="fas fa-trash mr-1"></i> Supprimer
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach

@@ -136,6 +136,10 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         Route::delete('/{location}/rooms/{room}', [LocationController::class, 'destroyRoom'])->name('destroyRoom');
         Route::get('{location}/addroom', [LocationController::class, 'addroom'])->name('addroom');
         Route::post('{location}/rooms', [LocationController::class, 'storeRoom'])->name('storeRoom');
+        Route::get('/{location}/corridors', [LocationController::class, 'corridors'])->name('corridors');
+    Route::get('/{location}/addcorridor', [LocationController::class, 'addcorridor'])->name('addcorridor');
+    Route::post('/{location}/corridors', [LocationController::class, 'storeCorridor'])->name('storeCorridor');
+    Route::delete('/{location}/corridors/{corridor}', [LocationController::class, 'destroyCorridor'])->name('destroyCorridor');
     });
 Route::prefix('superadmin/materials')->group(function () {
     // Main dashboard
@@ -252,4 +256,18 @@ Route::patch('/superadmin/reclamations/{id}/status/{status}', [SuperAdminControl
 Route::post('/superadmin/reclamations/{reclamationId}/messages', [SuperAdminController::class, 'storeMessage'])
     ->name('superadmin.reclamations.store-message');
    
+    // Update the superadmin dashboard route
+Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'superadmindashboard'])
+->name('superadmin.dashboard');
+
+// Message routes
+Route::prefix('superadmin/messages')->group(function () {
+    Route::get('/unread-count', [SuperAdminController::class, 'getUnreadCount'])->name('messages.unread-count');
+    Route::post('/mark-as-seen', [SuperAdminController::class, 'markAsSeen'])->name('messages.mark-as-seen');
+});
+Route::post('/locations/{location}/rooms/{room}/update-type', [LocationController::class, 'updateRoomType'])
+    ->name('superadmin.locations.updateRoomType');
+
+
+
     require __DIR__.'/auth.php';

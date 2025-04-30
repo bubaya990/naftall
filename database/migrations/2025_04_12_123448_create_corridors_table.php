@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('corridors', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->foreignId('location_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });

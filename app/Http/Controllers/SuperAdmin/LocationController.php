@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Site;
 use App\Models\Room;
 use App\Models\Floor;
-
+use App\Models\Corridor; 
 
 
 class LocationController extends Controller
@@ -90,8 +90,8 @@ public function store(Request $request)
     Location::create([
         'site_id' => $request->site_id,
         'type' => $request->type,
-        'floor_id' => $floor?->id, // Null if not 'Étage'
-        'name' => $locationName,
+        'floor_id' => $floor?->id,
+        'name' => $request->name, // Use the name from the form
     ]);
 
     return redirect()->route('superadmin.locations.gestion-localite')
@@ -177,21 +177,62 @@ public function updateType(Request $request, $id)
 }
     
 
- public function updateRoomType(Request $request, Location $location, Room $room)
- {
-     $request->validate([
-         'type' => 'required|string|in:Bureau,Salle reunion,Salle reseau',
-     ]);
 
-     $room->update(['type' => $request->type]);
-     
-     return back()->with('success', 'Room type updated.');
- }
 
  public function destroyRoom(Location $location, Room $room)
  {
      $room->delete();
      return back()->with('success', 'Room deleted successfully.');
  }
+ // Add these methods to your LocationController
+ public function corridors($locationId)
+ {
+     $location = Location::with(['site', 'corridors'])->findOrFail($locationId);
+     
+     return view('superadmin.locations.corridors', [
+         'location' => $location,
+         'corridors' => $location->corridors
+     ]);
+ }
+ 
+ public function addcorridor(Location $location)
+ {
+     return view('superadmin.locations.addcorridor', compact('location'));
+ }
+ 
+ public function storeCorridor(Request $request, Location $location)
+ {
+     $request->validate([
+         'name' => 'nullable|string|max:255',
+     ]);
+ 
+     $corridor = new Corridor();
+     $corridor->location_id = $location->id;
+     $corridor->name = $request->name;
+     $corridor->save();
+ 
+     return redirect()->route('superadmin.locations.corridors', $location->id)
+         ->with('success', 'Couloir ajouté avec succès!');
+ }
+ 
+ public function destroyCorridor(Location $location, Corridor $corridor)
+ {
+     $corridor->delete();
+     
+     return back()->with('success', 'Couloir supprimé avec succès!');
+ }
+
+ public function updateRoomType(Request $request, Location $location, Room $room)
+ {
+     $request->validate([
+         'type' => 'required|string|in:Bureau,Salle reunion,Salle reseau',
+     ]);
+ 
+     $room->update(['type' => $request->type]);
+     
+     return response()->json(['success' => true]);
+ }
+
+ 
 }
 

@@ -59,9 +59,7 @@
                                 <a href="{{ route('superadmin.reclamations.show', $reclamation->id) }}" class="text-blue-600 hover:text-blue-800 transition" title="Voir">
                                       <i class="fas fa-eye"></i>
                                 </a>
-                                    <a href="#" class="text-yellow-500 hover:text-yellow-700 transition" title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                    
                                     <form action="{{ route('superadmin.reclamations.destroy', $reclamation->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr ?')">
                                         @csrf
                                         @method('DELETE')

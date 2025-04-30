@@ -321,22 +321,7 @@ public function showReclamations()
 /**
  * Mark a message as seen.
  */
-public function markAsSeen($messageId)
-{
-    $message = Message::findOrFail($messageId);
-    $message->update(['seen' => true]);
-    
-    return response()->json(['success' => true]);
-}
 
-/**
- * Get unread messages count (for AJAX).
- */
-public function getUnreadCount()
-{
-    $count = Auth::user()->unreadMessages()->count();
-    return response()->json(['count' => $count]);
-}  
 /**
  * Display the specified reclamation.
  */
@@ -405,6 +390,27 @@ public function storeMessage(Request $request, $reclamationId)
 
     return redirect()->back()->with('success', 'Message envoyé avec succès');
 }
+
+public function getUnreadCount()
+{
+    $unreadCount = auth()->user()->unreadMessages()->count();
+    return response()->json(['count' => $unreadCount]);
+}
+
+public function markAsSeen(Request $request)
+{
+    // Mark all messages as seen or a specific one if messageId is provided
+    $messageId = $request->input('messageId');
+    
+    if ($messageId === 'all') {
+        auth()->user()->unreadMessages()->update(['seen' => true]);
+    } else {
+        auth()->user()->unreadMessages()->where('id', $messageId)->update(['seen' => true]);
+    }
+    
+    return response()->json(['success' => true]);
+}
+
 
 
 }

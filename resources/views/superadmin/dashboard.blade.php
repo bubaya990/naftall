@@ -13,58 +13,58 @@
     // Get unread messages count
     $unreadCount = auth()->user()->unreadMessages()->count();
     // Get latest 3 reclamations
-    $latestReclamations = App\Models\Reclamation::latest()->take(3)->get();
+    $latestReclamations = $latestReclamations ?? collect();
 @endphp
 
 <div class="relative">
     <!-- Background with blur effect -->
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
     
-   <!-- Notification bell + dropdown wrapper -->
-<div class="fixed top-4 right-10 z-20 animate-slideInRight">
-    <div class="relative inline-block">
-        <!-- Notification Bell -->
-        <button id="notification-btn" class="relative p-3 rounded-full hover:bg-white/30 text-gray-700 hover:text-blue-900 transition-all duration-300 transform hover:rotate-12 bg-white/80 backdrop-blur-sm shadow-lg">
-            <i class="fas fa-bell text-xl"></i>
-            @if($unreadCount > 0)
-                <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center animate-bounce">
-                    {{ $unreadCount }}
-                </span>
-            @endif
-        </button>
+    <!-- Notification bell + dropdown wrapper -->
+    <div class="fixed top-4 right-10 z-20 animate-slideInRight">
+        <div class="relative inline-block">
+            <!-- Notification Bell -->
+            <button id="notification-btn" class="relative p-3 rounded-full hover:bg-white/30 text-gray-700 hover:text-blue-900 transition-all duration-300 transform hover:rotate-12 bg-white/80 backdrop-blur-sm shadow-lg">
+                <i class="fas fa-bell text-xl"></i>
+                @if($unreadCount > 0)
+                    <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center animate-bounce">
+                        {{ $unreadCount }}
+                    </span>
+                @endif
+            </button>
 
-        <!-- Notification dropdown -->
-        <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-white backdrop-blur-lg rounded-xl shadow-xl z-10 border border-gray-200/50 transform origin-top transition-all duration-300 scale-95 opacity-0">
-            <div class="p-3 border-b border-gray-200/50 bg-white/80 flex justify-between items-center">
-                <h3 class="font-medium text-blue-900">Notifications ({{ $unreadCount }})</h3>
-                <a href="{{ route('superadmin.reclamations.addreclamation') }}" class="text-xs text-yellow-600 hover:text-yellow-700">Ajouter une réclamation</a>
-            </div>
+            <!-- Notification dropdown -->
+            <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-white backdrop-blur-lg rounded-xl shadow-xl z-10 border border-gray-200/50 transform origin-top transition-all duration-300 scale-95 opacity-0">
+                <div class="p-3 border-b border-gray-200/50 bg-white/80 flex justify-between items-center">
+                    <h3 class="font-medium text-blue-900">Notifications ({{ $unreadCount }})</h3>
+                    <a href="{{ route('superadmin.reclamations.addreclamation') }}" class="text-xs text-yellow-600 hover:text-yellow-700">Ajouter une réclamation</a>
+                </div>
 
-            <div class="max-h-60 overflow-y-auto">
-                @forelse($latestReclamations as $reclamation)
-                    <a href="#" class="block px-4 py-3 hover:bg-white/50 border-b border-gray-200/50 transition-all duration-200 hover:pl-5">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 text-yellow-500 mt-1 animate-pulse">
-                                <i class="fas fa-exclamation-circle"></i>
+                <div class="max-h-60 overflow-y-auto">
+                    @forelse($latestReclamations as $reclamation)
+                        <a href="#" class="block px-4 py-3 hover:bg-white/50 border-b border-gray-200/50 transition-all duration-200 hover:pl-5">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 text-yellow-500 mt-1 animate-pulse">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-blue-900">Reclamation #{{ $reclamation->num_R }}</p>
+                                    <p class="text-xs text-gray-600 truncate">{{ Str::limit($reclamation->message, 30) }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">{{ $reclamation->created_at->diffForHumans() }}</p>
+                                </div>
                             </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-blue-900">Reclamation #{{ $reclamation->num_R }}</p>
-                                <p class="text-xs text-gray-600 truncate">{{ Str::limit($reclamation->message, 30) }}</p>
-                                <p class="text-xs text-gray-500 mt-1">{{ $reclamation->created_at->diffForHumans() }}</p>
-                            </div>
-                        </div>
-                    </a>
-                @empty
-                    <div class="px-4 py-3 text-center text-gray-500">Aucune notification</div>
-                @endforelse
-            </div>
+                        </a>
+                    @empty
+                        <div class="px-4 py-3 text-center text-gray-500">Aucune notification</div>
+                    @endforelse
+                </div>
 
-            <div class="p-2 border-t border-gray-200/50 bg-white/50 text-center">
-                <a href="{{route('superadmin.reclamations') }}" class="text-xs font-medium text-yellow-600 hover:text-yellow-700 transition-colors duration-200">Voir toutes les reclamations</a>
+                <div class="p-2 border-t border-gray-200/50 bg-white/50 text-center">
+                    <a href="{{ route('superadmin.reclamations') }}" class="text-xs font-medium text-yellow-600 hover:text-yellow-700 transition-colors duration-200">Voir toutes les reclamations</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Main content container -->
     <div class="relative z-10 min-h-screen p-6 pb-16">
@@ -190,25 +190,15 @@
         });
         
         // Animate counting numbers
-        const counters = document.querySelectorAll('.animate-count');
-        const speed = 200;
-        
-        counters.forEach(counter => {
-            const target = +counter.getAttribute('data-target');
-            const count = +counter.innerText;
+        const animateCounters = () => {
+            const counters = document.querySelectorAll('.animate-count');
+            const speed = 200;
             
-            if (target > 0) {
-                const increment = target / speed;
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText;
                 
-                if (count < target) {
-                    counter.innerText = Math.ceil(count + increment);
-                    setTimeout(updateCount, 1);
-                } else {
-                    counter.innerText = target;
-                }
-                
-                function updateCount() {
-                    const count = +counter.innerText;
+                if (target > 0) {
                     const increment = target / speed;
                     
                     if (count < target) {
@@ -217,45 +207,62 @@
                     } else {
                         counter.innerText = target;
                     }
-                }
-            } else {
-                counter.innerText = target; // Handle zero case
-            }
-        });
-    });
-    // Check for new messages every 30 seconds
-setInterval(function() {
-    fetch(route('messages.unread-count'))
-        .then(response => response.json())
-        .then(data => {
-            const bellIcon = document.getElementById('notification-btn');
-            const countBadge = bellIcon.querySelector('span');
-            
-            if (data.count > 0) {
-                if (!countBadge) {
-                    const newBadge = document.createElement('span');
-                    newBadge.className = 'absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center animate-bounce';
-                    newBadge.textContent = data.count;
-                    bellIcon.appendChild(newBadge);
+                    
+                    function updateCount() {
+                        const count = +counter.innerText;
+                        
+                        if (count < target) {
+                            counter.innerText = Math.ceil(count + increment);
+                            setTimeout(updateCount, 1);
+                        } else {
+                            counter.innerText = target;
+                        }
+                    }
                 } else {
-                    countBadge.textContent = data.count;
+                    counter.innerText = target;
                 }
-            } else if (countBadge) {
-                countBadge.remove();
-            }
-        });
-}, 30000);
-
-// Mark messages as seen when notification dropdown is opened
-document.getElementById('notification-btn').addEventListener('click', function() {
-    fetch(route('messages.mark-as-seen', { messageId: 'all' }), {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ _method: 'POST' })
+            });
+        };
+        
+        // Initialize counters
+        animateCounters();
+        
+        // Check for new messages every 30 seconds
+        setInterval(function() {
+            fetch('{{ route("messages.unread-count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const bellIcon = document.getElementById('notification-btn');
+                    if (!bellIcon) return;
+                    
+                    const countBadge = bellIcon.querySelector('span');
+                    
+                    if (data.count > 0) {
+                        if (!countBadge) {
+                            const newBadge = document.createElement('span');
+                            newBadge.className = 'absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center animate-bounce';
+                            newBadge.textContent = data.count;
+                            bellIcon.appendChild(newBadge);
+                        } else {
+                            countBadge.textContent = data.count;
+                        }
+                    } else if (countBadge) {
+                        countBadge.remove();
+                    }
+                });
+        }, 30000);
     });
-});
+
+    // Mark messages as seen when notification dropdown is opened
+    document.getElementById('notification-btn')?.addEventListener('click', function() {
+        fetch('{{ route("messages.mark-as-seen") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ _method: 'POST' })
+        });
+    });
 </script>
 @endsection
