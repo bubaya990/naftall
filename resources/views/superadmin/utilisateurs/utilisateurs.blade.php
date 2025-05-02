@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- CSRF Token Meta Tag -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="relative">
     <!-- Background with blur effect -->
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
@@ -176,14 +179,11 @@
                                     <i class="fas fa-edit mr-1"></i>
                                     <span class="hidden md:inline">Modifier</span>
                                 </a>
-                                <form action="{{ route('superadmin.utilisateurs.destroy', $user->id) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-white/60 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold">
-                                        <i class="fas fa-trash-alt mr-1"></i>
-                                        <span class="hidden md:inline">Supprimer</span>
-                                    </button>
-                                </form>
+                                <button onclick="openDeleteModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')" 
+                                        class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-white/60 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold">
+                                    <i class="fas fa-trash-alt mr-1"></i>
+                                    <span class="hidden md:inline">Supprimer</span>
+                                </button>
                             </td>
                         </tr>
                         @endforeach
@@ -191,6 +191,34 @@
                 </table>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
+        <p class="text-gray-700 mb-2">Êtes-vous sûr de vouloir supprimer l'utilisateur :</p>
+        <p class="text-gray-900 font-semibold mb-1" id="user-to-delete-name"></p>
+        <p class="text-gray-700 mb-1" id="user-to-delete-email"></p>
+        <p class="text-red-500 text-sm mb-6">Attention: Cette action est irréversible.</p>
+        
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <input type="hidden" name="user_id" id="delete-user-id">
+            
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteModal()" 
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    Confirmer la suppression
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -207,6 +235,27 @@
 </style>
 
 <script>
+// Delete Modal Functions
+function openDeleteModal(userId, userName, userEmail) {
+    const modal = document.getElementById('deleteModal');
+    const userIdInput = document.getElementById('delete-user-id');
+    const userNameSpan = document.getElementById('user-to-delete-name');
+    const userEmailSpan = document.getElementById('user-to-delete-email');
+    
+    userIdInput.value = userId;
+    userNameSpan.textContent = userName;
+    userEmailSpan.textContent = userEmail;
+    
+    // Set the form action
+    document.getElementById('deleteForm').action = `/superadmin/utilisateurs/${userId}`;
+    
+    modal.classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get all search inputs
     const searchInputs = document.querySelectorAll('input[id^="search-"], select[id^="search-"]');

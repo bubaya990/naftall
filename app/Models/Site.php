@@ -27,4 +27,16 @@ class Site extends Model
     return $this->hasMany(Branche::class);
 }
 
+public function reclamations()
+{
+    return $this->hasManyThrough(
+        Reclamation::class,
+        User::class,
+        'site_id', // Foreign key on users table
+        'user_id', // Foreign key on reclamations table
+        'id',      // Local key on sites table
+        'id'       // Local key on users table
+    );
+}
+
 }

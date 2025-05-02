@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ING Service - Naftal</title>
@@ -91,7 +89,7 @@
         @auth
         <div class="p-4 flex items-center border-b border-gray-700 bg-naftal-blue-light">
             <div class="relative">
-                <img src="{{ Auth::user()->profile_picture ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&color=FFFFFF&background=FF6600' }}"
+                <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&color=FFFFFF&background=FF6600' }}"
                      class="w-10 h-10 rounded-full profile-image object-cover" alt="Profile">
                 <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full status-dot"></span>
             </div>
@@ -170,7 +168,7 @@
                 <i class="fas fa-chart-bar w-5 text-center text-naftal-orange mr-3"></i>
                 <span>Statistiques</span>
             </a>
-            <a href="{{ route('parametre') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+            <a href="{{ route('profile.edit') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                 <i class="fas fa-cog w-5 text-center text-naftal-orange mr-3"></i>
                 <span>Paramètres</span>
             </a>
@@ -230,7 +228,6 @@
             }
         });
     });
-    
 </script>
 </body>
 </html>

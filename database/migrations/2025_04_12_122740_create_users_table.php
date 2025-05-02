@@ -21,7 +21,10 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('branche_id')->constrained()->onDelete('cascade');
             $table->foreignId('site_id')->constrained()->onDelete('cascade');
+            $table->string('profile_picture')->nullable();
+
             $table->timestamps();
+
         });
         
         

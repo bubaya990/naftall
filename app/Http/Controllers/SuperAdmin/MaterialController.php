@@ -90,7 +90,189 @@ class MaterialController extends Controller
         'materials'
     ));
 }
+public function create($type, Location $location, $entityType, $entity)
+{
+    if (!$this->getModelFromType($type)) {
+        abort(404, "Type de matériel non valide");
+    }
 
+    // Resolve the entity (room or corridor)
+    $entityModel = $entityType === 'room' 
+        ? Room::findOrFail($entity) 
+        : Corridor::findOrFail($entity);
+
+    $states = ['bon', 'défectueux', 'hors_service'];
+    $rams = Ram::all();
+    
+    return view('superadmin.materials.form', [
+        'type' => $type,
+        'location' => $location,
+        'entityType' => $entityType,
+        'entity' => $entityModel,
+        'states' => $states,
+        'rams' => $rams,
+    ]);
+}
+
+// Show edit form
+public function edit($type, Material $material)
+{
+    $material->load('materialable', 'room.location', 'corridor.location');
+    
+    // Determine if the material is in a room or corridor
+    $entityType = $material->room_id ? 'room' : 'corridor';
+    $entity = $material->room_id ? $material->room : $material->corridor;
+    $location = $entity->location;
+
+    $states = ['bon', 'défectueux', 'hors_service'];
+    $rams = Ram::all();
+    
+    return view('superadmin.materials.form', [
+        'type' => $type,
+        'material' => $material,
+        'location' => $location,
+        'entityType' => $entityType,
+        'entity' => $entity,
+        'states' => $states,
+        'rams' => $rams,
+    ]);
+}
+
+// Store new material
+public function store(Request $request, $type)
+{
+    Log::info('Attempting to store new material', ['type' => $type, 'data' => $request->all()]);
+
+    try {
+        $validatedData = $request->validate($this->getValidationRules($type));
+        Log::info('Validation passed', ['validated' => $validatedData]);
+
+        DB::beginTransaction();
+
+        // Create the specific material type first
+        $materialable = $this->createMaterialable($type, $request);
+        if (!$materialable) {
+            throw new \Exception("Failed to create materialable record of type: {$type}");
+        }
+
+        // Then create the material record
+        $materialData = [
+            'inventory_number' => $validatedData['inventory_number'],
+            'serial_number' => $validatedData['serial_number'],
+            'state' => $validatedData['state'],
+            'room_id' => $request->location_type === 'room' ? $validatedData['room_id'] : null,
+            'corridor_id' => $request->location_type === 'corridor' ? $validatedData['corridor_id'] : null,
+        ];
+
+        $material = $materialable->material()->create($materialData);
+        Log::info('Material created successfully', ['material_id' => $material->id]);
+
+        DB::commit();
+
+        return redirect()
+            ->route('superadmin.materials.list', $type)
+            ->with('success', 'Matériel ajouté avec succès!');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        Log::error('Validation failed', ['errors' => $e->errors()]);
+        return back()->withErrors($e->errors())->withInput();
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Material creation failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return back()
+            ->withInput()
+            ->with('error', 'Erreur lors de l\'ajout du matériel: ' . $e->getMessage());
+    }
+}
+
+// Update existing material
+public function update(Request $request, $type, Material $material)
+{
+    Log::info('Attempting to update material', ['id' => $material->id, 'type' => $type]);
+
+    try {
+        $rules = $this->getValidationRules($type);
+        
+        // Adjust validation rules for update
+        $rules['inventory_number'] = 'required|unique:materials,inventory_number,' . $material->id;
+        $rules['serial_number'] = 'required|unique:materials,serial_number,' . $material->id;
+        
+        if ($type === 'ip-phones') {
+            $rules['mac_number'] = 'required|unique:ip_phones,mac_number,' . $material->materialable->id;
+        } elseif ($type === 'hotspots') {
+            $rules['password'] = 'required|unique:hotspots,password,' . $material->materialable->id;
+        }
+
+        $validatedData = $request->validate($rules);
+
+        DB::beginTransaction();
+
+        // Update the material record
+        $material->update([
+            'inventory_number' => $validatedData['inventory_number'],
+            'serial_number' => $validatedData['serial_number'],
+            'state' => $validatedData['state'],
+        ]);
+
+        // Update the materialable record
+        $materialableData = [];
+        switch ($type) {
+            case 'computers':
+                $materialableData = [
+                    'computer_brand' => $validatedData['computer_brand'],
+                    'computer_model' => $validatedData['computer_model'],
+                    'OS' => $validatedData['OS'],
+                    'ram_id' => $validatedData['ram_id'],
+                ];
+                break;
+            case 'printers':
+                $materialableData = [
+                    'printer_brand' => $validatedData['printer_brand'],
+                    'printer_model' => $validatedData['printer_model'],
+                ];
+                break;
+            case 'ip-phones':
+                $materialableData = [
+                    'mac_number' => $validatedData['mac_number'],
+                ];
+                break;
+            case 'hotspots':
+                $materialableData = [
+                    'password' => $validatedData['password'],
+                ];
+                break;
+        }
+
+        $material->materialable->update($materialableData);
+        Log::info('Material updated successfully', ['material_id' => $material->id]);
+
+        DB::commit();
+
+        return redirect()
+            ->route('superadmin.materials.list', $type)
+            ->with('success', 'Matériel mis à jour avec succès!');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        Log::error('Validation failed', ['errors' => $e->errors()]);
+        return back()->withErrors($e->errors())->withInput();
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Material update failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return back()
+            ->withInput()
+            ->with('error', 'Erreur lors de la mise à jour du matériel: ' . $e->getMessage());
+    }
+}
 // Helper method to increment the correct counter
 private function incrementMaterialCount(&$counts, $materialableType)
 {
@@ -110,57 +292,7 @@ private function incrementMaterialCount(&$counts, $materialableType)
     }
 }
     // Store a new material
-    public function store(Request $request, $type)
-    {
-        Log::info('Attempting to store new material', ['type' => $type, 'data' => $request->all()]);
-
-        try {
-            $validatedData = $request->validate($this->getValidationRules($type));
-            Log::info('Validation passed', ['validated' => $validatedData]);
-
-            DB::beginTransaction();
-
-            // Create the specific material type first
-            $materialable = $this->createMaterialable($type, $request);
-            if (!$materialable) {
-                throw new \Exception("Failed to create materialable record of type: {$type}");
-            }
-
-            // Then create the material record
-            $materialData = [
-                'inventory_number' => $validatedData['inventory_number'],
-                'serial_number' => $validatedData['serial_number'],
-                'state' => $validatedData['state'],
-                'room_id' => $request->location_type === 'room' ? $validatedData['room_id'] : null,
-                'corridor_id' => $request->location_type === 'corridor' ? $validatedData['corridor_id'] : null,
-            ];
-
-            $material = $materialable->material()->create($materialData);
-            Log::info('Material created successfully', ['material_id' => $material->id]);
-
-            DB::commit();
-
-            return redirect()
-                ->route('superadmin.materials.list', $type)
-                ->with('success', 'Matériel ajouté avec succès!');
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollBack();
-            Log::error('Validation failed', ['errors' => $e->errors()]);
-            return back()->withErrors($e->errors())->withInput();
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Material creation failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return back()
-                ->withInput()
-                ->with('error', 'Erreur lors de l\'ajout du matériel: ' . $e->getMessage());
-        }
-    }
-
+   
     private function createMaterialable($type, $request)
     {
         $modelClass = $this->getModelFromType($type);
@@ -264,18 +396,7 @@ private function incrementMaterialCount(&$counts, $materialableType)
     }
 
     // Show add material form
-    public function create($type)
-    {
-        if (!$this->getModelFromType($type)) {
-            abort(404, "Type de matériel non valide");
-        }
-
-        $sites = Site::all();
-        $states = ['bon', 'défectueux', 'hors_service'];
-        $rams = Ram::all();
-        
-        return view('superadmin.materials.add', compact('type', 'sites', 'states', 'rams'));
-    }
+   
 
     // Validation rules based on material type
     private function getValidationRules($type)

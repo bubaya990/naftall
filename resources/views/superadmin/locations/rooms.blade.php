@@ -68,21 +68,17 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-    <div class="flex space-x-3">
-        <a href="{{ route('superadmin.locations.rooms.materials', ['location' => $locationId, 'room' => $room->id]) }}" 
-           class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
-            <i class="fas fa-eye mr-1"></i> Voir Matériel
-        </a>
-        <form action="{{ route('superadmin.locations.destroyRoom', ['location' => $locationId, 'room' => $room->id]) }}" method="POST" class="inline">
-            @csrf
-            @method('DELETE')
-            <button onclick="return confirm('Are you sure you want to delete this room?')" 
-                    class="text-red-600 hover:text-red-800 transition-colors duration-200">
-                <i class="fas fa-trash-alt mr-1"></i> Delete
-            </button>
-        </form>
-    </div>
-</td>
+                                    <div class="flex space-x-3">
+                                        <a href="{{ route('superadmin.locations.rooms.materials', ['location' => $locationId, 'room' => $room->id]) }}" 
+                                           class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                                            <i class="fas fa-eye mr-1"></i> View Materials
+                                        </a>
+                                        <button onclick="openDeleteModal('{{ $room->id }}', '{{ $room->name }}')" 
+                                                class="text-red-600 hover:text-red-800 transition-colors duration-200">
+                                            <i class="fas fa-trash-alt mr-1"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -136,26 +132,48 @@
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold text-red-600 mb-4">Confirm Deletion</h3>
+        <p class="text-gray-700 mb-6">Are you sure you want to delete room: <span id="room-to-delete-name" class="font-semibold"></span>?</p>
+        
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <input type="hidden" name="room_id" id="delete-room-id">
+            
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteModal()" 
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    Delete Room
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    // Type Modal Functions
     function openTypeModal(roomId, currentType) {
         const modal = document.getElementById('typeModal');
         const roomIdInput = document.getElementById('modal-room-id');
         
-        // Set the current room ID
         roomIdInput.value = roomId;
         
-        // Uncheck all radio buttons first
         document.querySelectorAll('input[name="type"]').forEach(radio => {
             radio.checked = false;
         });
         
-        // Check the current type radio button if it exists
         const currentRadio = document.querySelector(`input[name="type"][value="${currentType}"]`);
         if (currentRadio) {
             currentRadio.checked = true;
         }
         
-        // Show the modal
         modal.classList.remove('hidden');
     }
     
@@ -163,9 +181,28 @@
         document.getElementById('typeModal').classList.add('hidden');
     }
 
+    // Delete Modal Functions
+    function openDeleteModal(roomId, roomName) {
+        const modal = document.getElementById('deleteModal');
+        const roomIdInput = document.getElementById('delete-room-id');
+        const roomNameSpan = document.getElementById('room-to-delete-name');
+        
+        roomIdInput.value = roomId;
+        roomNameSpan.textContent = roomName;
+        
+        // Set the form action
+        document.getElementById('deleteForm').action = `/superadmin/locations/{{ $locationId }}/rooms/${roomId}`;
+        
+        modal.classList.remove('hidden');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+
     // Initialize when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
-        // Handle confirm button click
+        // Handle type change confirmation
         document.getElementById('confirmChangeBtn').addEventListener('click', function() {
             const form = document.getElementById('typeChangeForm');
             const formData = new FormData(form);
@@ -177,7 +214,6 @@
                 return;
             }
             
-            // Disable button during submission
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Updating...';
             
@@ -197,13 +233,9 @@
                 return response.json();
             })
             .then(data => {
-                // Update the displayed type
                 const newType = form.querySelector('input[name="type"]:checked').value;
                 document.getElementById(`current-type-${roomId}`).textContent = newType;
-                
                 closeTypeModal();
-                
-                // Show success message
                 alert('Room type updated successfully!');
             })
             .catch(error => {

@@ -8,13 +8,15 @@ use Illuminate\Http\Request;
 use App\Models\Site;
 use App\Models\Room;
 use App\Models\Floor;
-use App\Models\Corridor; 
+use App\Models\Ram;
+use App\Models\Corridor;
+use App\Models\Material;
 
 
 class LocationController extends Controller
 {
-   
- 
+
+
 public function gestionLocalite()
 {
     if (Auth::user()->role !== 'superadmin') {
@@ -42,7 +44,7 @@ public function destroy(Location $location)
     // Delete related data
     $location->corridors()->delete();
     $location->rooms()->delete();
-    
+
     $location->delete();
 
     return redirect()->route('superadmin.locations.gestion-localite')
@@ -53,7 +55,7 @@ public function create()
 {
     $sites = Site::all();  // Removed fully qualified name
     $types = Location::getTypes();
-    
+
     return view('superadmin.locations.create', compact('sites', 'types'));
 }
 
@@ -65,7 +67,7 @@ public function store(Request $request)
         'floor_number' => 'required_if:type,Étage|nullable|integer|min:0',
     ]);
 
-    
+
 
     $floor = null;
     $locationName = '';
@@ -73,12 +75,12 @@ public function store(Request $request)
     if ($request->type === 'Étage') {
         // Handle floor creation without site reference
         $floorNumber = $request->floor_number;
-        
+
         // If no floor number provided, get next available
         if (!$floorNumber) {
             $floorNumber = Floor::max('floor_number') + 1 ?? 1;
         }
-        
+
         // Find or create floor (independent of site)
         $floor = Floor::firstOrCreate(
             ['floor_number' => $floorNumber],
@@ -120,14 +122,14 @@ public function updateType(Request $request, $id)
  public function rooms($location)
  {
      $rooms = \App\Models\Room::where('location_id', $location)->with('location')->get();
- 
+
      return view('superadmin.locations.rooms', [
          'rooms' => $rooms,
          'locationId' => $location // ✅ this is what you need for the view
      ]);
  }
- 
- 
+
+
 
  public function addroom(Location $location)
     {
@@ -154,7 +156,7 @@ public function updateType(Request $request, $id)
         $room->code = $validated['code'];
         $room->type = $validated['type'];
         $room->location_id = $location->id;
-        
+
         if ($room->save()) {
             \Log::debug('Room saved successfully', $room->toArray());
             return redirect()
@@ -175,7 +177,7 @@ public function updateType(Request $request, $id)
             ->with('error', 'Error: ' . $e->getMessage());
     }
 }
-    
+
 
 
 
@@ -188,37 +190,37 @@ public function updateType(Request $request, $id)
  public function corridors($locationId)
  {
      $location = Location::with(['site', 'corridors'])->findOrFail($locationId);
-     
+
      return view('superadmin.locations.corridors', [
          'location' => $location,
          'corridors' => $location->corridors
      ]);
  }
- 
+
  public function addcorridor(Location $location)
  {
      return view('superadmin.locations.addcorridor', compact('location'));
  }
- 
+
  public function storeCorridor(Request $request, Location $location)
  {
      $request->validate([
          'name' => 'nullable|string|max:255',
      ]);
- 
+
      $corridor = new Corridor();
      $corridor->location_id = $location->id;
      $corridor->name = $request->name;
      $corridor->save();
- 
+
      return redirect()->route('superadmin.locations.corridors', $location->id)
          ->with('success', 'Couloir ajouté avec succès!');
  }
- 
+
  public function destroyCorridor(Location $location, Corridor $corridor)
  {
      $corridor->delete();
-     
+
      return back()->with('success', 'Couloir supprimé avec succès!');
  }
 
@@ -227,16 +229,16 @@ public function updateType(Request $request, $id)
      $request->validate([
          'type' => 'required|string|in:Bureau,Salle reunion,Salle reseau',
      ]);
- 
+
      $room->update(['type' => $request->type]);
-     
+
      return response()->json(['success' => true]);
  }
 
  public function viewRoomMaterials(Location $location, Room $room)
 {
     $materials = $room->materials()->with('materialable')->get();
-    
+
     return view('superadmin.locations.view', [
         'location' => $location,
         'entity' => $room,
@@ -248,7 +250,7 @@ public function updateType(Request $request, $id)
 public function viewCorridorMaterials(Location $location, Corridor $corridor)
 {
     $materials = $corridor->materials()->with('materialable')->get();
-    
+
     return view('superadmin.locations.view', [
         'location' => $location,
         'entity' => $corridor,
@@ -260,6 +262,110 @@ public function viewCorridorMaterials(Location $location, Corridor $corridor)
 
 
 
+public function addMaterial(Request $request, $locationId, $entityType, $entityId, $type = 'computers')
+{
+    $location = Location::findOrFail($locationId);
 
+    if ($entityType === 'room') {
+        $entity = Room::findOrFail($entityId);
+    } else {
+        $entity = Corridor::findOrFail($entityId);
+    }
+
+    // Validate the type parameter
+    $validTypes = ['computers', 'printers', 'ip-phones', 'hotspots'];
+    if (!in_array($type, $validTypes)) {
+        $type = 'computers'; // default to computers if invalid type
+    }
+
+    $states = ['bon', 'défectueux', 'hors_service'];
+    $rams = \App\Models\Ram::all();
+
+    return view('superadmin.locations.addM', [
+        'location' => $location,
+        'entity' => $entity,
+        'entityType' => $entityType,
+        'type' => $type,
+        'states' => $states,
+        'rams' => $rams
+    ]);
 }
 
+public function storeMaterial(Request $request, $locationId, $entityType, $entityId)
+{
+    $location = Location::findOrFail($locationId);
+
+    if ($entityType === 'room') {
+        $entity = Room::findOrFail($entityId);
+    } else {
+        $entity = Corridor::findOrFail($entityId);
+    }
+
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'serial_number' => 'required|string|max:255|unique:materials,serial_number',
+        'state' => 'required|string|in:bon,défectueux,hors_service',
+        'type' => 'required|string|in:computers,printers,ip-phones,hotspots',
+        'ram_id' => 'required_if:type,computers|nullable|exists:rams,id',
+        'ip_address' => 'nullable|ip',
+        'mac_address' => 'nullable|string|max:255',
+        'model' => 'nullable|string|max:255',
+        'manufacturer' => 'nullable|string|max:255',
+        'printer_brand' => 'required_if:type,printers|nullable|string|max:255',
+        'printer_model' => 'required_if:type,printers|nullable|string|max:255',
+    ]);
+
+    try {
+        // Create the specific material type first
+        $materialable = null;
+        if ($validated['type'] === 'printers') {
+            $materialable = \App\Models\Printer::create([
+                'printer_brand' => $validated['printer_brand'],
+                'printer_model' => $validated['printer_model'],
+            ]);
+        }
+
+        // Create the material with the polymorphic relationship
+        $material = new Material([
+            'name' => $validated['name'],
+            'serial_number' => $validated['serial_number'],
+            'state' => $validated['state'],
+            'type' => $validated['type'],
+        ]);
+
+        // Set the entity relationship
+        if ($entityType === 'room') {
+            $material->room_id = $entity->id;
+        } else {
+            $material->corridor_id = $entity->id;
+        }
+
+        // Save the material with the polymorphic relationship
+        if ($materialable) {
+            $materialable->material()->save($material);
+        } else {
+            $material->save();
+        }
+
+        if ($material) {
+            return redirect()
+                ->route('superadmin.locations.view', [
+                    'location' => $location->id,
+                    'entityType' => $entityType,
+                    'entity' => $entity->id
+                ])
+                ->with('success', 'Matériel ajouté avec succès!');
+        } else {
+            return back()->with('error', 'Erreur lors de l\'ajout du matériel');
+        }
+    } catch (\Exception $e) {
+        return back()
+            ->withInput()
+            ->with('error', 'Erreur: ' . $e->getMessage());
+    }
+}
+
+
+
+
+}

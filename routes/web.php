@@ -19,6 +19,9 @@ use App\Http\Controllers\MaterielController;
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SuperAdmin\SuperAdminDashboardController;
+use App\Http\Controllers\StatistiqueController;
+use App\Models\ActivityLog;
+use App\Http\Controllers\SiteController;
 
 use App\Models\Floor;
 
@@ -41,7 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+ 
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+   
+        
     // Common
     Route::get('/informations', [InformationController::class, 'informations'])->name('informations');
     Route::get('/parametres', [CommonController::class, 'parametres'])->name('parametre');
@@ -127,7 +133,8 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         Route::get('/{location}/edit-type', [LocationController::class, 'editType'])->name('edit-type');
         Route::put('/{location}/update-type', [LocationController::class, 'updateType'])->name('update-type');
         Route::delete('/{location}', [LocationController::class, 'destroy'])->name('destroy');
-        
+        Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'superadmindashboard'])->name('superadmin.dashboard');
+
         // Room management routes
         Route::get('/{location}/rooms', [LocationController::class, 'rooms'])->name('rooms');
         Route::get('/{location}/addroom', [LocationController::class, 'addroom'])->name('addroom');
@@ -146,6 +153,11 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     // View materials for a corridor
     Route::get('/{location}/corridors/{corridor}/materials', [LocationController::class, 'viewCorridorMaterials'])
         ->name('corridors.materials');
+        Route::get('/{location}/{entityType}/{entity}/add-material', [LocationController::class, 'addMaterial'])
+    ->name('locations.addMaterial');
+    Route::get('/{location}/{entityType}/{entity}/add-material/{type?}', [LocationController::class, 'addMaterial'])
+    ->where('type', 'computers|printers|ip-phones|hotspots')
+    ->name('addMaterial');
     });
 Route::prefix('superadmin/materials')->group(function () {
     // Main dashboard
@@ -164,7 +176,10 @@ Route::prefix('superadmin/materials')->group(function () {
         ->name('superadmin.materials.create');
     Route::post('/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'store'])
         ->name('superadmin.materials.store');
- 
+        Route::post('/locations/{location}/material/{entityType}/{entity}/store/{type}', [MaterialController::class, 'store'])
+        ->name('locations.material.store');
+        Route::post('/locations/{location}/material/{entityType}/{entity}/store/{type}', [MaterialController::class, 'store'])
+        ->name('locations.material.store');
     Route::get('/{type}/{material}/edit', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'edit'])
         ->name('superadmin.materials.edit');
     Route::put('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'update'])
@@ -274,6 +289,57 @@ Route::prefix('superadmin/messages')->group(function () {
 Route::post('/locations/{location}/rooms/{room}/update-type', [LocationController::class, 'updateRoomType'])
     ->name('superadmin.locations.updateRoomType');
 
+    Route::get('/superadmin/locations/{location}/material/{entityType}/{entity}/add', [LocationController::class, 'addMaterial'])
+    ->name('locations.addMaterial');
+    Route::get('/superadmin/locations/{location}/rooms/{room}/add/{type}', [MaterialController::class, 'createForRoom'])->name('superadmin.rooms.materials.create');
 
+    Route::get('/superadmin/locations/{location}/corridors/{corridor}/add/{type}', [MaterialController::class, 'createForCorridor'])->name('superadmin.corridors.materials.create');
+    
+    Route::get('/statistiques', [StatistiqueController::class, 'index'])->name('statistiques');
+   
+   
+   // Inside your superadmin prefix group
+Route::prefix('superadmin')->group(function () {
+    Route::get('/cbr', [BrancheController::class, 'carburantSites'])->name('superadmin.cbr');
+    Route::get('/com', [BrancheController::class, 'commercialStructure'])->name('superadmin.com');
+    
+    // Special agence view
+    Route::get('/agence', function() {
+        return view('superadmin.agence');
+    })->name('superadmin.agence');
+});
 
+// Site routes
+Route::prefix('sites')->group(function () {
+    Route::get('/{site}/commercial', [SiteController::class, 'showCommercial'])->name('sites.commercial');
+    Route::get('/{site}/agence', [SiteController::class, 'showAgence'])->name('sites.agence');
+    Route::get('/{site}/carburant', [SiteController::class, 'showCarburant'])->name('sites.carburant');
+    Route::get('/{site}/commercial', [SiteController::class, 'showCommercial'])->name('sites.commercial');
+    Route::get('/{site}/agence', [SiteController::class, 'showAgence'])->name('sites.agence');
+    Route::get('/{site}', [SiteController::class, 'showSite'])->name('sites.show');
+    Route::get('/{site}/{branchType}', [SiteController::class, 'showSite'])->name('sites.branch');
+    Route::get('/{site}/{branchType}/{branch}', [SiteController::class, 'showSite'])->name('sites.branch.detail');
+});    Route::get('/{site}', [SiteController::class, 'show'])->name('sites.show');
+Route::get('/{site}/{branchType}', [SiteController::class, 'show'])->name('sites.branch');
+// For branch types (Agence, LP, CDD)
+Route::get('/sites/{site}/{branchType}', [BrancheController::class, 'showBranch'])
+    ->name('sites.branch');
+
+// For branch details (sub-branches)
+Route::get('/sites/branch/{branch}', [BrancheController::class, 'showBranchDetail'])
+    ->name('sites.branch.detail');
+    Route::get('{site}/{branchType}', [SomeController::class, 'someMethod'])->name('sites.branch');
+    Route::get('/{site}/{branchType}', [SomeController::class, 'someMethod'])->name('sites.branch');
+    Route::post('/superadmin/locations/{location}/material/store', [LocationController::class, 'storeMaterial'])
+    ->name('superadmin.locations.material.store');
+    Route::post('/superadmin/locations/{locationId}/material/{entityType}/{entityId}/store', [LocationController::class, 'storeMaterial'])
+    ->name('superadmin.locations.material.store');
+// Make sure your routes are defined like this:
+Route::prefix('superadmin/materials')->group(function() {
+    Route::get('/{type}/{id}/edit', [MaterialController::class, 'edit'])
+        ->name('superadmin.materials.edit');
+    
+    Route::delete('/{type}/{id}', [MaterialController::class, 'destroy'])
+        ->name('superadmin.materials.destroy');
+});
     require __DIR__.'/auth.php';

@@ -11,7 +11,7 @@
     $newLocations = $newLocations ?? 0;
     
     // Get unread messages count
-    $unreadCount = auth()->user()->unreadMessages()->count();
+    $unreadCount = auth()->check() ? auth()->user()->unreadMessages()->count() : 0;
     // Get latest 3 reclamations
     $latestReclamations = $latestReclamations ?? collect();
 @endphp
@@ -73,7 +73,7 @@
             <!-- Header -->
             <div class="mb-8">
                 <div class="animate-slideInLeft">
-                    <h1 class="text-2xl md:text-3xl font-bold text-blue-900">Bienvenue, <span class="text-yellow-600">{{ Auth::user()->name }}</span></h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-blue-900">Bienvenue, <span class="text-yellow-600">{{ Auth::user()?->name ?? 'Utilisateur' }}</span></h1>
                     <p class="text-gray-600 mt-1">Tableau de bord Super Admin</p>
                 </div>
             </div>

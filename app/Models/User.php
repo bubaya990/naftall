@@ -24,6 +24,8 @@ class User extends Authenticatable
         'role',
         'branche_id',
         'site_id',
+        
+    'profile_picture',
 
     ];
 

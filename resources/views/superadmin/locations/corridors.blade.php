@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- CSRF Token Meta Tag -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="relative">
     <!-- Background with blur effect -->
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
@@ -27,6 +30,19 @@
                 </a>
             </div>
 
+            <!-- Success/Error messages -->
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-green-100 text-green-800 rounded-lg animate-fadeIn">
+                    <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg animate-fadeIn">
+                    <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
+                </div>
+            @endif
+
             <!-- Corridors list -->
             <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl animate-fadeIn">
                 @if($corridors->count())
@@ -45,19 +61,15 @@
                                         <td class="px-6 py-4">#{{ $corridor->id }}</td>
                                         <td class="px-6 py-4">{{ $corridor->name ?? 'Non spécifié' }}</td>
                                         <td class="px-6 py-4 space-x-3">
-    <a href="{{ route('superadmin.locations.corridors.materials', ['location' => $location->id, 'corridor' => $corridor->id]) }}" 
-       class="text-blue-600 hover:text-blue-800">
-        <i class="fas fa-eye mr-1"></i> Voir Matériel
-    </a>
-    <form action="{{ route('superadmin.locations.destroyCorridor', [$location->id, $corridor->id]) }}" method="POST" class="inline">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="text-red-600 hover:text-red-900" 
-                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce couloir?')">
-            <i class="fas fa-trash"></i> Supprimer
-        </button>
-    </form>
-</td>
+                                            <a href="{{ route('superadmin.locations.corridors.materials', ['location' => $location->id, 'corridor' => $corridor->id]) }}" 
+                                               class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                                                <i class="fas fa-eye mr-1"></i> Voir Matériel
+                                            </a>
+                                            <button onclick="openDeleteModal('{{ $corridor->id }}', '{{ $corridor->name }}')" 
+                                                    class="text-red-600 hover:text-red-900 transition-colors duration-200">
+                                                <i class="fas fa-trash mr-1"></i> Supprimer
+                                            </button>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -73,4 +85,50 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
+        <p class="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer le couloir: <span id="corridor-to-delete-name" class="font-semibold"></span>?</p>
+        
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <input type="hidden" name="corridor_id" id="delete-corridor-id">
+            
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteModal()" 
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    Supprimer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Delete Modal Functions
+    function openDeleteModal(corridorId, corridorName) {
+        const modal = document.getElementById('deleteModal');
+        const corridorIdInput = document.getElementById('delete-corridor-id');
+        const corridorNameSpan = document.getElementById('corridor-to-delete-name');
+        
+        corridorIdInput.value = corridorId;
+        corridorNameSpan.textContent = corridorName;
+        
+        // Set the form action
+        document.getElementById('deleteForm').action = `/superadmin/locations/{{ $location->id }}/corridors/${corridorId}`;
+        
+        modal.classList.remove('hidden');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
 @endsection

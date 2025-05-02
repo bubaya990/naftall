@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- CSRF Token Meta Tag -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="relative">
     <!-- Background with blur effect -->
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
@@ -25,6 +28,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Success/Error messages -->
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-green-100 text-green-800 rounded-lg animate-fadeIn">
+                    <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg animate-fadeIn">
+                    <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
+                </div>
+            @endif
 
             <!-- Sites and Locations -->
             <div class="space-y-6">
@@ -77,15 +93,10 @@
                                                         
                                                         <!-- Delete button on right -->
                                                         <div class="flex-1 text-right">
-                                                            <form action="{{ route('superadmin.locations.destroy', $location->id) }}" method="POST" class="inline">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" 
-                                                                        class="text-red-600 hover:text-red-900 inline-flex items-center justify-end"
-                                                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette localité?')">
-                                                                    <i class="fas fa-trash mr-1"></i> Supprimer
-                                                                </button>
-                                                            </form>
+                                                            <button onclick="openDeleteModal('{{ $location->id }}', '{{ $location->name }}')" 
+                                                                    class="text-red-600 hover:text-red-900 inline-flex items-center justify-end">
+                                                                <i class="fas fa-trash mr-1"></i> Supprimer
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -107,4 +118,51 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
+        <p class="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer la localité: <span id="location-to-delete-name" class="font-semibold"></span>?</p>
+        <p class="text-red-500 text-sm mb-6">Attention: Cette action supprimera également toutes les salles et couloirs associés.</p>
+        
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <input type="hidden" name="location_id" id="delete-location-id">
+            
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteModal()" 
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    Confirmer la suppression
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Delete Modal Functions
+    function openDeleteModal(locationId, locationName) {
+        const modal = document.getElementById('deleteModal');
+        const locationIdInput = document.getElementById('delete-location-id');
+        const locationNameSpan = document.getElementById('location-to-delete-name');
+        
+        locationIdInput.value = locationId;
+        locationNameSpan.textContent = locationName;
+        
+        // Set the form action
+        document.getElementById('deleteForm').action = `/superadmin/locations/${locationId}`;
+        
+        modal.classList.remove('hidden');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
 @endsection

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\SuperAdmin;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -26,9 +27,10 @@ class SuperAdminDashboardController extends Controller
         
         // New locations in the last 30 days
         $newLocations = Location::where('created_at', '>=', now()->subDays(30))->count();
-        
+        $user = Auth::user();
+
         // Get unread messages count for the current user
-        $unreadCount = auth()->user()->unreadMessages()->count();
+        $unreadCount = $user ? $user->unreadMessages()->count() : 0;
         
         // Get latest 3 reclamations
         $latestReclamations = Reclamation::latest()->take(3)->get();
