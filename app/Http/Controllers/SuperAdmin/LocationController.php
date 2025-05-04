@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\SuperAdmin;
-use Illuminate\Support\Facades\Auth;
+
+use Illuminate\Support\Facades\DB;
+
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Location;
 use Illuminate\Http\Request;
 use App\Models\Site;
@@ -11,7 +14,10 @@ use App\Models\Floor;
 use App\Models\Ram;
 use App\Models\Corridor;
 use App\Models\Material;
-
+use App\Models\Hotspot;
+use App\Models\Computer;
+use App\Models\Printer;
+use App\Models\IpPhone;
 
 class LocationController extends Controller
 {
@@ -293,78 +299,118 @@ public function addMaterial(Request $request, $locationId, $entityType, $entityI
 
 public function storeMaterial(Request $request, $locationId, $entityType, $entityId)
 {
+    // Find the location and entity (room/corridor)
     $location = Location::findOrFail($locationId);
+    $entity = $entityType === 'room' 
+        ? Room::findOrFail($entityId)
+        : Corridor::findOrFail($entityId);
 
-    if ($entityType === 'room') {
-        $entity = Room::findOrFail($entityId);
-    } else {
-        $entity = Corridor::findOrFail($entityId);
-    }
-
+    // Common validation for all material types
     $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'serial_number' => 'required|string|max:255|unique:materials,serial_number',
+        'inventory_number' => 'required|string|max:255|unique:materials,inventory_number',
+        'serial_number' => 'nullable|string|max:255|unique:materials,serial_number',
         'state' => 'required|string|in:bon,défectueux,hors_service',
         'type' => 'required|string|in:computers,printers,ip-phones,hotspots',
-        'ram_id' => 'required_if:type,computers|nullable|exists:rams,id',
-        'ip_address' => 'nullable|ip',
-        'mac_address' => 'nullable|string|max:255',
-        'model' => 'nullable|string|max:255',
-        'manufacturer' => 'nullable|string|max:255',
-        'printer_brand' => 'required_if:type,printers|nullable|string|max:255',
-        'printer_model' => 'required_if:type,printers|nullable|string|max:255',
     ]);
 
+    // Type-specific validation
+    $typeRules = [
+        'computers' => [
+            'computer_brand' => 'required|string|max:255',
+            'computer_model' => 'required|string|max:255',
+            'OS' => 'required|string|in:Windows7,Windows8,Windows10,Linux',
+            'ram_id' => 'required|exists:rams,id',
+        ],
+        'printers' => [
+            'printer_brand' => 'required|string|max:255',
+            'printer_model' => 'required|string|max:255',
+        ],
+        'ip-phones' => [
+            'mac_number' => 'required|string|max:255',
+        ],
+        'hotspots' => [
+            'password' => 'required|string|max:255',
+        ],
+    ];
+
+    $request->validate($typeRules[$validated['type']]);
+
     try {
-        // Create the specific material type first
+        DB::beginTransaction();
+
+        // Create the specific material type
         $materialable = null;
-        if ($validated['type'] === 'printers') {
-            $materialable = \App\Models\Printer::create([
-                'printer_brand' => $validated['printer_brand'],
-                'printer_model' => $validated['printer_model'],
-            ]);
+        switch ($validated['type']) {
+            case 'computers':
+                $materialable = Computer::create([
+                    'computer_brand' => $request->computer_brand,
+                    'computer_model' => $request->computer_model,
+                    'OS' => $request->OS,
+                    'ram_id' => $request->ram_id,
+                ]);
+                break;
+
+            case 'printers':
+                $materialable = Printer::create([
+                    'printer_brand' => $request->printer_brand,
+                    'printer_model' => $request->printer_model,
+                ]);
+                break;
+
+            case 'ip-phones':
+                $materialable = IpPhone::create([
+                    'mac_number' => $request->mac_number,
+                ]);
+                break;
+
+            case 'hotspots':
+                $materialable = Hotspot::create([
+                    'password' => $request->password,
+                ]);
+                break;
         }
 
-        // Create the material with the polymorphic relationship
-        $material = new Material([
-            'name' => $validated['name'],
+        // Create the material record
+        $materialData = [
+            'inventory_number' => $validated['inventory_number'],
             'serial_number' => $validated['serial_number'],
             'state' => $validated['state'],
-            'type' => $validated['type'],
-        ]);
+            'name' => 'Matériel', // Default name as per your form
+        ];
 
-        // Set the entity relationship
+        // Set the appropriate relationship
         if ($entityType === 'room') {
-            $material->room_id = $entity->id;
+            $materialData['room_id'] = $entity->id;
         } else {
-            $material->corridor_id = $entity->id;
+            $materialData['corridor_id'] = $entity->id;
         }
 
-        // Save the material with the polymorphic relationship
+        // Create and associate the material
+        $material = new Material($materialData);
+        
         if ($materialable) {
             $materialable->material()->save($material);
         } else {
             $material->save();
         }
 
-        if ($material) {
-            return redirect()
-                ->route('superadmin.locations.view', [
-                    'location' => $location->id,
-                    'entityType' => $entityType,
-                    'entity' => $entity->id
-                ])
-                ->with('success', 'Matériel ajouté avec succès!');
-        } else {
-            return back()->with('error', 'Erreur lors de l\'ajout du matériel');
-        }
+        DB::commit();
+
+        return redirect()
+            ->route('superadmin.locations.view', [
+                'location' => $location->id,
+                'entityType' => $entityType,
+                'entity' => $entity->id
+            ])
+            ->with('success', 'Matériel ajouté avec succès!');
+
     } catch (\Exception $e) {
+        DB::rollBack();
         return back()
             ->withInput()
             ->with('error', 'Erreur: ' . $e->getMessage());
     }
 }
-
 
 
 

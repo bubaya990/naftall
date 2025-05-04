@@ -23,6 +23,7 @@ use App\Http\Controllers\StatistiqueController;
 use App\Models\ActivityLog;
 use App\Http\Controllers\SiteController;
 
+
 use App\Models\Floor;
 
 
@@ -328,8 +329,7 @@ Route::get('/sites/{site}/{branchType}', [BrancheController::class, 'showBranch'
 // For branch details (sub-branches)
 Route::get('/sites/branch/{branch}', [BrancheController::class, 'showBranchDetail'])
     ->name('sites.branch.detail');
-    Route::get('{site}/{branchType}', [SomeController::class, 'someMethod'])->name('sites.branch');
-    Route::get('/{site}/{branchType}', [SomeController::class, 'someMethod'])->name('sites.branch');
+    
     Route::post('/superadmin/locations/{location}/material/store', [LocationController::class, 'storeMaterial'])
     ->name('superadmin.locations.material.store');
     Route::post('/superadmin/locations/{locationId}/material/{entityType}/{entityId}/store', [LocationController::class, 'storeMaterial'])
@@ -342,4 +342,7 @@ Route::prefix('superadmin/materials')->group(function() {
     Route::delete('/{type}/{id}', [MaterialController::class, 'destroy'])
         ->name('superadmin.materials.destroy');
 });
+
+     Route::post('/superadmin/locations/{locationId}/{entityType}/{entityId}/materials', [LocationController::class, 'storeMaterial'])
+    ->name('superadmin.locations.materials.store');
     require __DIR__.'/auth.php';

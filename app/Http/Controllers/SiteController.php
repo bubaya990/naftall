@@ -11,17 +11,15 @@ class SiteController extends Controller
     public function showBranches($id, $brancheType)
     {
         $site = Site::findOrFail($id);
-        
+
         $branche = $site->branches()
                         ->where('name', $brancheType)
                         ->whereNull('parent_id')
                         ->with('children')
                         ->firstOrFail();
 
-        return view('superadmin.sites', [
-            'site' => $site,
-            'branche' => $branche
-        ]);
+                        return view('superadmin.branches.show', compact('site', 'brancheType'));
+
     }
 
     public function showCarburant(Site $site)
@@ -31,7 +29,7 @@ class SiteController extends Controller
             'isSiege' => $site->name === 'Siege'
         ]);
     }
-    
+
     public function showCommercial(Site $site)
     {
         return view('sites.commercial', [
@@ -41,43 +39,43 @@ class SiteController extends Controller
                              ->firstOrFail()
         ]);
     }
-    
+
     public function showAgence(Site $site)
     {
         return view('sites.agence', ['site' => $site]);
     }
 
 
-    public function showSite(Site $site, $branchType = null, Branche $branch = null)
+    public function showSite(Site $site, $brancheType = null, Branche $branch = null)
 {
     $data = [
         'site' => $site,
-        'branchType' => $branchType,
-        'branch' => $branch
+        'brancheType' => $brancheType,
+        'branche' => $branch
     ];
 
     // Special cases
-    if ($branchType === 'agence') {
+    if ($brancheType === 'agence') {
         $data['showAgencePlan'] = $site->name === 'Siege';
-    } 
-    elseif ($branchType === 'carburant') {
+    }
+    elseif ($brancheType === 'carburant') {
         $data['showFloorPlans'] = $site->name === 'Siege';
     }
 
     return view('superadmin.sites', $data);
 }
-public function show(Site $site, $branchType = null)
+public function show(Site $site, $brancheType = null)
 {
     $data = [
         'site' => $site,
-        'branchType' => $branchType
+        'brancheType' => $brancheType
     ];
 
     // Special handling for Siege
     if ($site->name === 'Siege') {
-        if ($branchType === 'carburant') {
+        if ($brancheType === 'carburant') {
             $data['showFloorPlans'] = true;
-        } elseif ($branchType === 'agence') {
+        } elseif ($brancheType === 'agence') {
             $data['showAgencePlan'] = true;
         }
     }
@@ -85,5 +83,35 @@ public function show(Site $site, $branchType = null)
     return view('superadmin.sites', $data);
 }
 
+public function showBranche(Site $site, $brancheType)
+{
+    $branche = $site->branches()
+                    ->where('name', $brancheType)
+                    ->whereNull('parent_id')
+                    ->with('children')
+                    ->firstOrFail();
+
+    return view('superadmin.sites', [
+        'site' => $site,
+        'brancheType' => $brancheType,
+        'branche' => $branche
+    ]);
+}
+
+public function showBrancheDetail(Site $site, $brancheType, Branche $branche)
+{
+    // VÃ©rifier que la branche appartient bien au site
+    if ($branche->site_id !== $site->id) {
+        abort(404);
+    }
+
+    return view('superadmin.sites', [
+        'site' => $site,
+        'brancheType' => $brancheType,
+        'branche' => $branche,
+        'showAgencePlan' => $brancheType === 'agence' && $site->name === 'Siege',
+        'showFloorPlans' => $brancheType === 'carburant' && $site->name === 'Siege'
+    ]);
+}
 
 }
