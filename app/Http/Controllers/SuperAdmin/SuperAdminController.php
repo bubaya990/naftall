@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\SuperAdmin;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Site;
-use Illuminate\Http\Request;
+
 use App\Models\Material;
 use App\Models\Message;
 use App\Models\Branche;
@@ -412,6 +413,18 @@ public function markAsSeen(Request $request)
     return response()->json(['success' => true]);
 }
 
+public function updateRole(Request $request, User $user)
+{
+    // Validate the incoming request for the 'role' field
+    $request->validate([
+        'role' => 'required|in:superadmin,admin,leader,utilisateur',
+    ]);
 
+    // Update the user's role
+    $user->update(['role' => $request->input('role')]);
+
+    // Optionally, you can return a response (e.g., redirect back with a success message)
+    return redirect()->route('superadmin.utilisateurs')->with('success', 'Le rôle de l\'utilisateur a été mis à jour.');
+}
 
 }

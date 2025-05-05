@@ -23,12 +23,16 @@
                 </a>
             </div>
 
-            <!-- Add corridor button -->
-            <div class="mb-8 animate-slideInRight">
-                <a href="{{ route('superadmin.locations.addcorridor', $location->id) }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
-                    <i class="fas fa-plus-circle mr-2"></i> Ajouter un couloir
-                </a>
-            </div>
+            <!-- Add corridor button (Only for SuperAdmin) -->
+            @auth
+                @if(auth()->user()->role === 'superadmin')
+                    <div class="mb-8 animate-slideInRight">
+                        <a href="{{ route('superadmin.locations.addcorridor', $location->id) }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
+                            <i class="fas fa-plus-circle mr-2"></i> Ajouter un couloir
+                        </a>
+                    </div>
+                @endif
+            @endauth
 
             <!-- Success/Error messages -->
             @if(session('success'))
@@ -65,10 +69,15 @@
                                                class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
                                                 <i class="fas fa-eye mr-1"></i> Voir Matériel
                                             </a>
-                                            <button onclick="openDeleteModal('{{ $corridor->id }}', '{{ $corridor->name }}')" 
-                                                    class="text-red-600 hover:text-red-900 transition-colors duration-200">
-                                                <i class="fas fa-trash mr-1"></i> Supprimer
-                                            </button>
+                                            
+                                            @auth
+                                                @if(auth()->user()->role === 'superadmin')
+                                                    <button onclick="openDeleteModal('{{ $corridor->id }}', '{{ $corridor->name }}')" 
+                                                            class="text-red-600 hover:text-red-900 transition-colors duration-200">
+                                                        <i class="fas fa-trash mr-1"></i> Supprimer
+                                                    </button>
+                                                @endif
+                                            @endauth
                                         </td>
                                     </tr>
                                 @endforeach
@@ -126,7 +135,7 @@
         
         modal.classList.remove('hidden');
     }
-    
+
     function closeDeleteModal() {
         document.getElementById('deleteModal').classList.add('hidden');
     }

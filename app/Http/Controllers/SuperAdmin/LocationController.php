@@ -25,9 +25,7 @@ class LocationController extends Controller
 
 public function gestionLocalite()
 {
-    if (Auth::user()->role !== 'superadmin') {
-        abort(403, 'Unauthorized action.');
-    }
+   
 
     $sites = \App\Models\Site::with(['locations.floor'])->get();
 

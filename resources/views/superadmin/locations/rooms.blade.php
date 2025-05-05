@@ -19,13 +19,15 @@
                     <p class="text-gray-600 mt-1">Location: {{ $rooms->first()->location->name ?? 'N/A' }}</p>
                 </div>
                 
-                <!-- Create button -->
+                <!-- Create button (only visible to superadmin) -->
+                @if(auth()->user()->role === 'superadmin')
                 <div>
                     <a href="{{ route('superadmin.locations.addroom', ['location' => $locationId]) }}" 
                        class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center">
                         <i class="fas fa-plus-circle mr-2"></i> Add New Room
                     </a>
                 </div>
+                @endif
             </div>
 
             @if(session('success'))
@@ -73,10 +75,12 @@
                                            class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
                                             <i class="fas fa-eye mr-1"></i> View Materials
                                         </a>
+                                        @if(auth()->user()->role === 'superadmin')
                                         <button onclick="openDeleteModal('{{ $room->id }}', '{{ $room->name }}')" 
                                                 class="text-red-600 hover:text-red-800 transition-colors duration-200">
                                             <i class="fas fa-trash-alt mr-1"></i> Delete
                                         </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -97,65 +101,10 @@
 </div>
 
 <!-- Type Change Modal -->
-<div id="typeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
-        <h3 class="text-xl font-bold text-blue-900 mb-4">Change Room Type</h3>
-        
-        <form id="typeChangeForm">
-            @csrf
-            <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="room_id" id="modal-room-id">
-            
-            <div class="space-y-3 mb-6">
-                @foreach(['Bureau', 'Salle reunion', 'Salle reseau'] as $type)
-                <div class="flex items-center">
-                    <input type="radio" id="type-{{ $type }}" name="type" value="{{ $type }}" 
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                    <label for="type-{{ $type }}" class="ml-3 block text-gray-700">
-                        {{ $type }}
-                    </label>
-                </div>
-                @endforeach
-            </div>
-            
-            <div class="flex justify-end space-x-3">
-                <button type="button" onclick="closeTypeModal()" 
-                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    Cancel
-                </button>
-                <button type="button" id="confirmChangeBtn"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    Confirm Change
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+<!-- ... -->
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
-        <h3 class="text-xl font-bold text-red-600 mb-4">Confirm Deletion</h3>
-        <p class="text-gray-700 mb-6">Are you sure you want to delete room: <span id="room-to-delete-name" class="font-semibold"></span>?</p>
-        
-        <form id="deleteForm" method="POST">
-            @csrf
-            @method('DELETE')
-            <input type="hidden" name="room_id" id="delete-room-id">
-            
-            <div class="flex justify-end space-x-3">
-                <button type="button" onclick="closeDeleteModal()" 
-                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                    Delete Room
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+<!-- ... -->
 
 <script>
     // Type Modal Functions

@@ -152,12 +152,31 @@
                     <i class="fas fa-tachometer-alt w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Tableau de bord</span>
                 </a>
-
+                <a href="{{ route('superadmin.utilisateurs') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                    <i class="fas fa-users w-5 text-center text-naftal-orange mr-3"></i>
+                    <span>Utilisateurs</span>
+                </a>
+                <a href="{{ route('superadmin.materials.index') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                    <i class="fas fa-boxes w-5 text-center text-naftal-orange mr-3"></i>
+                    <span>Gestion Matériel</span>
+                </a>
+                <a href="{{ route('superadmin.locations.gestion-localite') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                    <i class="fas fa-map-marker-alt w-5 text-center text-naftal-orange mr-3"></i>
+                    <span>Gestion Localité</span>
+                </a>
             {{-- Utilisateur --}}
             @elseif($role === 'utilisateur')
                 <a href="{{ route('superadmin.dashboard') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                     <i class="fas fa-tachometer-alt w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Tableau de bord</span>
+                </a>
+                <a href="{{ route('superadmin.utilisateurs') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                    <i class="fas fa-users w-5 text-center text-naftal-orange mr-3"></i>
+                    <span>Utilisateurs</span>
+                </a>
+                <a href="{{ route('superadmin.materials.index') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                    <i class="fas fa-boxes w-5 text-center text-naftal-orange mr-3"></i>
+                    <span>Gestion Matériel</span>
                 </a>
             @endif
         </div>

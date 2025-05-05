@@ -55,10 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/statistiques', [CommonController::class, 'statistiques'])->name('statistiques');
 
     // Dashboards
-    Route::get('/utilisateur/dashboard', [UtilisateurDashboardController::class, 'utilisateuredashboard'])->name('utilisateur.dashboard');
     Route::get('/superadmin/dashboard', [SuperAdminController::class, 'dashboard'])->name('superadmin.dashboard');
-    Route::get('/leader/dashboard', [LeaderDashboardController::class, 'leaderdashboard'])->name('leader.dashboard');
-    Route::get('/admin/dashboard', [AdminController::class, 'admindashboard'])->name('admin.dashboard');
 
 });
  // SuperAdmin Management
@@ -106,28 +103,12 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
 });
 
 
-    // Admin Management
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/utilisateurs', [AdminController::class, 'utilisateurs'])->name('utilisateurs');
-        Route::get('/gestion-material', [AdminController::class, 'gestionMaterial'])->name('gestion-material');
-        Route::get('/gestion-localite', [AdminController::class, 'gestionLocalite'])->name('gestion-localite');
-        Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
-        Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
-        Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
-    });
 
-    // Leader Management
-    Route::prefix('leader')->name('leader.')->group(function () {
-        Route::get('/dashboard', [LeaderController::class, 'dashboard'])->name('dashboard');
-        Route::get('/utilisateurs', [LeaderController::class, 'utilisateurs'])->name('utilisateurs');
-        Route::get('/gestion-material', [LeaderController::class, 'gestionMaterial'])->name('gestion-material');
-        Route::get('/gestion-localite', [LeaderController::class, 'gestionLocalite'])->name('gestion-localite');
-        Route::get('/affectations', [AffectationController::class, 'index'])->name('affectations.index');
-    });
+ 
+ 
 
 
-
-    Route::middleware(['auth'])->prefix('superadmin/locations')->name('superadmin.locations.')->group(function () {
+    Route::prefix('superadmin/locations')->name('superadmin.locations.')->group(function () {
         // Location management routes
         Route::get('/gestion-localite', [LocationController::class, 'gestionLocalite'])->name('gestion-localite');
         Route::get('/create', [LocationController::class, 'create'])->name('create');
@@ -395,5 +376,9 @@ Route::prefix('superadmin/materials')->group(function() {
     Route::get('/superadmin/sites/{site}/branche/{brancheType?}', [SiteController::class, 'show'])->name('superadmin.sites.branche');
 // Correct route definition
 Route::get('/superadmin/sites/{site}/branche/{brancheType?}', [SiteController::class, 'show'])->name('superadmin.sites.branche');
+Route::get('/superadmin/locations/gestion-localite/{type}', [App\Http\Controllers\SuperAdmin\LocationController::class, 'gestionLocalite'])->name('superadmin.locations.gestion-localite-with-type');
+Route::put('/superadmin/utilisateurs/{user}', [SuperAdminController::class, 'updateRole'])->name('superadmin.utilisateurs.updateRole');
 
-    require __DIR__.'/auth.php';
+
+
+require __DIR__.'/auth.php';

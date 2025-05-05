@@ -24,10 +24,12 @@
                     </h1>
                     <p class="text-blue-600 mt-1 text-sm md:text-base">Liste complète des équipements</p>
                 </div>
+                @if(auth()->user()->role === 'superadmin' || (auth()->user()->role === 'admin' && auth()->user()->site_id))
                 <a href="{{ route('superadmin.materials.create', ['type' => $type]) }}" 
                    class="btn btn-primary transform hover:scale-105 transition-transform duration-300 animate-bounceIn">
                    <i class="fas fa-plus-circle mr-2"></i>Ajouter
                 </a>
+                @endif
             </div>
 
             <!-- Materials Table -->
@@ -168,7 +170,9 @@
                             @endif
                             
                             <!-- Actions header (empty) -->
+                            @if(auth()->user()->role === 'superadmin' || auth()->user()->role === 'admin')
                             <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-white uppercase tracking-wider"></th>
+                            @endif
                         </tr>
                     </thead>
                     
@@ -192,7 +196,9 @@
                             @elseif($type == 'hotspots')
                             <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-white uppercase tracking-wider">Mot de passe</th>
                             @endif
+                            @if(auth()->user()->role === 'superadmin' || auth()->user()->role === 'admin')
                             <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-white uppercase tracking-wider">Actions</th>
+                            @endif
                         </tr>
                     </thead>
                     
@@ -205,6 +211,16 @@
                             </tr>
                         @else
                             @foreach($materials as $index => $material)
+                            @php
+                                // Get the site ID for this material
+                                $materialSiteId = $material->room ? $material->room->location->site_id : ($material->corridor ? $material->corridor->location->site_id : null);
+                                
+                                // Check if admin can see actions for this material
+                                $showActions = auth()->user()->role === 'superadmin' || 
+                                              (auth()->user()->role === 'admin' && 
+                                               auth()->user()->site_id && 
+                                               $materialSiteId == auth()->user()->site_id);
+                            @endphp
                             <tr class="hover:bg-blue-900/20 transition-all duration-300 ease-in-out transform hover:translate-x-1 animate-fadeIn" style="animation-delay: {{ $index * 50 }}ms">
                                 <td class="px-4 py-3 text-gray-900">{{ $material->inventory_number }}</td>
                                 <td class="px-4 py-3 text-gray-900">{{ $material->serial_number }}</td>
@@ -245,6 +261,7 @@
                                 <td class="px-4 py-3 text-gray-900">{{ $material->materialable->password }}</td>
                                 @endif
                                 
+                                @if($showActions)
                                 <td class="px-4 py-3 text-right space-x-2 md:space-x-3">
                                     <button onclick="openDeleteModal('{{ $type }}', '{{ $material->id }}', '{{ $material->inventory_number }}')" 
                                             class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-white/60 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold">
@@ -252,6 +269,11 @@
                                         <span class="hidden md:inline">Supprimer</span>
                                     </button>
                                 </td>
+                                @elseif(auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin')
+                                <td class="px-4 py-3 text-right">
+                                    <span class="text-gray-400 text-sm">Non autorisé</span>
+                                </td>
+                                @endif
                             </tr>
                             @endforeach
                         @endif
@@ -263,6 +285,7 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
+@if(auth()->user()->role === 'superadmin' || auth()->user()->role === 'admin')
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
         <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
@@ -288,6 +311,7 @@
         </form>
     </div>
 </div>
+@endif
 
 <style>
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

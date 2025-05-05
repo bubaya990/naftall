@@ -43,10 +43,14 @@
                        class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center">
                         <i class="fas fa-arrow-left mr-2"></i> Retour
                     </a>
+                    
+                    <!-- Check role directly with if/else -->
+                    @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
                     <a href="{{ route('locations.addMaterial', ['location' => $location->id, 'entityType' => $entityType, 'entity' => $entity->id]) }}" 
                        class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center ml-4">
                         <i class="fas fa-plus mr-2"></i> Ajouter Matériel
                     </a>
+                    @endif
                 </div>
             </div>
 
@@ -73,7 +77,11 @@
                                 <th class="px-6 py-3 text-blue-900 font-medium">Numéro de série</th>
                                 <th class="px-6 py-3 text-blue-900 font-medium">Type</th>
                                 <th class="px-6 py-3 text-blue-900 font-medium">État</th>
+
+                                <!-- Only show actions column if the user is superadmin or admin -->
+                                @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
                                 <th class="px-6 py-3 text-blue-900 font-medium">Actions</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200/50">
@@ -111,6 +119,9 @@
                                         {{ $material->state }}
                                     </span>
                                 </td>
+
+                                <!-- Only show the actions if the user is superadmin or admin -->
+                                @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
                                 <td class="px-6 py-4">
                                     <div class="flex space-x-2">
                                         <a href="{{ route('superadmin.materials.edit', ['type' => $materialType, 'id' => $material->id]) }}" 
@@ -123,6 +134,7 @@
                                         </button>
                                     </div>
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
