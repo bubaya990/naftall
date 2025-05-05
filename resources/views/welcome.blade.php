@@ -13,7 +13,7 @@
     <div class="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
 
     <!-- Logo with Soft Entrance & Floating Effect -->
-    <img src="{{ asset('image/naftall.jpg') }}" alt="Naftal Logo" 
+    <img src="{{ asset('image/naftal-logo.jpg') }}" alt="Naftal Logo" 
          class="relative z-10 w-1/3 md:w-1/4 lg:w-1/5 drop-shadow-lg animate-fade-scale animate-float">
 
     <!-- Connect Button with Modern Hover Effect -->

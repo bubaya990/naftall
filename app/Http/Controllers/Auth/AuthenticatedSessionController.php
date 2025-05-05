@@ -38,18 +38,6 @@ class AuthenticatedSessionController extends Controller
 
     protected function redirectTo(): string
     {
-        if (Auth::check()) {
-            $role = Auth::user()->role;
-
-            return match ($role) {
-                'admin' => '/admin/dashboard',
-                'utilisateur' => '/utilisateur/dashboard',
-                'superadmin' => '/superadmin/dashboard',
-                'leader' => '/leader/dashboard',
-                default => '/dashboard',
-            };
-        }
-
-        return '/login'; // fallback route
+        return '/superadmin/dashboard';
     }
 }

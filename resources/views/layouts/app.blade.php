@@ -129,33 +129,33 @@
 
             {{-- Admin --}}
             @elseif($role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                <a href="{{ route('superadmin.dashboard') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                     <i class="fas fa-tachometer-alt w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Tableau de bord</span>
                 </a>
-                <a href="{{ route('admin.utilisateurs') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                <a href="{{ route('superadmin.utilisateurs') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                     <i class="fas fa-users w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Utilisateurs</span>
                 </a>
-                <a href="{{ route('admin.gestion-material') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                <a href="{{ route('superadmin.materials.index') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                     <i class="fas fa-boxes w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Gestion Matériel</span>
                 </a>
-                <a href="{{ route('admin.gestion-localite') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                <a href="{{ route('superadmin.locations.gestion-localite') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                     <i class="fas fa-map-marker-alt w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Gestion Localité</span>
                 </a>
 
             {{-- Leader --}}
             @elseif($role === 'leader')
-                <a href="{{ route('leader.dashboard') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                <a href="{{ route('superadmin.dashboard') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                     <i class="fas fa-tachometer-alt w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Tableau de bord</span>
                 </a>
 
             {{-- Utilisateur --}}
             @elseif($role === 'utilisateur')
-                <a href="{{ route('utilisateur.dashboard') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
+                <a href="{{ route('superadmin.dashboard') }}" class="sidebar-item flex items-center p-3 rounded-lg text-sm font-medium">
                     <i class="fas fa-tachometer-alt w-5 text-center text-naftal-orange mr-3"></i>
                     <span>Tableau de bord</span>
                 </a>
