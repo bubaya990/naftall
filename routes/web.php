@@ -102,6 +102,7 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     // COM & CBR Quick Access
     Route::get('/com', [SuperAdminController::class, 'com'])->name('com');
     Route::get('/cbr', [SuperAdminController::class, 'cbr'])->name('cbr');
+    
 });
 
 
@@ -321,7 +322,12 @@ Route::prefix('sites')->group(function () {
     Route::get('/{site}/{branchType}', [SiteController::class, 'showSite'])->name('sites.branch');
     Route::get('/{site}/{branchType}/{branch}', [SiteController::class, 'showSite'])->name('sites.branch.detail');
 });    Route::get('/{site}', [SiteController::class, 'show'])->name('sites.show');
-Route::get('/{site}/{branchType}', [SiteController::class, 'show'])->name('sites.branch');
+       Route::get('/{site}/{branchType}', [SiteController::class, 'show'])->name('sites.branch');
+       Route::get('/superadmin/sites/branche', [SiteController::class, 'branche'])->name('superadmin.sites.branche');
+       Route::get('/superadmin/sites/{site}/branche/{branche}/detail', [BrancheController::class, 'showDetail'])
+       ->name('superadmin.sites.branche.detail');
+       Route::get('/sites/branche', [BrancheController::class, 'method'])
+       ->name('sites.branche');
 // For branch types (Agence, LP, CDD)
 Route::get('/sites/{site}/{branchType}', [BrancheController::class, 'showBranch'])
     ->name('sites.branch');
@@ -341,8 +347,53 @@ Route::prefix('superadmin/materials')->group(function() {
     
     Route::delete('/{type}/{id}', [MaterialController::class, 'destroy'])
         ->name('superadmin.materials.destroy');
-});
+        Route::prefix('sites')->name('sites.')->group(function () {
+    
+            // Main site view - shows all branches
+            Route::get('/{site}', [SiteController::class, 'show'])
+                ->name('show');
+            
+            // Specific branch views
+            Route::get('/{site}/carburant', [SiteController::class, 'showCarburant'])
+                ->name('carburant');
+            
+            Route::get('/{site}/commercial', [SiteController::class, 'showCommercial'])
+                ->name('commercial');
+            
+            Route::get('/{site}/agence', [SiteController::class, 'showAgence'])
+                ->name('agence');
+            
+            // Generic branch handler (used for links)
+            Route::get('/{site}/branche/{brancheType}', [SiteController::class, 'show'])
+                ->name('branche');
+            
+            // AJAX endpoint for branch data
+            Route::post('/branche/data', [SiteController::class, 'getBrancheData'])
+                ->name('branche.data');
+                Route::get('/{site}', [SiteController::class, 'show'])->name('show');
+    
+                // Branch views
+                Route::get('/{site}/carburant', [SiteController::class, 'showCarburant'])->name('carburant');
+                Route::get('/{site}/commercial', [SiteController::class, 'showCommercial'])->name('commercial');
+                Route::get('/{site}/agence', [SiteController::class, 'showAgence'])->name('agence');
+                
+                // AJAX endpoint
+                Route::post('/branche/data', [SiteController::class, 'getBrancheData'])
+                       ->name('branche.data');
+        });
+     Route::post('/superadmin/locations/{locationId}/{entityType}/{entityId}/materials', [LocationController::class, 'storeMaterial'])->name('superadmin.locations.materials.store');
+    });
+    Route::prefix('superadmin')->name('superadmin.')->group(function () {
+        Route::prefix('sites')->name('sites.')->group(function () {
+            Route::get('/{site}/branche/{brancheType}', [SiteController::class, 'show'])
+                   ->name('branche');
+        });
+        
+        // CBR route
+        Route::get('/cbr', [BrancheController::class, 'carburantSites'])->name('cbr');
+    });
+    Route::get('/superadmin/sites/{site}/branche/{brancheType?}', [SiteController::class, 'show'])->name('superadmin.sites.branche');
+// Correct route definition
+Route::get('/superadmin/sites/{site}/branche/{brancheType?}', [SiteController::class, 'show'])->name('superadmin.sites.branche');
 
-     Route::post('/superadmin/locations/{locationId}/{entityType}/{entityId}/materials', [LocationController::class, 'storeMaterial'])
-    ->name('superadmin.locations.materials.store');
     require __DIR__.'/auth.php';

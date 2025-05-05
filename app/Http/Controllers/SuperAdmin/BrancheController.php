@@ -1,117 +1,107 @@
 <?php
+
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Branche;
 use App\Models\Site;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class BrancheController extends Controller
 {
+    /**
+     * Show carburant sites (CBR)
+     */
     public function carburantSites()
     {
-        // Get unique sites that have carburant branches
         $carburantBranches = Branche::with('site')
             ->where('name', 'carburant')
             ->get()
             ->unique('site_id')
-            ->values(); // Réindexer le tableau après unique()
+            ->values();
 
         return view('superadmin.cbr', compact('carburantBranches'));
     }
 
-// SuperAdmin/BrancheController.php
-public function commercialDetails()
-{
-    $stations = Site::whereHas('branche', function($q) {
-        $q->where('name', 'commercial');
-    })
-    ->with('children') // Load children directly
-    ->whereNull('parent_id') // Only GD (top level) stations, no child stations alone
-    ->get();
+    /**
+     * Show commercial structure (COM)
+     */
+    public function commercialStructure()
+    {
+        try {
+            $commercialBranches = Branche::with(['children' => function($query) {
+                $query->with(['children' => function($query) {
+                    $query->with('children');
+                }]);
+            }])
+            ->where('name', 'Commercial')
+            ->get();
 
-    return view('superadmin.com', compact('stations'));
-}
-public function commercialStructure()
-{
-    try {
-        // Charger toutes les branches commerciales avec leurs relations
-        $commercialBranches = Branche::with(['children' => function($query) {
-            $query->with(['children' => function($query) {
-                $query->with('children');
-            }]);
-        }])
-        ->where('name', 'Commercial')
-        ->get();
+            $site = Site::first();
 
-        $site = Site::first();
+            if ($commercialBranches->isEmpty()) {
+                return view('superadmin.com', [
+                    'commercialBranches' => null,
+                    'site' => $site
+                ]);
+            }
 
-        if ($commercialBranches->isEmpty()) {
+            Log::info('Commercial Branches Loaded', [
+                'count' => $commercialBranches->count(),
+                'sites' => $commercialBranches->pluck('site.name')
+            ]);
+
             return view('superadmin.com', [
-                'commercialBranches' => null,
+                'commercialBranches' => $commercialBranches,
                 'site' => $site
             ]);
+        } catch (\Exception $e) {
+            Log::error('Commercial Structure Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to load commercial structure');
         }
+    }
 
-        // Debug pour vérifier les branches chargées
-        foreach ($commercialBranches as $branche) {
-            Log::info('Commercial Branche Children for site ' . $branche->site->name . ':', [
-                'children' => $branche->children->pluck('name')->toArray()
+    /**
+     * Show branch details
+     */
+    public function showBranche(Site $site, $brancheType)
+    {
+        try {
+            $branche = Branche::where('site_id', $site->id)
+                ->where('name', $brancheType)
+                ->with('children')
+                ->firstOrFail();
+
+            return view('superadmin.sites', [
+                'site' => $site,
+                'branche' => $branche,
+                'brancheType' => $brancheType,
+                'showFloorPlans' => $brancheType === 'carburant' && $site->name === 'Siege',
+                'showAgencePlan' => $brancheType === 'agence' && $site->name === 'Siege'
             ]);
+        } catch (\Exception $e) {
+            Log::error('Show Branche Error: ' . $e->getMessage());
+            return redirect()->route('superadmin.com')->with('error', 'Branch not found');
         }
-
-        return view('superadmin.com', [
-            'commercialBranches' => $commercialBranches,
-            'site' => $site
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error in commercialStructure: ' . $e->getMessage());
-        return view('superadmin.com', [
-            'commercialBranches' => null,
-            'site' => null
-        ]);
     }
-}
 
-public function showBranche($site, $brancheType)
-{
-    try {
-        $site = Site::findOrFail($site);
-        $branche = Branche::where('site_id', $site->id)
-            ->where('name', $brancheType)
-            ->with('children')
-            ->firstOrFail();
-
-        return view('superadmin.sites', [
-            'site' => $site,
-            'branche' => $branche,
-            'brancheType' => $brancheType,
-            'children' => $branche->children
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error in showBranche: ' . $e->getMessage());
-        return redirect()->route('superadmin.com')->with('error', 'Branche non trouvée');
+    /**
+     * Show branch sub-details
+     */
+    public function showBrancheDetail(Site $site, $brancheType, Branche $branche)
+    {
+        try {
+            return view('superadmin.sites', [
+                'site' => $site,
+                'branche' => $branche->load('children'),
+                'brancheType' => $brancheType,
+                'showFloorPlans' => false,
+                'showAgencePlan' => false
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Show Branche Detail Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to load branch details');
+        }
     }
-}
-
-public function showBrancheDetail($site, $brancheType, $branche)
-{
-    try {
-        $site = Site::findOrFail($site);
-        $branche = Branche::with('children')
-            ->findOrFail($branche);
-
-        return view('superadmin.sites', [
-            'site' => $site,
-            'branche' => $branche,
-            'brancheType' => $brancheType,
-            'children' => $branche->children
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error in showBrancheDetail: ' . $e->getMessage());
-        return redirect()->route('superadmin.com')->with('error', 'Branche non trouvée');
-    }
-}
-
 }

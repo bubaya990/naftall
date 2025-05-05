@@ -4,114 +4,69 @@ namespace App\Http\Controllers;
 
 use App\Models\Site;
 use App\Models\Branche;
+use Illuminate\Http\Request;
 
 class SiteController extends Controller
 {
-
-    public function showBranches($id, $brancheType)
+    /**
+     * Display main site view
+     */
+    public function show(Site $site, $brancheType)
     {
-        $site = Site::findOrFail($id);
-
-        $branche = $site->branches()
-                        ->where('name', $brancheType)
-                        ->whereNull('parent_id')
-                        ->with('children')
-                        ->firstOrFail();
-
-                        return view('superadmin.branches.show', compact('site', 'brancheType'));
-
+        $branche = Branche::where('site_id', $site->id)
+                          ->where('name', $brancheType)
+                          ->first(); // Removed `whereNull('parent_id')`
+    
+        if (!$branche) {
+            abort(404, "Branche '{$brancheType}' not found for this site.");
+        }
+    
+        return view('superadmin.sites', compact('site', 'branche'));
     }
+    
 
+    /**
+     * Show carburant branch
+     */
     public function showCarburant(Site $site)
     {
-        return view('sites.carburant', [
-            'site' => $site,
-            'isSiege' => $site->name === 'Siege'
-        ]);
+        return $this->show($site, 'carburant');
     }
 
+    /**
+     * Show commercial branch
+     */
     public function showCommercial(Site $site)
     {
-        return view('sites.commercial', [
-            'site' => $site,
-            'branche' => $site->branches()
-                             ->where('name', 'Commercial')
-                             ->firstOrFail()
-        ]);
+        return $this->show($site, 'commercial');
     }
 
+    /**
+     * Show agence branch
+     */
     public function showAgence(Site $site)
     {
-        return view('sites.agence', ['site' => $site]);
+        return $this->show($site, 'agence');
     }
 
+    /**
+     * Get branch data (AJAX)
+     */
+    public function getBrancheData(Request $request)
+    {
+        $request->validate([
+            'site' => 'required|exists:sites,id',
+            'brancheType' => 'required|string'
+        ]);
 
-    public function showSite(Site $site, $brancheType = null, Branche $branch = null)
-{
-    $data = [
-        'site' => $site,
-        'brancheType' => $brancheType,
-        'branche' => $branch
-    ];
+        $branche = Branche::where('site_id', $site->id)
+                  ->where('name', $brancheType)
+                  ->whereNull('parent_id') // <== This line filters top-level branches only
+                  ->first();
 
-    // Special cases
-    if ($brancheType === 'agence') {
-        $data['showAgencePlan'] = $site->name === 'Siege';
+
+        return response()->json([
+            'branche' => $branche
+        ]);
     }
-    elseif ($brancheType === 'carburant') {
-        $data['showFloorPlans'] = $site->name === 'Siege';
-    }
-
-    return view('superadmin.sites', $data);
-}
-public function show(Site $site, $brancheType = null)
-{
-    $data = [
-        'site' => $site,
-        'brancheType' => $brancheType
-    ];
-
-    // Special handling for Siege
-    if ($site->name === 'Siege') {
-        if ($brancheType === 'carburant') {
-            $data['showFloorPlans'] = true;
-        } elseif ($brancheType === 'agence') {
-            $data['showAgencePlan'] = true;
-        }
-    }
-
-    return view('superadmin.sites', $data);
-}
-
-public function showBranche(Site $site, $brancheType)
-{
-    $branche = $site->branches()
-                    ->where('name', $brancheType)
-                    ->whereNull('parent_id')
-                    ->with('children')
-                    ->firstOrFail();
-
-    return view('superadmin.sites', [
-        'site' => $site,
-        'brancheType' => $brancheType,
-        'branche' => $branche
-    ]);
-}
-
-public function showBrancheDetail(Site $site, $brancheType, Branche $branche)
-{
-    // VÃ©rifier que la branche appartient bien au site
-    if ($branche->site_id !== $site->id) {
-        abort(404);
-    }
-
-    return view('superadmin.sites', [
-        'site' => $site,
-        'brancheType' => $brancheType,
-        'branche' => $branche,
-        'showAgencePlan' => $brancheType === 'agence' && $site->name === 'Siege',
-        'showFloorPlans' => $brancheType === 'carburant' && $site->name === 'Siege'
-    ]);
-}
-
 }
