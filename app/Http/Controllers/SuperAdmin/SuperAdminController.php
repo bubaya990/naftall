@@ -415,16 +415,25 @@ public function markAsSeen(Request $request)
 
 public function updateRole(Request $request, User $user)
 {
-    // Validate the incoming request for the 'role' field
+    // Only validate the role field
     $request->validate([
         'role' => 'required|in:superadmin,admin,leader,utilisateur',
     ]);
 
-    // Update the user's role
-    $user->update(['role' => $request->input('role')]);
-
-    // Optionally, you can return a response (e.g., redirect back with a success message)
-    return redirect()->route('superadmin.utilisateurs')->with('success', 'Le rôle de l\'utilisateur a été mis à jour.');
+    try {
+        $user->update(['role' => $request->input('role')]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Le rôle de l\'utilisateur a été mis à jour.'
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la mise à jour du rôle: ' . $e->getMessage()
+        ], 500);
+    }
 }
 
 }

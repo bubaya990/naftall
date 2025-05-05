@@ -351,22 +351,46 @@ function openRoleModal(userId, userName, userEmail, currentRole) {
     userEmailSpan.textContent = userEmail;
    
     // Set the form action to use the named route
-    document.getElementById('roleForm').action = `/superadmin/utilisateurs/${userId}`;
+    document.getElementById('roleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    // Uncheck all radio buttons first
-    document.querySelectorAll('input[name="role"]').forEach(radio => {
-        radio.checked = false;
+    const form = this;
+    const formData = new FormData(form);
+    
+    // Convert FormData to JSON to avoid form-data validation issues
+    const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
     });
     
-    // Check the current role radio button
-    const currentRoleRadio = document.querySelector(`input[name="role"][value="${currentRole}"]`);
-    if (currentRoleRadio) {
-        currentRoleRadio.checked = true;
-    }
-   
-    modal.classList.remove('hidden');
-}
-
+    fetch(form.action, {
+        method: 'POST', // Laravel will handle as PUT via method spoofing
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(err));
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            closeRoleModal();
+            window.location.reload();
+        } else {
+            alert('Error updating role: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error: ' + (error.message || 'Failed to update role'));
+    });
+});
 function closeRoleModal() {
     document.getElementById('roleModal').classList.add('hidden');
 }

@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->id(); // Auto-incrementing primary key
 
-            $table->string('capacity'); // RAM capacity (e.g., '4GB', '8GB')
+            $table->enum('capacity', ['4GB', '8GB', '16GB', '32GB']);
             $table->enum('state', ['good', 'bad', 'out of order']); // RAM state
 
             $table->unsignedBigInteger('computer_id'); // Foreign key to computers table

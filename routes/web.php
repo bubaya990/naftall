@@ -380,5 +380,4 @@ Route::get('/superadmin/locations/gestion-localite/{type}', [App\Http\Controller
 Route::put('/superadmin/utilisateurs/{user}', [SuperAdminController::class, 'updateRole'])->name('superadmin.utilisateurs.updateRole');
 
 
-
 require __DIR__.'/auth.php';
