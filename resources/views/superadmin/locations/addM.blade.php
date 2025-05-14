@@ -84,13 +84,15 @@
                             <option value="Linux" {{ old('OS', $material->materialable->OS ?? '') == 'Linux' ? 'selected' : '' }}>Linux</option>
                         </select>
                     </div>
-                    <div>
-    <label for="ram_capacity" class="block text-gray-700 text-sm font-bold mb-2">RAM</label>
-    <select id="ram_capacity" name="ram_capacity" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-        <option value="">Sélectionner la RAM</option>
-        @foreach (['4GB', '8GB', '16GB', '32GB'] as $ramOption)
-            <option value="{{ $ramOption }}" {{ old('ram_capacity', $material->materialable->ram_capacity ?? '') == $ramOption ? 'selected' : '' }}>
-                {{ $ramOption }}
+<div>
+    <label class="block text-sm md:text-base font-bold text-gray-900 mb-2" for="ram_id">RAM *</label>
+    <select id="ram_id" name="ram_id"
+            class="block w-full px-4 py-3 border-2 border-blue-400 rounded-xl bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
+            required>
+        <option value="">Select RAM</option>
+        @foreach($rams as $ram)
+            <option value="{{ $ram->id }}" {{ old('ram_id') == $ram->id ? 'selected' : '' }}>
+                {{ $ram->capacity }}
             </option>
         @endforeach
     </select>
