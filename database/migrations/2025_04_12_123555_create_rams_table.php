@@ -12,14 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rams', function (Blueprint $table) {
-            $table->engine = 'InnoDB'; // Ensures InnoDB engine for foreign key support
 
             $table->id(); // Auto-incrementing primary key
 
             $table->enum('capacity', ['4GB', '8GB', '16GB', '32GB']);
-            $table->enum('state', ['good', 'bad', 'out of order']); // RAM state
 
-            $table->unsignedBigInteger('computer_id'); // Foreign key to computers table
 
             $table->timestamps(); // Created at and updated at timestamps
         });

@@ -147,8 +147,7 @@ Route::prefix('superadmin/materials')->group(function () {
     Route::get('/', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'index'])
         ->name('superadmin.materials.index');
     
-
- 
+      
        // Site-specific materials
     Route::get('/sites/{site}/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'siteMaterials'])
         ->name('superadmin.materials.site');
@@ -378,6 +377,23 @@ Route::prefix('superadmin/materials')->group(function() {
 Route::get('/superadmin/sites/{site}/branche/{brancheType?}', [SiteController::class, 'show'])->name('superadmin.sites.branche');
 Route::get('/superadmin/locations/gestion-localite/{type}', [App\Http\Controllers\SuperAdmin\LocationController::class, 'gestionLocalite'])->name('superadmin.locations.gestion-localite-with-type');
 Route::put('/superadmin/utilisateurs/{user}', [SuperAdminController::class, 'updateRole'])->name('superadmin.utilisateurs.updateRole');
+Route::put('/superadmin/utilisateurs/{user}', [SuperAdminController::class, 'updateRole'])
+    ->name('superadmin.utilisateurs.updateRole');
+    Route::put('/superadmin/utilisateurs/{user}/role', [SuperAdminController::class, 'updateRole'])
+    ->name('superadmin.utilisateurs.updateRole');
 
+    // Edit route
+Route::get('/materials/{type}/{id}/edit', [MaterialController::class, 'edit'])->name('superadmin.materials.edit');
 
+// Update route
+Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])->name('superadmin.materials.update');
+// Edit route
+Route::get('/materials/{type}/{id}/edit', [MaterialController::class, 'edit'])
+    ->name('superadmin.materials.edit');
+
+// Update route
+Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])
+    ->name('superadmin.materials.update');
+    Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])
+    ->name('superadmin.materials.update');
 require __DIR__.'/auth.php';

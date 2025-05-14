@@ -60,7 +60,7 @@ class ComputerSeeder extends Seeder
         $computer2 = Computer::create([
             'computer_brand' => 'Dell',
             'computer_model' => 'Optiplex 7070',
-            'OS' => 'Windows 10',
+            'OS' => 'Windows10',
             'ram_id' => $ram->id
         ]);
         
@@ -76,7 +76,7 @@ class ComputerSeeder extends Seeder
         $computer3 = Computer::create([
             'computer_brand' => 'Alfatron',
             'computer_model' => 'Alfatron A7',
-            'OS' => 'Windows 10',
+            'OS' => 'Windows10',
             'ram_id' => $ram->id
         ]);
         
@@ -92,7 +92,7 @@ class ComputerSeeder extends Seeder
         $computer4 = Computer::create([
             'computer_brand' => 'Fujitsu',
             'computer_model' => 'Lifebook A555',
-            'OS' => 'Windows 10',
+            'OS' => 'Windows10',
             'ram_id' => $ram->id
         ]);
         

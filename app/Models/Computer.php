@@ -10,33 +10,26 @@ class Computer extends Model
     use HasFactory;
 
     protected $fillable = [
-    
-    'computer_brand',
-    'computer_model',
-    'OS',
-    'ram_id',
-  ];
+        'computer_brand',
+        'computer_model',
+        'OS',
+        'ram_id', // Keeping as ram_id to match your model
+    ];
 
-  protected $appends = ['total_ram'];
+    protected $appends = ['total_ram'];
 
-  // In the Computer model
-public function material()
-{
-    return $this->morphOne(Material::class, 'materialable');
-}
-
-  
+    public function material()
+    {
+        return $this->morphOne(Material::class, 'materialable');
+    }
 
     public function rams()
     {
-        return $this->hasMany(Ram::class);
+        return $this->belongsTo(Ram::class, 'ram_id'); // Fixed typo from brlongto to belongsTo
     }
-    
-    // Accessor to get total RAM
+
     public function getTotalRamAttribute()
     {
-        return $this->ram ? $this->ram->size : 0; 
-        }
-    
-
+        return $this->rams ? $this->rams->capacity : null;
+    }
 }

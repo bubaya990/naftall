@@ -11,18 +11,14 @@ class Ram extends Model
     use HasFactory;
     protected $fillable = [
         'capacity',
-        'state',
+        
         
     ];
     //
     public function computer()
     {
-        return $this->belongsTo(Computer::class, 'computer_id');
+        return $this->hasemany(Computer::class);
     }
-    public function getTotalRamAttribute()
-{
-    dd($this->ram_id); // Check the value
-    return $this->ram_id; // or your logic here
-}
+
 
 }

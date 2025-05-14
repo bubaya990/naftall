@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('computer_brand');
             $table->string('computer_model');
             $table->enum('OS',  ['Windows7', 'Windows8','Windows10','Linux']);
-            $table->unsignedBigInteger('ram_id');
+            $table->foreignId('ram_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

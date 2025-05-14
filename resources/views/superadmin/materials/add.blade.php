@@ -119,19 +119,21 @@
                                 </select>
                             </div>
 
-                            <!-- RAM -->
-                            <div>
-                                <label class="block text-sm md:text-base font-bold text-gray-900 mb-2" for="ram_id">RAM *</label>
-                                <select id="ram_id" name="ram_id"
-                                        class="block w-full px-4 py-3 border-2 border-blue-400 rounded-xl bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
-                                        required>
-                                    @foreach(\App\Models\Ram::all() as $ram)
-                                        <option value="{{ $ram->id }}" {{ old('ram_id') == $ram->id ? 'selected' : '' }}>
-                                            {{ $ram->capacity }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+<!-- RAM -->
+<div>
+    <label class="block text-sm md:text-base font-bold text-gray-900 mb-2" for="ram_id">RAM *</label>
+    <select id="ram_id" name="ram_id"
+            class="block w-full px-4 py-3 border-2 border-blue-400 rounded-xl bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
+            required>
+        <option value="">Select RAM</option>
+        @foreach($rams as $ram)
+            <option value="{{ $ram->id }}" {{ old('ram_id') == $ram->id ? 'selected' : '' }}>
+                {{ $ram->capacity }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
                         @elseif($type == 'printers')
                             <!-- Printer Brand -->

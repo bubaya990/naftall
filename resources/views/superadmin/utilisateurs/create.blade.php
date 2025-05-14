@@ -72,6 +72,17 @@
                                    required>
                         </div>
 
+                         <!-- Password Confirmation -->
+                         <div class="col-span-1">
+                            <label class="block text-sm md:text-base font-bold text-gray-900 mb-2" for="password_confirmation">Confirmer le mot de passe </label>
+                            <input class="block w-full px-4 py-3 border-2 border-blue-400 rounded-xl bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
+                                   id="password_confirmation"
+                                   type="password"
+                                   name="password_confirmation"
+                                   placeholder="Confirmer le mot de passe"
+                                   required>
+                        </div>
+
                        
 
                         <!-- Role -->

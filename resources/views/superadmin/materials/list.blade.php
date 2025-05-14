@@ -263,6 +263,14 @@
                                 
                                 @if($showActions)
                                 <td class="px-4 py-3 text-right space-x-2 md:space-x-3">
+                                    <!-- Edit Button -->
+                                    <a href="{{ route('superadmin.materials.edit', ['type' => $type, 'id' => $material->id]) }}"
+                                       class="text-blue-600 hover:text-blue-800 transform hover:scale-110 transition duration-200 bg-white/60 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold inline-block">
+                                       <i class="fas fa-edit mr-1"></i>
+                                       <span class="hidden md:inline">Modifier</span>
+                                    </a>
+                                    
+                                    <!-- Delete Button -->
                                     <button onclick="openDeleteModal('{{ $type }}', '{{ $material->id }}', '{{ $material->inventory_number }}')" 
                                             class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-white/60 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold">
                                         <i class="fas fa-trash-alt mr-1"></i>

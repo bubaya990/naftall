@@ -85,14 +85,17 @@
                         </select>
                     </div>
                     <div>
-                        <label for="ram_id" class="block text-gray-700 text-sm font-bold mb-2">RAM</label>
-                        <select id="ram_id" name="ram_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            <option value="">Sélectionner la RAM</option>
-                            @foreach ($rams as $ram)
-                                <option value="{{ $ram->id }}" {{ old('ram_id', $material->materialable->ram_id ?? '') == $ram->id ? 'selected' : '' }}>{{ $ram->capacity }} Go</option>
-                            @endforeach
-                        </select>
-                    </div>
+    <label for="ram_capacity" class="block text-gray-700 text-sm font-bold mb-2">RAM</label>
+    <select id="ram_capacity" name="ram_capacity" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+        <option value="">Sélectionner la RAM</option>
+        @foreach (['4GB', '8GB', '16GB', '32GB'] as $ramOption)
+            <option value="{{ $ramOption }}" {{ old('ram_capacity', $material->materialable->ram_capacity ?? '') == $ramOption ? 'selected' : '' }}>
+                {{ $ramOption }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
                 </div>
 
                 <div id="printer_fields" style="{{ old('type', $type ?? '') == 'printers' ? '' : 'display: none;' }}">

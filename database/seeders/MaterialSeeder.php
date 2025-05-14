@@ -30,20 +30,6 @@ class MaterialSeeder extends Seeder
         $states = ['bon', 'défectueux', 'hors_service'];
 
         // Create computer with material
-        $computer = Computer::create([
-            'computer_brand' => 'Dell',
-            'computer_model' => 'Optiplex 7070',
-            'os' => 'Windows10',
-            'ram_id' => 1
-        ]);
-        
-        $computer->material()->create([
-            'inventory_number' => 'INV-1001',
-            'serial_number' => 'SN-XYZ-001',
-            'state' => $states[array_rand($states)],
-            'room_id' => $room->id,
-            'corridor_id' => $corridor->id
-        ]);
 
         // Create printer with material
         $printer = Printer::create([

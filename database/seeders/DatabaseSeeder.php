@@ -27,9 +27,11 @@ class DatabaseSeeder extends Seeder
         LocationSeeder::class,
         CorridorSeeder::class, // Doit être avant Material
         RoomSeeder::class,
+      
         MaterialSeeder::class, // Doit être avant Printer/Computer
-        ComputerSeeder::class,
         RamSeeder::class,
+        ComputerSeeder::class,
+       
         PrinterSeeder::class,
         IpPhoneSeeder::class,
         HotspotSeeder::class,

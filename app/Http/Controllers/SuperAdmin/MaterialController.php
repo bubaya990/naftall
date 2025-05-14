@@ -327,4 +327,102 @@ private function incrementMaterialCount(&$counts, $materialableType)
         }
     }
 
+
+
+    public function edit($type, $id)
+    {
+        $modelClass = $this->getModelFromType($type);
+        if (!$modelClass) {
+            abort(404, "Type de matériel non trouvé");
+        }
+
+        $material = Material::with(['materialable', 'room.location.site', 'corridor.location.site'])
+            ->where('materialable_type', $modelClass)
+            ->findOrFail($id);
+
+        $sites = Site::all();
+        $states = ['bon', 'défectueux', 'hors_service'];
+        $rams = Ram::all();
+        
+        return view('superadmin.materials.edit', compact('material', 'type', 'sites', 'states', 'rams'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $type, $id)
+{
+    try {
+        $material = Material::with('materialable')->findOrFail($id);
+        
+        $rules = [
+            'state' => 'required|in:bon,défectueux,hors_service',
+        ];
+        
+        if ($type == 'computers') {
+            $rules['ram_capacity'] = 'required|in:4GB,8GB,16GB,32GB';
+            $rules['OS'] = 'required|in:Windows7,Windows8,Windows10,Linux';
+        }
+        
+        if ($type == 'hotspots') {
+            $rules['password'] = 'required';
+        }
+        
+        if ($request->has('site_id')) {
+            $rules = array_merge($rules, [
+                'site_id' => 'required|exists:sites,id',
+                'location_id' => 'required|exists:locations,id',
+                'location_type' => 'required|in:room,corridor',
+                'room_id' => 'required_if:location_type,room|nullable|exists:rooms,id',
+                'corridor_id' => 'required_if:location_type,corridor|nullable|exists:corridors,id',
+            ]);
+        }
+        
+        $validatedData = $request->validate($rules);
+        
+        DB::beginTransaction();
+        
+        // Update material
+        $material->update([
+            'state' => $validatedData['state'],
+            'room_id' => isset($validatedData['room_id']) ? $validatedData['room_id'] : $material->room_id,
+            'corridor_id' => isset($validatedData['corridor_id']) ? $validatedData['corridor_id'] : $material->corridor_id,
+        ]);
+        
+        // Update type-specific fields
+        switch ($type) {
+            case 'computers':
+                $material->materialable->update([
+                    'ram_capacity' => $validatedData['ram_capacity'],
+                    'OS' => $validatedData['OS']
+                ]);
+                break;
+            case 'hotspots':
+                $material->materialable->update([
+                    'password' => $validatedData['password']
+                ]);
+                break;
+        }
+        
+        DB::commit();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Modification enregistrée avec succès!'
+        ]);
+            
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la mise à jour: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }

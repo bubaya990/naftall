@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Site;
-
+use Illuminate\Support\Facades\Hash;
 use App\Models\Material;
 use App\Models\Message;
 use App\Models\Branche;
@@ -51,6 +51,7 @@ class SuperAdminController extends Controller
     /**
      * Store a newly created user in storage.
      */
+
     public function store(Request $request)
     {
         $request->validate([
@@ -59,6 +60,7 @@ class SuperAdminController extends Controller
             'role' => 'required|in:admin,utilisateur,superadmin,leader',
             'site_id' => 'required|exists:sites,id',
             'branche_id' => 'required|exists:branches,id', // Validate branche_id
+            'password' => 'required|string|min:8|confirmed',
         ]);
     
         // Create the user with the selected branche_id
@@ -67,7 +69,7 @@ class SuperAdminController extends Controller
             'email' => $request->email,
             'role' => $request->role,
             'site_id' => $request->site_id,
-            'password' => bcrypt('defaultpassword'),
+            'password' => Hash::make($request->password),
             'branche_id' => $request->branche_id,
         ]);
     
@@ -415,25 +417,15 @@ public function markAsSeen(Request $request)
 
 public function updateRole(Request $request, User $user)
 {
-    // Only validate the role field
     $request->validate([
-        'role' => 'required|in:superadmin,admin,leader,utilisateur',
+        'role' => 'required|in:superadmin,admin,leader,utilisateur'
     ]);
 
-    try {
-        $user->update(['role' => $request->input('role')]);
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Le rôle de l\'utilisateur a été mis à jour.'
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la mise à jour du rôle: ' . $e->getMessage()
-        ], 500);
-    }
-}
+    $user->update(['role' => $request->role]);
 
+    return response()->json([
+        'success' => true,
+        'message' => 'Role updated successfully'
+    ]);
+}
 }

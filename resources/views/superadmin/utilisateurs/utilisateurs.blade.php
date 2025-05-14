@@ -126,7 +126,7 @@
                                 </div>
                             </th>
                            
-                            <!-- Actions header (empty) -->
+                            <!-- Actions header -->
                             <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-white uppercase tracking-wider">
                                 @if(auth()->user()->role === 'superadmin')
                                     Actions
@@ -152,7 +152,7 @@
                    
                     <tbody class="divide-y divide-blue-800/30" id="usersTable">
                         @foreach($users as $index => $user)
-                        <tr class="hover:bg-blue-900/20 transition-all duration-300 ease-in-out transform hover:translate-x-1 animate-fadeIn" style="animation-delay: {{ $index * 50 }}ms">
+                        <tr class="hover:bg-blue-900/20 transition-all duration-300 ease-in-out transform hover:translate-x-1 animate-fadeIn" style="animation-delay: {{ $index * 50 }}ms" data-user-id="{{ $user->id }}">
                             <td class="px-4 py-3 text-gray-900">{{ $user->id }}</td>
                             <td class="px-4 py-3 text-gray-900">{{ $user->name }}</td>
                             <td class="px-4 py-3 text-gray-900">{{ $user->email }}</td>
@@ -166,7 +166,7 @@
                                     ];
                                     $roleClass = $roleColors[$user->role] ?? 'bg-gray-700 text-white';
                                 @endphp
-                                <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-md {{ $roleClass }}">
+                                <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-md {{ $roleClass }} role-badge">
                                     {{ ucfirst($user->role) }}
                                 </span>
                             </td>
@@ -206,36 +206,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-@if(auth()->user()->role === 'superadmin')
-<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
-        <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
-        <p class="text-gray-700 mb-2">Êtes-vous sûr de vouloir supprimer l'utilisateur :</p>
-        <p class="text-gray-900 font-semibold mb-1" id="user-to-delete-name"></p>
-        <p class="text-gray-700 mb-1" id="user-to-delete-email"></p>
-        <p class="text-red-500 text-sm mb-6">Attention: Cette action est irréversible.</p>
-       
-        <form id="deleteForm" method="POST">
-            @csrf
-            @method('DELETE')
-            <input type="hidden" name="user_id" id="delete-user-id">
-           
-            <div class="flex justify-end space-x-3">
-                <button type="button" onclick="closeDeleteModal()"
-                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    Annuler
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                    Confirmer la suppression
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-@endif
-
 <!-- Role Update Modal -->
 @if(auth()->user()->role === 'superadmin')
 <div id="roleModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
@@ -245,10 +215,9 @@
         <p class="text-gray-900 font-semibold mb-1" id="user-to-update-name"></p>
         <p class="text-gray-700 mb-1" id="user-to-update-email"></p>
         
-        <form id="roleForm" method="POST">
+        <div id="roleUpdateForm">
             @csrf
-            @method('PUT')
-            <input type="hidden" name="user_id" id="update-user-id">
+            <input type="hidden" id="update-user-id">
             
             <div class="space-y-4 mb-6">
                 <div class="flex items-center">
@@ -286,9 +255,39 @@
                         class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     Annuler
                 </button>
-                <button type="submit"
+                <button type="button" onclick="submitRoleUpdate()"
                         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     Mettre à jour
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+<!-- Delete Confirmation Modal -->
+@if(auth()->user()->role === 'superadmin')
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
+        <p class="text-gray-700 mb-2">Êtes-vous sûr de vouloir supprimer l'utilisateur :</p>
+        <p class="text-gray-900 font-semibold mb-1" id="user-to-delete-name"></p>
+        <p class="text-gray-700 mb-1" id="user-to-delete-email"></p>
+        <p class="text-red-500 text-sm mb-6">Attention: Cette action est irréversible.</p>
+       
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <input type="hidden" name="user_id" id="delete-user-id">
+           
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    Confirmer la suppression
                 </button>
             </div>
         </form>
@@ -296,148 +295,122 @@
 </div>
 @endif
 
-<style>
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.05); } 100% { transform: scale(1); } }
-@keyframes slideInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-.animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
-.animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
-.animate-bounceIn { animation: bounceIn 0.6s ease-out forwards; }
-.animate-slideInDown { animation: slideInDown 0.4s ease-out forwards; }
-
-/* Radio button styles */
-input[type="radio"] {
-    border-color: #6366f1;
-}
-input[type="radio"]:checked {
-    background-color: currentColor;
-    border-color: currentColor;
-}
-</style>
-
 <script>
-// Delete Modal Functions
-function openDeleteModal(userId, userName, userEmail) {
-    const modal = document.getElementById('deleteModal');
-    const userIdInput = document.getElementById('delete-user-id');
-    const userNameSpan = document.getElementById('user-to-delete-name');
-    const userEmailSpan = document.getElementById('user-to-delete-email');
-   
-    userIdInput.value = userId;
-    userNameSpan.textContent = userName;
-    userEmailSpan.textContent = userEmail;
-   
-    // Set the form action
-    document.getElementById('deleteForm').action = `/superadmin/utilisateurs/${userId}`;
-   
-    modal.classList.remove('hidden');
-}
-
-function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.add('hidden');
-}
-
-// Role Modal Functions
-function openRoleModal(userId, userName, userEmail, currentRole) {
-    const modal = document.getElementById('roleModal');
-    const userIdInput = document.getElementById('update-user-id');
-    const userNameSpan = document.getElementById('user-to-update-name');
-    const userEmailSpan = document.getElementById('user-to-update-email');
-   
-    userIdInput.value = userId;
-    userNameSpan.textContent = userName;
-    userEmailSpan.textContent = userEmail;
-   
-    // Set the form action to use the named route
-    document.getElementById('roleForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = this;
-    const formData = new FormData(form);
-    
-    // Convert FormData to JSON to avoid form-data validation issues
-    const jsonData = {};
-    formData.forEach((value, key) => {
-        jsonData[key] = value;
-    });
-    
-    fetch(form.action, {
-        method: 'POST', // Laravel will handle as PUT via method spoofing
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonData),
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => Promise.reject(err));
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            closeRoleModal();
-            window.location.reload();
-        } else {
-            alert('Error updating role: ' + (data.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error: ' + (error.message || 'Failed to update role'));
-    });
-});
-function closeRoleModal() {
-    document.getElementById('roleModal').classList.add('hidden');
-}
-
-// Handle role form submission
-document.getElementById('roleForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = this;
-    const formData = new FormData(form);
-    
-    fetch(form.action, {
-        method: 'POST', // Laravel will handle the PUT via method spoofing
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Close the modal
-            closeRoleModal();
-            // Reload the page to see changes
-            window.location.reload();
-        } else {
-            alert('Error updating role: ' + (data.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating the role');
-    });
-});
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Get all search inputs
+    // Role Modal Functions
+    window.openRoleModal = function(userId, userName, userEmail, currentRole) {
+        const modal = document.getElementById('roleModal');
+        if (!modal) {
+            console.error('Role modal element not found');
+            return;
+        }
+        
+        // Set user information
+        document.getElementById('update-user-id').value = userId;
+        document.getElementById('user-to-update-name').textContent = userName;
+        document.getElementById('user-to-update-email').textContent = userEmail;
+        
+        // Reset and set role selection
+        document.querySelectorAll('#roleModal input[name="role"]').forEach(radio => {
+            radio.checked = false;
+        });
+        
+        const currentRoleRadio = document.querySelector(`#roleModal input[name="role"][value="${currentRole}"]`);
+        if (currentRoleRadio) {
+            currentRoleRadio.checked = true;
+        } else {
+            console.warn(`No radio button found for role: ${currentRole}`);
+        }
+        
+        // Show modal
+        modal.classList.remove('hidden');
+    };
+
+    window.closeRoleModal = function() {
+        const modal = document.getElementById('roleModal');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    // Handle role update submission
+    window.submitRoleUpdate = function() {
+        const userId = document.getElementById('update-user-id').value;
+        const role = document.querySelector('#roleModal input[name="role"]:checked').value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        fetch(`/superadmin/utilisateurs/${userId}/role`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                role: role
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Update the UI
+                const roleBadge = document.querySelector(`tr[data-user-id="${userId}"] .role-badge`);
+                if (roleBadge) {
+                    // Update badge appearance
+                    const roleClasses = {
+                        'superadmin': 'bg-purple-700',
+                        'admin': 'bg-blue-700',
+                        'leader': 'bg-green-700',
+                        'utilisateur': 'bg-yellow-600'
+                    };
+                    // Remove all role classes
+                    roleBadge.classList.remove('bg-purple-700', 'bg-blue-700', 'bg-green-700', 'bg-yellow-600', 'bg-gray-700');
+                    // Add the new role class
+                    roleBadge.classList.add(roleClasses[role]);
+                    // Update text
+                    roleBadge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+                }
+                closeRoleModal();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to update role'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error: ' + (error.message || 'An error occurred'));
+        });
+    };
+
+    // Delete Modal Functions
+    window.openDeleteModal = function(userId, userName, userEmail) {
+        const modal = document.getElementById('deleteModal');
+        if (!modal) {
+            console.error('Delete modal element not found');
+            return;
+        }
+        
+        document.getElementById('delete-user-id').value = userId;
+        document.getElementById('user-to-delete-name').textContent = userName;
+        document.getElementById('user-to-delete-email').textContent = userEmail;
+        document.getElementById('deleteForm').action = `/superadmin/utilisateurs/${userId}`;
+        modal.classList.remove('hidden');
+    };
+
+    window.closeDeleteModal = function() {
+        const modal = document.getElementById('deleteModal');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    // Search functionality
     const searchInputs = document.querySelectorAll('input[id^="search-"], select[id^="search-"]');
     const rows = document.querySelectorAll('#usersTable tr');
 
-    // Function to filter rows based on all search criteria
     function filterRows() {
         const filters = {};
        
-        // Collect all filter values
         searchInputs.forEach(input => {
             const column = input.getAttribute('data-column');
             filters[column] = input.value.toLowerCase();
@@ -447,19 +420,15 @@ document.addEventListener('DOMContentLoaded', function() {
             let visible = true;
             const cells = row.cells;
 
-            // Check each filter
             for (const [column, value] of Object.entries(filters)) {
                 if (value === '') continue;
                
                 const cell = cells[column];
                 let cellText = cell.textContent.toLowerCase();
                
-                // Special handling for role and branche columns (span content)
                 if (column === '3' || column === '5') {
                     const span = cell.querySelector('span');
-                    if (span) {
-                        cellText = span.textContent.toLowerCase();
-                    }
+                    if (span) cellText = span.textContent.toLowerCase();
                 }
                
                 if (!cellText.includes(value)) {
@@ -468,7 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // Apply visibility
             if (visible) {
                 row.classList.remove('hidden');
                 row.style.opacity = 1;
@@ -481,7 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Add event listeners to all search inputs
     searchInputs.forEach(input => {
         input.addEventListener('input', filterRows);
     });
@@ -498,4 +465,51 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<style>
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes slideInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+.animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
+.animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
+.animate-bounceIn { animation: bounceIn 0.6s ease-out forwards; }
+.animate-slideInDown { animation: slideInDown 0.4s ease-out forwards; }
+
+/* Modal styles */
+.hidden { display: none !important; }
+#roleModal, #deleteModal { 
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+}
+
+/* Role badge colors */
+.bg-purple-700 { background-color: #6b46c1; }
+.bg-blue-700 { background-color: #2b6cb0; }
+.bg-green-700 { background-color: #2f855a; }
+.bg-yellow-600 { background-color: #d69e2e; }
+.bg-gray-700 { background-color: #4a5568; }
+.text-white { color: white; }
+
+/* Table responsive styles */
+@media (max-width: 768px) {
+    td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: inline-block;
+        width: 120px;
+    }
+}
+
+/* Radio button styles */
+input[type="radio"] {
+    border-color: #6366f1;
+}
+input[type="radio"]:checked {
+    background-color: currentColor;
+    border-color: currentColor;
+}
+</style>
+
 @endsection
