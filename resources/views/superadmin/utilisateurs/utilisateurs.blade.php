@@ -12,32 +12,32 @@
     <!-- Main content container -->
     <div class="relative z-10 min-h-screen p-4 md:p-6 pb-16">
         <!-- Users List Section -->
-        <div class="bg-white/70 backdrop-blur-xl shadow-2xl rounded-2xl p-4 md:p-8 w-full mx-auto mt-4 md:mt-8 transition-all duration-500 transform hover:scale-[1.005]">
-            <!-- Header with actions -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 animate-fadeIn">Liste des Utilisateurs</h1>
-                @if(auth()->user()->role === 'superadmin')
-                    <a href="{{ route('superadmin.utilisateurs.create') }}"
-                       class="btn btn-primary transform hover:scale-105 transition-transform duration-300 animate-bounceIn">
-                       <i class="fas fa-plus-circle mr-2"></i>Créer un compte
-                    </a>
-                @endif
-            </div>
+<div class="bg-gradient-to-br from-blue-50 to-blue-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-blue-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">            <!-- Header with actions -->
+       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800 animate-fadeIn">Liste des Utilisateurs</h1>
+    @if(auth()->user()->role === 'superadmin')
+        <a href="{{ route('superadmin.utilisateurs.create') }}" 
+           class="btn btn-primary transform hover:scale-105 transition-transform duration-300">
+           <i class="fas fa-plus-circle mr-2"></i>Créer un compte
+        </a>
+    @endif
+</div>
+
 
             <!-- Users Table -->
-            <div class="overflow-x-auto w-full backdrop-filter backdrop-blur-lg bg-blue-900/30 rounded-xl shadow-lg border border-blue-800/20 animate-fadeInUp">
+<div class="overflow-x-auto w-full bg-white rounded-xl shadow-lg border-2 border-blue-200 blur-lg animate-fadeInUp">
                 <table class="w-full border-collapse">
                     <!-- Search headers row -->
-                    <thead class="bg-blue-900/20 backdrop-blur-sm">
+                    <thead class="bg-blue-50">
                         <tr class="animate-fadeIn">
                             <!-- ID Search -->
-                            <th class="px-2 py-2">
+                            <th class="px-2 py-2 border-b-2 border-blue-200">
                                 <div class="relative w-24 mx-auto">
                                     <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                         <i class="fas fa-id-card text-blue-600 text-xs"></i>
                                     </div>
                                     <input type="text"
-                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-400 rounded-full bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
+                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-300 rounded-full bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
                                            placeholder="ID"
                                            id="search-id"
                                            data-column="0" />
@@ -45,13 +45,13 @@
                             </th>
                            
                             <!-- Name Search -->
-                            <th class="px-2 py-2">
+                            <th class="px-2 py-2 border-b-2 border-blue-200">
                                 <div class="relative mx-auto">
                                     <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                         <i class="fas fa-user text-blue-600 text-xs"></i>
                                     </div>
                                     <input type="text"
-                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-400 rounded-full bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
+                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-300 rounded-full bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
                                            placeholder="Nom"
                                            id="search-name"
                                            data-column="1" />
@@ -59,13 +59,13 @@
                             </th>
                            
                             <!-- Email Search -->
-                            <th class="px-2 py-2">
+                            <th class="px-2 py-2 border-b-2 border-blue-200">
                                 <div class="relative mx-auto">
                                     <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                         <i class="fas fa-envelope text-blue-600 text-xs"></i>
                                     </div>
                                     <input type="text"
-                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-400 rounded-full bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
+                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-300 rounded-full bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
                                            placeholder="Email"
                                            id="search-email"
                                            data-column="2" />
@@ -73,12 +73,12 @@
                             </th>
                            
                             <!-- Role Search -->
-                            <th class="px-2 py-2">
+                            <th class="px-2 py-2 border-b-2 border-blue-200">
                                 <div class="relative mx-auto">
                                     <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                         <i class="fas fa-user-tag text-blue-600 text-xs"></i>
                                     </div>
-                                    <select class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-400 rounded-full bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800 appearance-none"
+                                    <select class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-300 rounded-full bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 font-medium text-gray-800 appearance-none"
                                             id="search-role"
                                             data-column="3">
                                         <option value="">Rôle</option>
@@ -94,13 +94,13 @@
                             </th>
                            
                             <!-- Site Search -->
-                            <th class="px-2 py-2">
+                            <th class="px-2 py-2 border-b-2 border-blue-200">
                                 <div class="relative mx-auto">
                                     <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                         <i class="fas fa-building text-blue-600 text-xs"></i>
                                     </div>
                                     <input type="text"
-                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-400 rounded-full bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
+                                           class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-300 rounded-full bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 font-medium text-gray-800"
                                            placeholder="Site"
                                            id="search-site"
                                            data-column="4" />
@@ -108,12 +108,12 @@
                             </th>
                            
                             <!-- Branche Search -->
-                            <th class="px-2 py-2">
+                            <th class="px-2 py-2 border-b-2 border-blue-200">
                                 <div class="relative mx-auto">
                                     <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                         <i class="fas fa-code-branch text-blue-600 text-xs"></i>
                                     </div>
-                                    <select class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-400 rounded-full bg-white/90 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300 font-medium text-gray-800 appearance-none"
+                                    <select class="block w-full pl-8 pr-2 py-1 text-sm border-2 border-blue-300 rounded-full bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 font-medium text-gray-800 appearance-none"
                                             id="search-branche"
                                             data-column="5">
                                         <option value="">Branche</option>
@@ -127,7 +127,7 @@
                             </th>
                            
                             <!-- Actions header -->
-                            <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-white uppercase tracking-wider">
+                            <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">
                                 @if(auth()->user()->role === 'superadmin')
                                     Actions
                                 @endif
@@ -136,62 +136,62 @@
                     </thead>
                    
                     <!-- Column headers -->
-                    <thead class="bg-blue-900/70 backdrop-blur-sm">
+                    <thead class="bg-blue-100">
                         <tr class="animate-fadeIn">
-                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-white uppercase tracking-wider">ID</th>
-                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-white uppercase tracking-wider">Nom</th>
-                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-white uppercase tracking-wider">Email</th>
-                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-white uppercase tracking-wider">Rôle</th>
-                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-white uppercase tracking-wider">Site</th>
-                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-white uppercase tracking-wider">Branche</th>
+                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">ID</th>
+                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">Nom</th>
+                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">Email</th>
+                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">Rôle</th>
+                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">Site</th>
+                            <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">Branche</th>
                             @if(auth()->user()->role === 'superadmin')
-                                <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-white uppercase tracking-wider">Actions</th>
+                                <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b-2 border-blue-200">Actions</th>
                             @endif
                         </tr>
                     </thead>
                    
-                    <tbody class="divide-y divide-blue-800/30" id="usersTable">
+                    <tbody class="divide-y divide-blue-200" id="usersTable">
                         @foreach($users as $index => $user)
-                        <tr class="hover:bg-blue-900/20 transition-all duration-300 ease-in-out transform hover:translate-x-1 animate-fadeIn" style="animation-delay: {{ $index * 50 }}ms" data-user-id="{{ $user->id }}">
-                            <td class="px-4 py-3 text-gray-900">{{ $user->id }}</td>
-                            <td class="px-4 py-3 text-gray-900">{{ $user->name }}</td>
-                            <td class="px-4 py-3 text-gray-900">{{ $user->email }}</td>
-                            <td class="px-4 py-3">
+                        <tr class="hover:bg-blue-50 transition-all duration-300 ease-in-out transform hover:translate-x-1 animate-fadeIn" style="animation-delay: {{ $index * 50 }}ms" data-user-id="{{ $user->id }}">
+                            <td class="px-4 py-3 text-gray-800 border-b border-blue-100">{{ $user->id }}</td>
+                            <td class="px-4 py-3 text-gray-800 border-b border-blue-100">{{ $user->name }}</td>
+                            <td class="px-4 py-3 text-gray-800 border-b border-blue-100">{{ $user->email }}</td>
+                            <td class="px-4 py-3 border-b border-blue-100">
                                 @php
                                     $roleColors = [
-                                        'admin' => 'bg-blue-700 text-white',
-                                        'superadmin' => 'bg-purple-700 text-white',
-                                        'leader' => 'bg-green-700 text-white',
-                                        'utilisateur' => 'bg-yellow-600 text-white',
+                                        'admin' => 'bg-blue-600 text-white',
+                                        'superadmin' => 'bg-purple-600 text-white',
+                                        'leader' => 'bg-green-600 text-white',
+                                        'utilisateur' => 'bg-yellow-500 text-white',
                                     ];
-                                    $roleClass = $roleColors[$user->role] ?? 'bg-gray-700 text-white';
+                                    $roleClass = $roleColors[$user->role] ?? 'bg-gray-600 text-white';
                                 @endphp
-                                <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-md {{ $roleClass }} role-badge">
+                                <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-sm {{ $roleClass }} role-badge">
                                     {{ ucfirst($user->role) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-gray-900">{{ $user->site->name ?? 'N/A' }}</td>
-                            <td class="px-4 py-3 text-gray-900">
+                            <td class="px-4 py-3 text-gray-800 border-b border-blue-100">{{ $user->site->name ?? 'N/A' }}</td>
+                            <td class="px-4 py-3 text-gray-800 border-b border-blue-100">
                                 @php
                                     $brancheColors = [
-                                        'carburant' => 'bg-orange-600 text-white',
-                                        'commercial' => 'bg-indigo-600 text-white',
+                                        'carburant' => 'bg-orange-500 text-white',
+                                        'commercial' => 'bg-indigo-500 text-white',
                                     ];
-                                    $brancheClass = $brancheColors[$user->branche->name ?? ''] ?? 'bg-gray-600 text-white';
+                                    $brancheClass = $brancheColors[$user->branche->name ?? ''] ?? 'bg-gray-500 text-white';
                                 @endphp
-                                <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-md {{ $brancheClass }}">
+                                <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-sm {{ $brancheClass }}">
                                     {{ ucfirst($user->branche->name ?? 'N/A') }}
                                 </span>
                             </td>
                             @if(auth()->user()->role === 'superadmin')
-                                <td class="px-4 py-3 text-right space-x-2 md:space-x-3">
+                                <td class="px-4 py-3 text-right space-x-2 md:space-x-3 border-b border-blue-100">
                                     <button onclick="openRoleModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}', '{{ $user->role }}')"
-                                            class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200 bg-white/60 hover:bg-indigo-100 px-3 py-1.5 rounded-lg font-bold">
+                                            class="text-indigo-600 hover:text-indigo-800 transform hover:scale-110 transition duration-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
                                         <i class="fas fa-user-tag mr-1"></i>
                                         <span class="hidden md:inline">Rôle</span>
                                     </button>
                                     <button onclick="openDeleteModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')"
-                                            class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-white/60 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold">
+                                            class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold border border-red-200">
                                         <i class="fas fa-trash-alt mr-1"></i>
                                         <span class="hidden md:inline">Supprimer</span>
                                     </button>
@@ -209,7 +209,7 @@
 <!-- Role Update Modal -->
 @if(auth()->user()->role === 'superadmin')
 <div id="roleModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border-2 border-blue-200">
         <h3 class="text-xl font-bold text-blue-600 mb-4">Modifier le rôle</h3>
         <p class="text-gray-700 mb-2">Sélectionnez le nouveau rôle pour :</p>
         <p class="text-gray-900 font-semibold mb-1" id="user-to-update-name"></p>
@@ -268,7 +268,7 @@
 <!-- Delete Confirmation Modal -->
 @if(auth()->user()->role === 'superadmin')
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border-2 border-blue-200">
         <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
         <p class="text-gray-700 mb-2">Êtes-vous sûr de vouloir supprimer l'utilisateur :</p>
         <p class="text-gray-900 font-semibold mb-1" id="user-to-delete-name"></p>
@@ -361,13 +361,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (roleBadge) {
                     // Update badge appearance
                     const roleClasses = {
-                        'superadmin': 'bg-purple-700',
-                        'admin': 'bg-blue-700',
-                        'leader': 'bg-green-700',
-                        'utilisateur': 'bg-yellow-600'
+                        'superadmin': 'bg-purple-600',
+                        'admin': 'bg-blue-600',
+                        'leader': 'bg-green-600',
+                        'utilisateur': 'bg-yellow-500'
                     };
                     // Remove all role classes
-                    roleBadge.classList.remove('bg-purple-700', 'bg-blue-700', 'bg-green-700', 'bg-yellow-600', 'bg-gray-700');
+                    roleBadge.classList.remove('bg-purple-600', 'bg-blue-600', 'bg-green-600', 'bg-yellow-500', 'bg-gray-600');
                     // Add the new role class
                     roleBadge.classList.add(roleClasses[role]);
                     // Update text
@@ -484,12 +484,24 @@ document.addEventListener('DOMContentLoaded', function() {
     z-index: 9999;
 }
 
+/* Table styles */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th, td {
+    border-bottom: 1px solid #e2e8f0;
+}
+
 /* Role badge colors */
-.bg-purple-700 { background-color: #6b46c1; }
-.bg-blue-700 { background-color: #2b6cb0; }
-.bg-green-700 { background-color: #2f855a; }
-.bg-yellow-600 { background-color: #d69e2e; }
-.bg-gray-700 { background-color: #4a5568; }
+.bg-purple-600 { background-color: #9333ea; }
+.bg-blue-600 { background-color: #2563eb; }
+.bg-green-600 { background-color: #16a34a; }
+.bg-yellow-500 { background-color: #eab308; }
+.bg-gray-600 { background-color: #4b5563; }
+.bg-orange-500 { background-color: #f97316; }
+.bg-indigo-500 { background-color: #6366f1; }
 .text-white { color: white; }
 
 /* Table responsive styles */
@@ -499,6 +511,7 @@ document.addEventListener('DOMContentLoaded', function() {
         font-weight: bold;
         display: inline-block;
         width: 120px;
+        color: #4b5563;
     }
 }
 
@@ -509,6 +522,16 @@ input[type="radio"] {
 input[type="radio"]:checked {
     background-color: currentColor;
     border-color: currentColor;
+}
+
+/* Hover effects */
+tr:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Button transitions */
+button, a {
+    transition: all 0.2s ease-in-out;
 }
 </style>
 

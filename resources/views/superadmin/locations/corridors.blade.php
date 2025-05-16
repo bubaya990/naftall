@@ -9,17 +9,18 @@
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
     
     <!-- Main content container -->
-    <div class="relative z-10 min-h-screen p-6 pb-16">
-        <!-- Dashboard content with glassmorphism effect -->
-        <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-7xl mx-auto mt-8 transition-all duration-500 transform hover:scale-[1.01]">
+    <div class="relative z-10 min-h-screen p-4 md:p-6 pb-16">
+        <!-- Corridors content with gradient background -->
+        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-yellow-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
             <!-- Header with back button -->
-            <div class="mb-8 flex justify-between items-center">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div class="animate-slideInLeft">
-                    <h1 class="text-2xl md:text-3xl font-bold text-blue-900">Gestion des couloirs</h1>
+                    <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800">Gestion des Couloirs</h1>
                     <p class="text-gray-600 mt-2">{{ $location->site->name }} - {{ $location->name ?? 'Localité' }}</p>
                 </div>
-                <a href="{{ route('superadmin.locations.gestion-localite') }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                    <i class="fas fa-arrow-left mr-1"></i> Retour
+                <a href="{{ route('superadmin.locations.gestion-localite') }}" 
+                   class="text-yellow-700 hover:text-yellow-900 transition-colors duration-200 bg-yellow-100 hover:bg-yellow-200 px-4 py-2 rounded-lg font-medium border border-yellow-200">
+                    <i class="fas fa-arrow-left mr-2"></i> Retour
                 </a>
             </div>
 
@@ -27,7 +28,8 @@
             @auth
                 @if(auth()->user()->role === 'superadmin')
                     <div class="mb-8 animate-slideInRight">
-                        <a href="{{ route('superadmin.locations.addcorridor', $location->id) }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 inline-flex items-center">
+                        <a href="{{ route('superadmin.locations.addcorridor', $location->id) }}" 
+                           class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
                             <i class="fas fa-plus-circle mr-2"></i> Ajouter un couloir
                         </a>
                     </div>
@@ -48,33 +50,35 @@
             @endif
 
             <!-- Corridors list -->
-            <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl animate-fadeIn">
+            <div class="bg-white backdrop-blur-sm rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-200 animate-fadeIn">
                 @if($corridors->count())
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-green-50/50">
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full border-collapse bg-white">
+                            <thead class="bg-gradient-to-r from-yellow-50 to-yellow-100">
                                 <tr>
-                                    <th class="px-6 py-3 text-green-900 font-medium">ID</th>
-                                    <th class="px-6 py-3 text-green-900 font-medium">Nom</th>
-                                    <th class="px-6 py-3 text-green-900 font-medium">Actions</th>
+                                    <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b border-yellow-200">ID</th>
+                                    <th class="px-4 py-3 text-left text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b border-yellow-200">Nom</th>
+                                    <th class="px-4 py-3 text-right text-sm md:text-base font-bold text-gray-700 uppercase tracking-wider border-b border-yellow-200">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200/50">
+                            <tbody class="divide-y divide-gray-200">
                                 @foreach($corridors as $corridor)
-                                    <tr class="hover:bg-green-50/30 transition-colors duration-200">
-                                        <td class="px-6 py-4">#{{ $corridor->id }}</td>
-                                        <td class="px-6 py-4">{{ $corridor->name ?? 'Non spécifié' }}</td>
-                                        <td class="px-6 py-4 space-x-3">
+                                    <tr class="hover:bg-yellow-50/30 transition-colors duration-200">
+                                        <td class="px-4 py-3 text-gray-800 border-b border-gray-200">#{{ $corridor->id }}</td>
+                                        <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $corridor->name ?? 'Non spécifié' }}</td>
+                                        <td class="px-4 py-3 text-right space-x-2 md:space-x-3 border-b border-gray-200">
                                             <a href="{{ route('superadmin.locations.corridors.materials', ['location' => $location->id, 'corridor' => $corridor->id]) }}" 
-                                               class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                                                <i class="fas fa-eye mr-1"></i> Voir Matériel
+                                               class="text-blue-600 hover:text-blue-800 transform hover:scale-110 transition duration-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
+                                                <i class="fas fa-eye mr-1"></i>
+                                                <span class="hidden md:inline">Matériel</span>
                                             </a>
                                             
                                             @auth
                                                 @if(auth()->user()->role === 'superadmin')
-                                                    <button onclick="openDeleteModal('{{ $corridor->id }}', '{{ $corridor->name }}')" 
-                                                            class="text-red-600 hover:text-red-900 transition-colors duration-200">
-                                                        <i class="fas fa-trash mr-1"></i> Supprimer
+                                                    <button onclick="openDeleteModal('{{ $corridor->id }}', '{{ $corridor->name }}')"
+                                                            class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold border border-red-200">
+                                                        <i class="fas fa-trash-alt mr-1"></i>
+                                                        <span class="hidden md:inline">Supprimer</span>
                                                     </button>
                                                 @endif
                                             @endauth
@@ -97,9 +101,11 @@
 
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border-2 border-yellow-200">
         <h3 class="text-xl font-bold text-red-600 mb-4">Confirmer la suppression</h3>
-        <p class="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer le couloir: <span id="corridor-to-delete-name" class="font-semibold"></span>?</p>
+        <p class="text-gray-700 mb-2">Êtes-vous sûr de vouloir supprimer le couloir :</p>
+        <p class="text-gray-900 font-semibold mb-1" id="corridor-to-delete-name"></p>
+        <p class="text-red-500 text-sm mb-6">Attention: Cette action supprimera également tous les matériels associés.</p>
         
         <form id="deleteForm" method="POST">
             @csrf
@@ -108,12 +114,12 @@
             
             <div class="flex justify-end space-x-3">
                 <button type="button" onclick="closeDeleteModal()" 
-                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-500">
                     Annuler
                 </button>
                 <button type="submit"
                         class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                    Supprimer
+                    Confirmer la suppression
                 </button>
             </div>
         </form>
@@ -121,23 +127,94 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     // Delete Modal Functions
-    function openDeleteModal(corridorId, corridorName) {
+    window.openDeleteModal = function(corridorId, corridorName) {
         const modal = document.getElementById('deleteModal');
-        const corridorIdInput = document.getElementById('delete-corridor-id');
-        const corridorNameSpan = document.getElementById('corridor-to-delete-name');
+        if (!modal) {
+            console.error('Delete modal element not found');
+            return;
+        }
         
-        corridorIdInput.value = corridorId;
-        corridorNameSpan.textContent = corridorName;
-        
-        // Set the form action
+        document.getElementById('delete-corridor-id').value = corridorId;
+        document.getElementById('corridor-to-delete-name').textContent = corridorName;
         document.getElementById('deleteForm').action = `/superadmin/locations/{{ $location->id }}/corridors/${corridorId}`;
-        
         modal.classList.remove('hidden');
-    }
+    };
 
-    function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.add('hidden');
-    }
+    window.closeDeleteModal = function() {
+        const modal = document.getElementById('deleteModal');
+        if (modal) modal.classList.add('hidden');
+    };
+});
 </script>
+
+<style>
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+.animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
+.animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
+.animate-slideInLeft { animation: slideInLeft 0.6s ease-out forwards; }
+.animate-slideInRight { animation: slideInRight 0.6s ease-out forwards; }
+
+/* Modal styles */
+.hidden { display: none !important; }
+#deleteModal { 
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+}
+
+/* Table styles */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th, td {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Table responsive styles */
+@media (max-width: 768px) {
+    td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: inline-block;
+        width: 120px;
+        color: #4b5563;
+    }
+}
+
+/* Hover effects */
+tr:hover {
+    background-color: rgba(254, 249, 195, 0.3) !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Button transitions */
+button, a {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Yellow color accents */
+.from-yellow-50 { --tw-gradient-from: #fefce8; }
+.to-yellow-100 { --tw-gradient-to: #fef9c3; }
+.from-yellow-100 { --tw-gradient-from: #fef9c3; }
+.to-yellow-200 { --tw-gradient-to: #fef08a; }
+.bg-yellow-100 { background-color: #fef9c3; }
+.bg-yellow-200 { background-color: #fef08a; }
+.border-yellow-200 { border-color: #fef08a; }
+.text-yellow-700 { color: #a16207; }
+.bg-yellow-50 { background-color: #fefce8; }
+
+/* Action button colors */
+.bg-yellow-500 { background-color: #eab308; }
+.bg-yellow-600 { background-color: #ca8a04; }
+.hover\:from-yellow-600:hover { --tw-gradient-from: #ca8a04; }
+.hover\:to-yellow-700:hover { --tw-gradient-to: #a16207; }
+</style>
+
 @endsection

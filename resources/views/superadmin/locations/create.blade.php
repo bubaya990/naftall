@@ -8,7 +8,7 @@
     <!-- Foreground content -->
     <div class="relative z-10 min-h-screen p-6 pb-16">
         <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-3xl mx-auto mt-10 animate-fadeIn">
-            <h1 class="text-2xl md:text-3xl font-bold text-blue-900 mb-8 animate-slideInLeft">
+            <h1 class="text-2xl md:text-3xl font-bold text-yellow-900 mb-8 animate-slideInLeft">
                 <i class="fas fa-plus-circle text-yellow-500 mr-2"></i>
                 Nouvelle localité
             </h1>
@@ -18,9 +18,9 @@
 
                 <!-- Site Selection -->
                 <div>
-                    <label for="site_id" class="block text-blue-900 font-medium mb-2">Site</label>
+                    <label for="site_id" class="block text-yellow-900 font-medium mb-2">Site</label>
                     <select name="site_id" id="site_id"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-blue-200 bg-white/90 backdrop-blur-sm">
+                        class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-yellow-200 bg-white/90 backdrop-blur-sm">
                         <option value="">-- Sélectionner un site --</option>
                         @foreach($sites as $site)
                             <option value="{{ $site->id }}" {{ old('site_id') == $site->id ? 'selected' : '' }}>
@@ -32,18 +32,18 @@
 
                 <!-- Name input -->
                 <div class="mt-4">
-                    <label for="name" class="block text-blue-900 font-medium mb-2">Nom de la localité</label>
+                    <label for="name" class="block text-yellow-900 font-medium mb-2">Nom de la localité</label>
                     <input type="text" name="name" id="name"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-blue-200 bg-white/90 backdrop-blur-sm"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-yellow-200 bg-white/90 backdrop-blur-sm"
                         value="{{ old('name') }}"
                         placeholder="Entrez le nom de la localité">
                 </div>
 
                 <!-- Type Selection -->
                 <div class="mt-4">
-                    <label for="type" class="block text-blue-900 font-medium mb-2">Type de localité</label>
+                    <label for="type" class="block text-yellow-900 font-medium mb-2">Type de localité</label>
                     <select name="type" id="type"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-blue-200 bg-white/90 backdrop-blur-sm">
+                        class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring focus:ring-yellow-200 bg-white/90 backdrop-blur-sm">
                         <option value="">-- Choisir un type --</option>
                         @foreach(\App\Models\Location::getTypes() as $t)
                             <option value="{{ $t }}" {{ old('type', $location->type ?? '') === $t ? 'selected' : '' }}>
@@ -55,7 +55,7 @@
 
                 <!-- Floor Number Input (shown only for 'Étage' type) -->
                 <div id="floorDiv" class="{{ old('type') === 'Étage' ? '' : 'hidden' }} mt-4">
-                    <label for="floor_number" class="block text-blue-900 font-medium mb-2">
+                    <label for="floor_number" class="block text-yellow-900 font-medium mb-2">
                         Numéro d'étage
                     </label>
                     <input type="number" name="floor_number" id="floor_number"

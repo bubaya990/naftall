@@ -74,7 +74,7 @@
             <div class="mb-8">
                 <div class="animate-slideInLeft">
                     <h1 class="text-2xl md:text-3xl font-bold text-blue-900">Bienvenue, <span class="text-yellow-600">{{ Auth::user()?->name ?? 'Utilisateur' }}</span></h1>
-                    <p class="text-gray-600 mt-1">Tableau de bord Super Admin</p>
+                    <p class="text-gray-600 mt-1">Tableau de bord <span class="text-xs text-gray-600 uppercase tracking-wider">{{ Auth::user()->role }}</span></p>
                 </div>
             </div>
 
@@ -147,7 +147,6 @@
             <!-- COM & CBR Buttons Section -->
             <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 transition-all duration-300 hover:shadow-xl">
                 <div class="p-4 border-b border-gray-200/50 bg-white/50">
-                    <h2 class="font-semibold text-blue-900 text-center text-lg">Accès Rapide</h2>
                 </div>
                 <div class="p-6 flex flex-col md:flex-row justify-between items-center gap-6">
                     <!-- COM Button -->

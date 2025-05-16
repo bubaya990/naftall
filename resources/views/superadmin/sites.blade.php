@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="p-6">
+
+<!-- Blurred Background -->
+<div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
+
+<div class="p-6 relative z-10">
     <h1 class="text-2xl font-bold mb-6 text-blue-900">
         {{ $site->name }} – {{ ucfirst($branche->name) }}
     </h1>
@@ -28,24 +32,24 @@
 
     {{-- === SPECIAL CASE: AGENCE (CHILD OF COMMERCIAL IN SIEGE) === --}}
     @elseif(strtolower($branche->name) === 'agence' && strtolower($site->name) === 'siege')
-        <div class="grid grid-cols-1 gap-6">
-            <div class="bg-white/80 rounded-xl shadow-lg p-6 text-center hover:scale-105 transition-transform">
+        <div class="flex flex-col items-center gap-6">
+            <div class="bg-white/80 rounded-xl shadow-lg p-6 w-full max-w-3xl">
                 <img src="{{ asset('image/PLAN siege (RDC).jpg') }}"
                      alt="PLAN siege (RDC)"
-                     class="w-full h-auto rounded-lg mb-4">
-                <h2 class="text-lg font-bold text-blue-800">Plan – RDC (Agence)</h2>
+                     class="w-full h-auto rounded-lg">
+                <h2 class="text-lg font-bold text-blue-800 mt-4 text-center">Plan – RDC (Agence)</h2>
             </div>
         </div>
 
     {{-- === CARBURANT IN SIEGE (ALL THREE FLOORS) === --}}
     @elseif(strtolower($branche->name) === 'carburant' && strtolower($site->name) === 'siege')
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="flex flex-col items-center gap-6">
             @foreach(['etage 1', 'etage 2', 'etage 3'] as $etage)
-                <div class="bg-white/80 rounded-xl shadow-lg p-6 text-center hover:scale-105 transition-transform">
+                <div class="bg-white/80 rounded-xl shadow-lg p-6 w-full max-w-3xl">
                     <img src="{{ asset("image/PLAN siege ($etage).jpg") }}"
                          alt="PLAN siege {{ $etage }}"
-                         class="w-full h-auto rounded-lg mb-4">
-                    <h2 class="text-lg font-bold text-blue-800">Plan – {{ ucfirst($etage) }}</h2>
+                         class="w-full h-auto rounded-lg">
+                    <h2 class="text-lg font-bold text-blue-800 mt-4 text-center">Plan – {{ ucfirst($etage) }}</h2>
                 </div>
             @endforeach
         </div>
@@ -63,4 +67,5 @@
         </div>
     @endif
 </div>
+
 @endsection

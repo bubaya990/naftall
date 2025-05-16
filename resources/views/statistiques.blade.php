@@ -5,245 +5,144 @@
     <!-- Blurred background -->
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
 
-    <div class="relative z-10 min-h-screen p-6 pb-16">
-        <!-- Header with blurred background -->
-        <div class="relative rounded-2xl overflow-hidden mb-6 h-32 flex items-center justify-center">
-            <!-- Blurred header background -->
-            <div class="absolute inset-0 bg-cover bg-center filter blur-md" style="background-image: url('/image/background.jpg');"></div>
-            <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/30"></div>
-            <!-- Header content -->
-            <h1 class="relative z-10 text-3xl md:text-4xl font-bold text-white text-center px-4">
-                Tableau de Statistiques – <span class="text-yellow-400">Naftal</span>
-            </h1>
-        </div>
+    <div class="relative z-10 min-h-screen p-4 pb-12">
+        <!-- Main content container with nude weight background -->
+        <div class="bg-amber-50/80 backdrop-blur-lg shadow-2xl rounded-2xl p-6 max-w-4xl mx-auto mt-6 transition-all duration-500 transform hover:scale-[1.01] border border-amber-100">
+            <!-- Header -->
+            <div class="mb-6 text-center animate-slideInLeft">
+                <h1 class="text-xl md:text-2xl font-bold text-blue-900">Tableau de Statistiques</h1>
+                <p class="text-amber-700 mt-1">Vue d'ensemble du système Naftal</p>
+            </div>
 
-        <!-- Main content container -->
-        <div class="max-w-7xl mx-auto space-y-6">
-            <!-- Aperçu Général Section -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-4 border-b border-gray-200 bg-gray-50">
-                    <h2 class="font-semibold text-gray-800">Aperçu Général</h2>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Users Card -->
+                <div class="bg-gradient-to-br from-pink-50 to-pink-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-pink-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-blue-900 mb-1">Utilisateurs</h2>
+                            <p class="text-2xl font-bold text-blue-900 animate-count" data-target="{{ $userCount }}">0</p>
+                        </div>
+                        <div class="p-2 rounded-full bg-pink-100/80 text-pink-600 transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-users text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-pink-200/50">
+                            <span>Admins</span>
+                            <span class="font-medium">{{ $adminCount }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-pink-200/50">
+                            <span>Leaders</span>
+                            <span class="font-medium">{{ $leaderCount }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1">
+                            <span>Utilisateurs</span>
+                            <span class="font-medium">{{ $utilisateurCount }}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Users Card with pink shadow -->
-                        <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all duration-300 transform hover:scale-105 shadow-[0_10px_20px_-5px_rgba(255,99,132,0.3)] hover:shadow-[0_15px_25px_-5px_rgba(255,99,132,0.4)]">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Utilisateurs</p>
-                                    <h3 class="text-2xl font-bold text-gray-800">{{ $userCount }}</h3>
-                                </div>
-                                <div class="bg-pink-100 text-pink-600 p-3 rounded-full">
-                                    <i class="fas fa-users text-xl"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-gray-500">
-                                <div class="flex justify-between">
-                                    <span>Admins</span>
-                                    <span class="font-medium">{{ $adminCount }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Leaders</span>
-                                    <span class="font-medium">{{ $leaderCount }}</span>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Materials Card with blue shadow -->
-                        <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all duration-300 transform hover:scale-105 shadow-[0_10px_20px_-5px_rgba(54,162,235,0.3)] hover:shadow-[0_15px_25px_-5px_rgba(54,162,235,0.4)]">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Matériels</p>
-                                    <h3 class="text-2xl font-bold text-gray-800">{{ $materialCount }}</h3>
-                                </div>
-                                <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
-                                    <i class="fas fa-boxes text-xl"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-gray-500">
-                                <div class="flex justify-between">
-                                    <span>Ordinateurs</span>
-                                    <span class="font-medium">{{ $computerCount }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Imprimantes</span>
-                                    <span class="font-medium">{{ $printerCount }}</span>
-                                </div>
-                            </div>
+                <!-- Materials Card -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-blue-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-blue-900 mb-1">Matériels</h2>
+                            <p class="text-2xl font-bold text-blue-900 animate-count" data-target="{{ $materialCount }}">0</p>
                         </div>
-
-                        <!-- Reclamations Card with teal shadow -->
-                        <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all duration-300 transform hover:scale-105 shadow-[0_10px_20px_-5px_rgba(75,192,192,0.3)] hover:shadow-[0_15px_25px_-5px_rgba(75,192,192,0.4)]">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Réclamations</p>
-                                    <h3 class="text-2xl font-bold text-gray-800">{{ $reclamationCount }}</h3>
-                                </div>
-                                <div class="bg-teal-100 text-teal-600 p-3 rounded-full">
-                                    <i class="fas fa-exclamation-circle text-xl"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-gray-500">
-                                <div class="flex justify-between">
-                                    <span>Nouvelles</span>
-                                    <span class="font-medium">{{ $newReclamationCount }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Résolues</span>
-                                    <span class="font-medium">{{ $resolvedReclamationCount }}</span>
-                                </div>
-                            </div>
+                        <div class="p-2 rounded-full bg-blue-100/80 text-blue-600 transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-boxes text-lg"></i>
                         </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-blue-200/50">
+                            <span>Ordinateurs</span>
+                            <span class="font-medium">{{ $computerCount }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-blue-200/50">
+                            <span>Imprimantes</span>
+                            <span class="font-medium">{{ $printerCount }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1">
+                            <span>Fonctionnels</span>
+                            <span class="font-medium">{{ $materialFonctionnel }}</span>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Sites Card with yellow shadow -->
-                        <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all duration-300 transform hover:scale-105 shadow-[0_10px_20px_-5px_rgba(255,206,86,0.3)] hover:shadow-[0_15px_25px_-5px_rgba(255,206,86,0.4)]">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-500">Sites</p>
-                                    <h3 class="text-2xl font-bold text-gray-800">{{ $siteCount }}</h3>
-                                </div>
-                                <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full">
-                                    <i class="fas fa-map-marker-alt text-xl"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 text-sm text-gray-500">
-                                <div class="flex justify-between">
-                                    <span>Branches</span>
-                                    <span class="font-medium">{{ $brancheCount }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Locations</span>
-                                    <span class="font-medium">{{ $locationCount }}</span>
-                                </div>
-                            </div>
+                <!-- Reclamations Card - Green version -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-green-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-blue-900 mb-1">Réclamations</h2>
+                            <p class="text-2xl font-bold text-blue-900 animate-count" data-target="{{ $reclamationCount }}">0</p>
+                        </div>
+                        <div class="p-2 rounded-full bg-green-100/80 text-green-600 transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-exclamation-circle text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-green-200/50">
+                            <span>Nouvelles</span>
+                            <span class="font-medium">{{ $newReclamationCount }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-green-200/50">
+                            <span>En cours</span>
+                            <span class="font-medium">{{ $reclamationStatusCounts['in_progress'] ?? 0 }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1">
+                            <span>Résolues</span>
+                            <span class="font-medium">{{ $resolvedReclamationCount }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sites Card -->
+                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-yellow-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-blue-900 mb-1">Sites</h2>
+                            <p class="text-2xl font-bold text-blue-900 animate-count" data-target="{{ $siteCount }}">0</p>
+                        </div>
+                        <div class="p-2 rounded-full bg-yellow-100/80 text-yellow-600 transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-map-marker-alt text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-yellow-200/50">
+                            <span>Branches</span>
+                            <span class="font-medium">{{ $brancheCount }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1 border-b border-yellow-200/50">
+                            <span>Locations</span>
+                            <span class="font-medium">{{ $locationCount }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-blue-900 py-1">
+                            <span>Réclamations</span>
+                            <span class="font-medium">{{ $sitesWithReclamations->sum('reclamations_count') }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Visualisation des Données Section -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-4 border-b border-gray-200 bg-gray-50">
-                    <h2 class="font-semibold text-gray-800">Visualisation des Données</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <!-- Reclamations Chart -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-[0_10px_25px_-5px_rgba(255,99,132,0.1)]">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Statut des Réclamations</h3>
-                            <div class="flex justify-center">
-                                <div style="width: 250px; height: 250px;">
-                                    <canvas id="reclamationStatusChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Materials Chart -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-[0_10px_25px_-5px_rgba(54,162,235,0.1)]">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Types de Matériels</h3>
-                            <div class="flex justify-center">
-                                <div style="width: 250px; height: 250px;">
-                                    <canvas id="materialTypeChart"></canvas>
-                                </div>
-                            </div>
+            <!-- Charts Section -->
+            <div class="mt-6 grid grid-cols-1 gap-4">
+                <!-- Reclamations Chart - Green version -->
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-amber-200">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-3">Statut des Réclamations</h3>
+                    <div class="flex justify-center">
+                        <div style="width: 250px; height: 250px;">
+                            <canvas id="reclamationStatusChart"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Détails Statistiques Section -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-4 border-b border-gray-200 bg-gray-50">
-                    <h2 class="font-semibold text-gray-800">Détails Statistiques</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Users by Role -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-[0_10px_25px_-5px_rgba(255,99,132,0.1)]">
-                            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-                                <i class="fas fa-user-tag mr-2 text-yellow-600"></i> Utilisateurs par Rôle
-                            </h4>
-                            <ul class="space-y-3">
-                                <li class="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-pink-500 mr-2"></span>
-                                        Super Admin
-                                    </span>
-                                    <span class="font-medium bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-sm">{{ $superadminCount }}</span>
-                                </li>
-                                <li class="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-                                        Admins
-                                    </span>
-                                    <span class="font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">{{ $adminCount }}</span>
-                                </li>
-                                <li class="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-teal-500 mr-2"></span>
-                                        Leaders
-                                    </span>
-                                    <span class="font-medium bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-sm">{{ $leaderCount }}</span>
-                                </li>
-                                <li class="flex justify-between items-center py-2">
-                                    <span class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                                        Utilisateurs
-                                    </span>
-                                    <span class="font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm">{{ $utilisateurCount }}</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Materials by State -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-[0_10px_25px_-5px_rgba(75,192,192,0.1)]">
-                            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-                                <i class="fas fa-cogs mr-2 text-yellow-600"></i> État des Matériels
-                            </h4>
-                            <ul class="space-y-3">
-                                <li class="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                                        Fonctionnel
-                                    </span>
-                                    <span class="font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">{{ $materialFonctionnel }}</span>
-                                </li>
-                                <li class="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-                                        En panne
-                                    </span>
-                                    <span class="font-medium bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">{{ $materialPanne }}</span>
-                                </li>
-                                <li class="flex justify-between items-center py-2">
-                                    <span class="flex items-center">
-                                        <span class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                                        En maintenance
-                                    </span>
-                                    <span class="font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm">{{ $materialMaintenance }}</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Reclamations by Site -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-[0_10px_25px_-5px_rgba(255,206,86,0.1)]">
-                            <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-                                <i class="fas fa-map-marked-alt mr-2 text-yellow-600"></i> Réclamations par Site
-                            </h4>
-                            <div class="max-h-64 overflow-y-auto pr-2">
-                                <ul class="space-y-3">
-                                    @foreach($sitesWithReclamations as $site)
-                                    <li class="flex justify-between items-center py-2 border-b border-gray-100">
-                                        <span class="flex items-center truncate">
-                                            <span class="w-3 h-3 rounded-full bg-indigo-500 mr-2"></span>
-                                            <span class="truncate">{{ $site->name }}</span>
-                                        </span>
-                                        <span class="font-medium bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-sm">{{ $site->reclamations_count }}</span>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </div>
+                <!-- Materials Chart -->
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-amber-200">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-3">Types de Matériels</h3>
+                    <div class="flex justify-center">
+                        <div style="width: 250px; height: 250px;">
+                            <canvas id="materialTypeChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -256,7 +155,36 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Reclamation Status Chart with empty state handling
+        // Animate counting numbers
+        const counters = document.querySelectorAll('.animate-count');
+        const speed = 200;
+        
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const increment = target / speed;
+            
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(updateCount, 1);
+            } else {
+                counter.innerText = target;
+            }
+            
+            function updateCount() {
+                const count = +counter.innerText;
+                const increment = target / speed;
+                
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 1);
+                } else {
+                    counter.innerText = target;
+                }
+            }
+        });
+
+        // Reclamation Status Chart - Green version
         const reclamationCtx = document.getElementById('reclamationStatusChart').getContext('2d');
         const reclamationData = {
             new: {{ $reclamationStatusCounts['new'] ?? 0 }},
@@ -276,50 +204,50 @@
                         [reclamationData.new, reclamationData.in_progress, reclamationData.resolved, reclamationData.closed] : 
                         [1],
                     backgroundColor: hasReclamationData ? 
-                        ['#FF6384', '#36A2EB', '#4BC0C0', '#FFCE56'] : 
+                        ['#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B'] : // Green color palette
                         ['#e5e7eb'],
-                    hoverBackgroundColor: hasReclamationData ? 
-                        ['#FF6384', '#36A2EB', '#4BC0C0', '#FFCE56'] : 
-                        ['#e5e7eb'],
-                    borderWidth: 1,
-                    borderColor: '#fff'
+                    borderWidth: 3, // Thicker border
+                    borderColor: '#fff',
+                    weight: 2 // Heavier weight for segments
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '70%',
+                cutout: '65%', // Slightly smaller hole for more visible segments
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
                             padding: 20,
-                            color: '#374151'
+                            color: '#374151',
+                            font: {
+                                weight: 'bold' // Bold legend text
+                            }
                         }
-                    },
-                    tooltip: {
-                        enabled: hasReclamationData,
-                        backgroundColor: '#1f2937',
-                        titleColor: '#f9fafb',
-                        bodyColor: '#f9fafb',
-                        borderColor: '#4b5563',
-                        borderWidth: 1
                     }
                 },
                 animation: {
                     animateScale: true,
                     animateRotate: true
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                        weight: 2 // Heavier weight for segments
+                    }
                 }
             }
         });
 
-        // Material Type Chart with empty state handling
+        // Material Type Chart with heavier segments
         const materialCtx = document.getElementById('materialTypeChart').getContext('2d');
         const materialData = {
             computers: {{ $computerCount }},
             printers: {{ $printerCount }},
-            ipPhones: {{ $ipPhoneCount }},
-            hotspots: {{ $hotspotCount }}
+            ipPhones: {{ $ipPhoneCount ?? 0 }},
+            hotspots: {{ $hotspotCount ?? 0 }}
         };
         
         const hasMaterialData = Object.values(materialData).some(val => val > 0);
@@ -335,37 +263,37 @@
                     backgroundColor: hasMaterialData ? 
                         ['#FF6384', '#36A2EB', '#4BC0C0', '#FFCE56'] : 
                         ['#e5e7eb'],
-                    hoverBackgroundColor: hasMaterialData ? 
-                        ['#FF6384', '#36A2EB', '#4BC0C0', '#FFCE56'] : 
-                        ['#e5e7eb'],
-                    borderWidth: 1,
-                    borderColor: '#fff'
+                    borderWidth: 3, // Thicker border
+                    borderColor: '#fff',
+                    weight: 2 // Heavier weight for segments
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '70%',
+                cutout: '65%', // Slightly smaller hole for more visible segments
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
                             padding: 20,
-                            color: '#374151'
+                            color: '#374151',
+                            font: {
+                                weight: 'bold' // Bold legend text
+                            }
                         }
-                    },
-                    tooltip: {
-                        enabled: hasMaterialData,
-                        backgroundColor: '#1f2937',
-                        titleColor: '#f9fafb',
-                        bodyColor: '#f9fafb',
-                        borderColor: '#4b5563',
-                        borderWidth: 1
                     }
                 },
                 animation: {
                     animateScale: true,
                     animateRotate: true
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                        weight: 2 // Heavier weight for segments
+                    }
                 }
             }
         });
