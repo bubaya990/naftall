@@ -24,7 +24,7 @@ class LocationSeeder extends Seeder
     ]);
 
     Location::create([
-        'name'=>'Rez-de-chausse sige',
+        'name'=>'Rez-de-chausse siege',
         'type' => 'Rez-de-chaussee',
         'floor_id' => 2,
         'site_id' => 1,

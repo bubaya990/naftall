@@ -7,7 +7,7 @@
 <div class="relative min-h-screen">
     <!-- Background with stronger blur at edges -->
     <div class="fixed inset-0 overflow-hidden">
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/image/background.jpg'); filter: blur(12px); transform: scale(1.05);"></div>
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/image/background.webp'); filter: blur(12px); transform: scale(1.05);"></div>
         <div class="absolute inset-0 bg-black bg-opacity-10 backdrop-blur-sm"></div>
     </div>
 

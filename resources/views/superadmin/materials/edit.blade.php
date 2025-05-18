@@ -5,7 +5,7 @@
 
 <div class="relative min-h-screen">
     <!-- Enhanced Background with Layered Blur -->
-    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(12px) brightness(0.9); transform: scale(1.05);"></div>
+    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(12px) brightness(0.9); transform: scale(1.05);"></div>
     <div class="fixed inset-0 bg-gradient-to-br from-green-900/20 to-green-800/30 z-0"></div>
 
     <!-- Main Container -->

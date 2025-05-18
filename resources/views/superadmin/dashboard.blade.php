@@ -18,7 +18,7 @@
 
 <div class="relative">
     <!-- Background with blur effect -->
-    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
+    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
     
     <!-- Notification bell + dropdown wrapper -->
     <div class="fixed top-4 right-10 z-20 animate-slideInRight">

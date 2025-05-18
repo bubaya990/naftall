@@ -22,7 +22,7 @@
 <body class="font-sans text-gray-900 antialiased">
 <div class="relative">
     <!-- Background with blur effect -->
-    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
+    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
 
     <!-- Main content container -->
     <div class="relative z-10 min-h-screen flex flex-col items-center justify-center p-4">

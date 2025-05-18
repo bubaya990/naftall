@@ -6,7 +6,7 @@
 
 <div class="relative">
     <!-- Background with blur effect -->
-    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
+    <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
 
     <!-- Main content container -->
     <div class="relative z-10 min-h-screen p-4 md:p-6 pb-16 flex items-center justify-center">

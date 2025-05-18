@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\InformationController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -22,7 +21,6 @@ use App\Http\Controllers\SuperAdmin\SuperAdminDashboardController;
 use App\Http\Controllers\StatistiqueController;
 use App\Models\ActivityLog;
 use App\Http\Controllers\SiteController;
-
 
 use App\Models\Floor;
 
@@ -45,19 +43,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
- 
-        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
    
         
     // Common
-    Route::get('/informations', [InformationController::class, 'informations'])->name('informations');
-    Route::get('/parametres', [CommonController::class, 'parametres'])->name('parametre');
     Route::get('/statistiques', [CommonController::class, 'statistiques'])->name('statistiques');
 
     // Dashboards
     Route::get('/superadmin/dashboard', [SuperAdminController::class, 'dashboard'])->name('superadmin.dashboard');
 
 });
+
+
  // SuperAdmin Management
 Route::prefix('superadmin')->name('superadmin.')->group(function () {
     // User Management
@@ -142,32 +139,25 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     ->where('type', 'computers|printers|ip-phones|hotspots')
     ->name('addMaterial');
     });
+
+
+
 Route::prefix('superadmin/materials')->group(function () {
     // Main dashboard
-    Route::get('/', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'index'])
-        ->name('superadmin.materials.index');
-    
-      
-       // Site-specific materials
-    Route::get('/sites/{site}/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'siteMaterials'])
-        ->name('superadmin.materials.site');
+    Route::get('/', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'index'])->name('superadmin.materials.index');
+
+    // Site-specific materials
+    Route::get('/sites/{site}/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'siteMaterials'])->name('superadmin.materials.site');
 
     
     // CRUD operations
-    Route::get('/{type}/create', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'create'])
-        ->name('superadmin.materials.create');
-    Route::post('/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'store'])
-        ->name('superadmin.materials.store');
-        Route::post('/locations/{location}/material/{entityType}/{entity}/store/{type}', [MaterialController::class, 'store'])
-        ->name('locations.material.store');
-        Route::post('/locations/{location}/material/{entityType}/{entity}/store/{type}', [MaterialController::class, 'store'])
-        ->name('locations.material.store');
-    Route::get('/{type}/{material}/edit', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'edit'])
-        ->name('superadmin.materials.edit');
-    Route::put('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'update'])
-        ->name('superadmin.materials.update');
-    Route::delete('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'destroy'])
-        ->name('superadmin.materials.destroy');
+    Route::get('/{type}/create', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'create'])->name('superadmin.materials.create');
+    Route::post('/{type}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'store'])->name('superadmin.materials.store');
+    Route::post('/locations/{location}/material/{entityType}/{entity}/store/{type}', [MaterialController::class, 'store'])->name('locations.material.store');
+    Route::post('/locations/{location}/material/{entityType}/{entity}/store/{type}', [MaterialController::class, 'store'])->name('locations.material.store');
+    Route::get('/{type}/{material}/edit', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'edit'])->name('superadmin.materials.edit');
+    Route::put('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'update'])->name('superadmin.materials.update');
+    Route::delete('/{type}/{material}', [\App\Http\Controllers\SuperAdmin\MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
         
 });
 
@@ -175,16 +165,13 @@ Route::get('/superadmin/cbr', [SuperAdminController::class, 'cbr'])->name('super
 Route::get('/superadmin/com', [SuperAdminController::class, 'com'])->name('superadmin.com');
 Route::get('/superadmin/com', [SuperAdminController::class, 'showCom'])->name('superadmin.com');
 Route::get('/superadmin/cbr', [SuperAdminController::class, 'showCbr'])->name('superadmin.cbr');
-Route::post('/superadmin/reclamations/add-reclamation', [SuperAdminController::class, 'storeReclamation'])
-    ->name('superadmin.add-reclamation');
-    Route::delete('/superadmin/reclamations/{id}', [SuperAdminController::class, 'destroy'])->name('superadmin.reclamations.destroy');
-    Route::get('/superadmin/reclamations', [SuperAdminController::class, 'showReclamations'])->name('superadmin.reclamations');
-    Route::delete('/superadmin/reclamations/{id}', [SuperAdminController::class, 'destroyReclamation'])->name('superadmin.reclamations.destroy');
+Route::post('/superadmin/reclamations/add-reclamation', [SuperAdminController::class, 'storeReclamation'])->name('superadmin.add-reclamation');
+Route::delete('/superadmin/reclamations/{id}', [SuperAdminController::class, 'destroy'])->name('superadmin.reclamations.destroy');
+Route::get('/superadmin/reclamations', [SuperAdminController::class, 'showReclamations'])->name('superadmin.reclamations');
+Route::delete('/superadmin/reclamations/{id}', [SuperAdminController::class, 'destroyReclamation'])->name('superadmin.reclamations.destroy');
 
-;
-// Display the printer creation form
-// IP Phone routes
-// routes/web.php
+
+
 
 
 Route::prefix('superadmin/materials')->group(function () {
@@ -194,22 +181,22 @@ Route::prefix('superadmin/materials')->group(function () {
     // Material type routes
     Route::prefix('{type}')->group(function () {
         // List materials by type
-        Route::get('/', [MaterialController::class, 'list'])->name('superadmin.materials.list');
+    Route::get('/', [MaterialController::class, 'list'])->name('superadmin.materials.list');
         
         // Add material form
-        Route::get('/add', [MaterialController::class, 'create'])->name('superadmin.materials.create');
+    Route::get('/add', [MaterialController::class, 'create'])->name('superadmin.materials.create');
         
         // Store new material
-        Route::post('/store', [MaterialController::class, 'store'])->name('superadmin.materials.store');
+    Route::post('/store', [MaterialController::class, 'store'])->name('superadmin.materials.store');
         
         // Edit material form
-        Route::get('/{id}/edit', [MaterialController::class, 'edit'])->name('superadmin.materials.edit');
+    Route::get('/{id}/edit', [MaterialController::class, 'edit'])->name('superadmin.materials.edit');
         
         // Update material
-        Route::put('/{id}/update', [MaterialController::class, 'update'])->name('superadmin.materials.update');
+    Route::put('/{id}/update', [MaterialController::class, 'update'])->name('superadmin.materials.update');
         
         // Delete material
-        Route::delete('/{id}/delete', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
+    Route::delete('/{id}/delete', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
     });
     Route::get('superadmin/materials/{type}/add', [MaterialController::class, 'create'])->name('superadmin.materials.create');
     Route::get('superadmin/materials/{type}/{id}/delete', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
@@ -396,4 +383,8 @@ Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])
     ->name('superadmin.materials.update');
     Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])
     ->name('superadmin.materials.update');
+
+
+
+
 require __DIR__.'/auth.php';

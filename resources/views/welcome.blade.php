@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="relative w-full h-screen flex flex-col items-center justify-center bg-cover bg-center overflow-hidden" 
-      style="background-image: url('{{ asset('image/R.jpg') }}');">
+      style="background-image: url('{{ asset('/image/background.webp') }}');">
     
     <!-- Overlay (Blur Effect) -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-md"></div>

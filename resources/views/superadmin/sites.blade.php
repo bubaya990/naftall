@@ -3,7 +3,7 @@
 @section('content')
 
 <!-- Blurred Background -->
-<div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.jpg'); filter: blur(6px);"></div>
+<div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
 
 <div class="p-6 relative z-10">
     <h1 class="text-2xl font-bold mb-6 text-blue-900">
