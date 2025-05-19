@@ -84,24 +84,18 @@
                                 <span class="text-2xl font-bold text-blue-900">{{ $site->users_count ?? 0 }}</span>
                             </div>
                         </div>
-                        <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-blue-900">
+                        <div class="mt-2 flex flex-col gap-1 text-xs text-blue-900">
                             <div class="bg-blue-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Admin</p>
-                                <p>{{ $site->admins_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Admin: {{ $site->admins_count ?? 0 }}</p>
                             </div>
                             <div class="bg-blue-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Super</p>
-                                <p class="font-semibold">Admin</p>
-                                <p>{{ $site->superadmins_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Super Admin: {{ $site->superadmins_count ?? 0 }}</p>
                             </div>
                             <div class="bg-blue-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Leader</p>
-                                <p>{{ $site->leaders_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Leader: {{ $site->leaders_count ?? 0 }}</p>
                             </div>
                             <div class="bg-blue-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Utilis</p>
-                                <p class="font-semibold">ateur</p>
-                                <p>{{ $site->utilisateurs_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Utilisateur: {{ $site->utilisateurs_count ?? 0 }}</p>
                             </div>
                         </div>
                     </div>
@@ -109,8 +103,7 @@
                     <!-- Materials by Type Circle -->
                     <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow p-4 border-l-4 border-green-500">
                         <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-md font-semibold text-blue-900">Matériels</h3>
-                            <h3 class="text-md font-semibold text-blue-900">par Type</h3>
+                            <h3 class="text-md font-semibold text-blue-900">Matériels par Type</h3>
                             <div class="p-2 rounded-full bg-green-100 text-green-600">
                                 <i class="fas fa-laptop"></i>
                             </div>
@@ -121,23 +114,18 @@
                                 <span class="text-2xl font-bold text-blue-900">{{ $site->computers_count + $site->printers_count + $site->ip_phones_count + $site->hotspots_count ?? 0 }}</span>
                             </div>
                         </div>
-                        <div class="mt-2 grid grid-cols-2 gap-2 text-xs text-blue-900">
+                        <div class="mt-2 flex flex-col gap-1 text-xs text-blue-900">
                             <div class="bg-green-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Ordinateurs</p>
-                                <p>{{ $site->computers_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Ordinateurs: {{ $site->computers_count ?? 0 }}</p>
                             </div>
                             <div class="bg-green-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Imprimantes</p>
-                                <p>{{ $site->printers_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Imprimantes: {{ $site->printers_count ?? 0 }}</p>
                             </div>
                             <div class="bg-green-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Téléphones</p>
-                                <p>{{ $site->ip_phones_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Téléphones: {{ $site->ip_phones_count ?? 0 }}</p>
                             </div>
                             <div class="bg-green-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Points</p>
-                                <p class="font-semibold">d'accès</p>
-                                <p>{{ $site->hotspots_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Points d'accès: {{ $site->hotspots_count ?? 0 }}</p>
                             </div>
                         </div>
                     </div>
@@ -145,8 +133,7 @@
                     <!-- Materials State Circle -->
                     <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg shadow p-4 border-l-4 border-yellow-500">
                         <div class="flex items-center justify-between mb-2">
-                            <h3 class="text-md font-semibold text-blue-900">État</h3>
-                            <h3 class="text-md font-semibold text-blue-900">Matériels</h3>
+                            <h3 class="text-md font-semibold text-blue-900">État des Matériels</h3>
                             <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
                                 <i class="fas fa-cogs"></i>
                             </div>
@@ -157,20 +144,15 @@
                                 <span class="text-2xl font-bold text-blue-900">{{ $site->computers_count + $site->printers_count + $site->ip_phones_count + $site->hotspots_count ?? 0 }}</span>
                             </div>
                         </div>
-                        <div class="mt-2 grid grid-cols-3 gap-2 text-xs text-blue-900">
+                        <div class="mt-2 flex flex-col gap-1 text-xs text-blue-900">
                             <div class="bg-yellow-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Bon</p>
-                                <p>{{ $site->bon_materials_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Bon: {{ $site->bon_materials_count ?? 0 }}</p>
                             </div>
                             <div class="bg-yellow-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Défec</p>
-                                <p class="font-semibold">tueux</p>
-                                <p>{{ $site->defectueux_materials_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Défectueux: {{ $site->defectueux_materials_count ?? 0 }}</p>
                             </div>
                             <div class="bg-yellow-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Hors</p>
-                                <p class="font-semibold">Service</p>
-                                <p>{{ $site->hors_service_materials_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Hors Service: {{ $site->hors_service_materials_count ?? 0 }}</p>
                             </div>
                         </div>
                     </div>
@@ -189,21 +171,15 @@
                                 <span class="text-2xl font-bold text-blue-900">{{ $site->reclamations_count ?? 0 }}</span>
                             </div>
                         </div>
-                        <div class="mt-2 grid grid-cols-3 gap-2 text-xs text-blue-900">
+                        <div class="mt-2 flex flex-col gap-1 text-xs text-blue-900">
                             <div class="bg-purple-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Nou</p>
-                                <p class="font-semibold">velles</p>
-                                <p>{{ $site->new_reclamations_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Nouvelles: {{ $site->new_reclamations_count ?? 0 }}</p>
                             </div>
                             <div class="bg-purple-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">En</p>
-                                <p class="font-semibold">cours</p>
-                                <p>{{ $site->en_cours_reclamations_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">En cours: {{ $site->en_cours_reclamations_count ?? 0 }}</p>
                             </div>
                             <div class="bg-purple-100/50 p-1 rounded text-center">
-                                <p class="font-semibold">Trai</p>
-                                <p class="font-semibold">tées</p>
-                                <p>{{ $site->traitee_reclamations_count ?? 0 }}</p>
+                                <p class="font-semibold whitespace-nowrap">Traitées: {{ $site->traitee_reclamations_count ?? 0 }}</p>
                             </div>
                         </div>
                     </div>
@@ -219,7 +195,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                         @foreach($site->location_types as $type => $count)
-                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
+                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm whitespace-nowrap">
                             {{ $type }}: {{ $count }}
                         </span>
                         @endforeach
@@ -238,32 +214,25 @@
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border-l-4 border-blue-500">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-lg font-semibold text-blue-900">Utilisateurs</h3>
-                                <h3 class="text-lg font-semibold text-blue-900">Totaux</h3>
+                                <h3 class="text-lg font-semibold text-blue-900">Utilisateurs Totaux</h3>
                                 <p class="text-3xl font-bold text-blue-900">{{ $userCount }}</p>
                             </div>
                             <div class="p-3 rounded-full bg-blue-100 text-blue-600">
                                 <i class="fas fa-users text-xl"></i>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-2 gap-2">
+                        <div class="mt-4 flex flex-col gap-2">
                             <div class="bg-blue-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Admin</p>
-                                <p class="text-lg">{{ $adminCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Admin: {{ $adminCount }}</p>
                             </div>
                             <div class="bg-blue-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Super</p>
-                                <p class="font-semibold">Admin</p>
-                                <p class="text-lg">{{ $superadminCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Super Admin: {{ $superadminCount }}</p>
                             </div>
                             <div class="bg-blue-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Leader</p>
-                                <p class="text-lg">{{ $leaderCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Leader: {{ $leaderCount }}</p>
                             </div>
                             <div class="bg-blue-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Utilis</p>
-                                <p class="font-semibold">ateur</p>
-                                <p class="text-lg">{{ $utilisateurCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Utilisateur: {{ $utilisateurCount }}</p>
                             </div>
                         </div>
                     </div>
@@ -272,31 +241,25 @@
                     <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border-l-4 border-green-500">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-lg font-semibold text-blue-900">Matériels</h3>
-                                <h3 class="text-lg font-semibold text-blue-900">Totaux</h3>
+                                <h3 class="text-lg font-semibold text-blue-900">Matériels Totaux</h3>
                                 <p class="text-3xl font-bold text-blue-900">{{ $materialCount }}</p>
                             </div>
                             <div class="p-3 rounded-full bg-green-100 text-green-600">
                                 <i class="fas fa-laptop text-xl"></i>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-2 gap-2">
+                        <div class="mt-4 flex flex-col gap-2">
                             <div class="bg-green-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Ordinateurs</p>
-                                <p class="text-lg">{{ $computerCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Ordinateurs: {{ $computerCount }}</p>
                             </div>
                             <div class="bg-green-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Imprimantes</p>
-                                <p class="text-lg">{{ $printerCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Imprimantes: {{ $printerCount }}</p>
                             </div>
                             <div class="bg-green-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Téléphones</p>
-                                <p class="text-lg">{{ $ipPhoneCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Téléphones: {{ $ipPhoneCount }}</p>
                             </div>
                             <div class="bg-green-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Points</p>
-                                <p class="font-semibold">d'accès</p>
-                                <p class="text-lg">{{ $hotspotCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Points d'accès: {{ $hotspotCount }}</p>
                             </div>
                         </div>
                     </div>
@@ -305,28 +268,22 @@
                     <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-4 border-l-4 border-yellow-500">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-lg font-semibold text-blue-900">État des</h3>
-                                <h3 class="text-lg font-semibold text-blue-900">Matériels</h3>
+                                <h3 class="text-lg font-semibold text-blue-900">État des Matériels</h3>
                                 <p class="text-3xl font-bold text-blue-900">{{ $materialCount }}</p>
                             </div>
                             <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
                                 <i class="fas fa-cogs text-xl"></i>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-3 gap-2">
+                        <div class="mt-4 flex flex-col gap-2">
                             <div class="bg-yellow-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Bon</p>
-                                <p class="text-lg">{{ $materialBon }}</p>
+                                <p class="font-semibold whitespace-nowrap">Bon: {{ $materialBon }}</p>
                             </div>
                             <div class="bg-yellow-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Défec</p>
-                                <p class="font-semibold">tueux</p>
-                                <p class="text-lg">{{ $materialDefectueux }}</p>
+                                <p class="font-semibold whitespace-nowrap">Défectueux: {{ $materialDefectueux }}</p>
                             </div>
                             <div class="bg-yellow-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Hors</p>
-                                <p class="font-semibold">Service</p>
-                                <p class="text-lg">{{ $materialHorsService }}</p>
+                                <p class="font-semibold whitespace-nowrap">Hors Service: {{ $materialHorsService }}</p>
                             </div>
                         </div>
                     </div>
@@ -345,21 +302,15 @@
                                 <i class="fas fa-exclamation-circle text-xl"></i>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-3 gap-2">
+                        <div class="mt-4 flex flex-col gap-2">
                             <div class="bg-purple-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Nou</p>
-                                <p class="font-semibold">velles</p>
-                                <p class="text-lg">{{ $newReclamationCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Nouvelles: {{ $newReclamationCount }}</p>
                             </div>
                             <div class="bg-purple-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">En</p>
-                                <p class="font-semibold">cours</p>
-                                <p class="text-lg">{{ $enCoursReclamationCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">En cours: {{ $enCoursReclamationCount }}</p>
                             </div>
                             <div class="bg-purple-100/50 p-2 rounded text-center">
-                                <p class="font-semibold">Trai</p>
-                                <p class="font-semibold">tées</p>
-                                <p class="text-lg">{{ $traiteeReclamationCount }}</p>
+                                <p class="font-semibold whitespace-nowrap">Traitées: {{ $traiteeReclamationCount }}</p>
                             </div>
                         </div>
                         <div class="mt-4">
@@ -371,8 +322,7 @@
                     <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border-l-4 border-indigo-500">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-lg font-semibold text-blue-900">Sites &</h3>
-                                <h3 class="text-lg font-semibold text-blue-900">Locations</h3>
+                                <h3 class="text-lg font-semibold text-blue-900">Sites & Locations</h3>
                                 <p class="text-3xl font-bold text-blue-900">{{ $siteCount }} Sites</p>
                             </div>
                             <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
@@ -750,6 +700,9 @@
         .bg-gradient-to-br {
             background: white !important;
         }
+    }
+    .whitespace-nowrap {
+        white-space: nowrap;
     }
 </style>
 @endsection

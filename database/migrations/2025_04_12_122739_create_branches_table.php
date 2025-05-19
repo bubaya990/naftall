@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('site_id')->constrained()->onDelete('cascade');
             $table->foreignId('parent_id')->nullable()->constrained('branches')->onDelete('cascade');
+            $table->json('plan_images')->nullable()->after('parent_id');
             $table->timestamps();
         });
     }

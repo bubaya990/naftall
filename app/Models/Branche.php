@@ -10,6 +10,9 @@ class Branche extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'site_id', 'parent_id'];
+    protected $casts = [
+        'plan_images' => 'array'
+    ];
 
     public function site()
     {

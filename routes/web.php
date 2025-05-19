@@ -385,6 +385,8 @@ Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])
     ->name('superadmin.materials.update');
 
 
-
-
+Route::get('/sites/{site}/{brancheType}', [SiteController::class, 'show'])->name('site.branche.show');
+Route::post('/branches/{branche}/upload-plans', [SiteController::class, 'uploadPlans'])->name('branches.upload.plans');
+Route::post('/branches/{branche}/upload-plans', [SiteController::class, 'uploadPlans'])->name('branches.upload.plans');
+Route::delete('/branches/{branche}/delete-plan/{imageIndex}', [SiteController::class, 'deletePlan'])->name('branches.delete.plan');
 require __DIR__.'/auth.php';

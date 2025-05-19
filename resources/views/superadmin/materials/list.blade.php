@@ -7,7 +7,7 @@
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
    
     <div class="relative z-10 min-h-screen p-4 md:p-6 pb-16">
-        <!-- Materials Section - Using exact same gradient as locations view -->
+        <!-- Materials Section -->
         <div class="bg-gradient-to-br from-green-50 to-green-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-green-500">
             
             <!-- Header with actions -->
@@ -29,12 +29,10 @@
                         <i class="fas fa-arrow-left mr-2"></i>Retour
                     </a>
 
-
                     @if(auth()->user()->role === 'superadmin' || (auth()->user()->role === 'admin' && auth()->user()->site_id))
                     <a href="{{ route('superadmin.materials.create', ['type' => $type]) }}" 
-           class="btn btn-primary transform hover:scale-105 transition-transform duration-300">
-           <i class="fas fa-plus-circle mr-2"></i>Ajouter
-       
+                       class="btn btn-primary transform hover:scale-105 transition-transform duration-300">
+                       <i class="fas fa-plus-circle mr-2"></i>Ajouter
                     </a>
                     @endif
                 </div>
@@ -183,69 +181,68 @@
                             </tr>
                         @else
                             @foreach($materials as $index => $material)
-                            @php
-                                // Get the site ID for this material
-                                $materialSiteId = $material->room ? $material->room->location->site_id : ($material->corridor ? $material->corridor->location->site_id : null);
-                                
-                                // Check if admin can see actions for this material
-                                $showActions = auth()->user()->role === 'superadmin' || 
+                                @php
+                                    // Get the site ID for this material
+                                    $materialSiteId = $material->room ? $material->room->location->site_id : ($material->corridor ? $material->corridor->location->site_id : null);
+                                    
+                                    // Check if admin can see this material (only their site's materials)
+                                    $canView = auth()->user()->role === 'superadmin' || 
                                               (auth()->user()->role === 'admin' && 
                                                auth()->user()->site_id && 
                                                $materialSiteId == auth()->user()->site_id);
-                            @endphp
-                            <tr class="hover:bg-green-50/50">
-                                <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $material->inventory_number }}</td>
-                                <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $material->serial_number }}</td>
-                                <td class="px-4 py-3 border-b border-gray-200">
-                                    @php
-                                        $stateColors = [
-                                            'bon' => 'bg-green-600 text-white',
-                                            'défectueux' => 'bg-yellow-600 text-white',
-                                            'hors service' => 'bg-red-600 text-white',
-                                        ];
-                                        $stateClass = $stateColors[$material->state] ?? 'bg-gray-600 text-white';
-                                    @endphp
-                                    <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-sm {{ $stateClass }}">
-                                        {{ ucfirst($material->state) }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-gray-800 border-b border-gray-200">
-                                    {{ $material->room->location->site->name ?? $material->corridor->location->site->name ?? 'N/A' }}
-                                </td>
-                                <td class="px-4 py-3 text-gray-800 border-b border-gray-200">
-                                    @if($material->room)
-                                    Salle: {{ $material->room->name }}
-                                    @elseif($material->corridor)
-                                    Couloir
-                                    @endif
-                                </td>
+                                @endphp
                                 
-                                @if($type == 'computers')
-                                <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $material->materialable->computer_brand }}</td>
-                                @endif
-                                
-                                @if($showActions)
-                                <td class="px-4 py-3 text-right space-x-2 md:space-x-3 border-b border-gray-200">
-                                    <!-- Edit Button -->
-                                    <a href="{{ route('superadmin.materials.edit', ['type' => $type, 'id' => $material->id]) }}"
-                                       class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
-                                       <i class="fas fa-edit mr-1"></i>
-                                       <span class="hidden md:inline">Modifier</span>
-                                    </a>
+                                @if($canView)
+                                <tr class="hover:bg-green-50/50">
+                                    <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $material->inventory_number }}</td>
+                                    <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $material->serial_number }}</td>
+                                    <td class="px-4 py-3 border-b border-gray-200">
+                                        @php
+                                            $stateColors = [
+                                                'bon' => 'bg-green-600 text-white',
+                                                'défectueux' => 'bg-yellow-600 text-white',
+                                                'hors service' => 'bg-red-600 text-white',
+                                            ];
+                                            $stateClass = $stateColors[$material->state] ?? 'bg-gray-600 text-white';
+                                        @endphp
+                                        <span class="px-3 py-1.5 text-xs md:text-sm font-bold rounded-full shadow-sm {{ $stateClass }}">
+                                            {{ ucfirst($material->state) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-gray-800 border-b border-gray-200">
+                                        {{ $material->room->location->site->name ?? $material->corridor->location->site->name ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-gray-800 border-b border-gray-200">
+                                        @if($material->room)
+                                        Salle: {{ $material->room->name }}
+                                        @elseif($material->corridor)
+                                        Couloir
+                                        @endif
+                                    </td>
                                     
-                                    <!-- Delete Button -->
-                                    <button onclick="openDeleteModal('{{ $type }}', '{{ $material->id }}', '{{ $material->inventory_number }}')" 
-                                            class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold border border-red-200">
-                                        <i class="fas fa-trash-alt mr-1"></i>
-                                        <span class="hidden md:inline">Supprimer</span>
-                                    </button>
-                                </td>
-                                @elseif(auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin')
-                                <td class="px-4 py-3 text-right border-b border-gray-200">
-                                    <span class="text-gray-400 text-sm">Non autorisé</span>
-                                </td>
+                                    @if($type == 'computers')
+                                    <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $material->materialable->computer_brand }}</td>
+                                    @endif
+                                    
+                                    @if(auth()->user()->role === 'superadmin' || auth()->user()->role === 'admin')
+                                    <td class="px-4 py-3 text-right space-x-2 md:space-x-3 border-b border-gray-200">
+                                        <!-- Edit Button -->
+                                        <a href="{{ route('superadmin.materials.edit', ['type' => $type, 'id' => $material->id]) }}"
+                                           class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
+                                           <i class="fas fa-edit mr-1"></i>
+                                           <span class="hidden md:inline">Modifier</span>
+                                        </a>
+                                        
+                                        <!-- Delete Button -->
+                                        <button onclick="openDeleteModal('{{ $type }}', '{{ $material->id }}', '{{ $material->inventory_number }}')" 
+                                                class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold border border-red-200">
+                                            <i class="fas fa-trash-alt mr-1"></i>
+                                            <span class="hidden md:inline">Supprimer</span>
+                                        </button>
+                                    </td>
+                                    @endif
+                                </tr>
                                 @endif
-                            </tr>
                             @endforeach
                         @endif
                     </tbody>
