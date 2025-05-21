@@ -116,4 +116,34 @@ class SiteController extends Controller
             'branche' => $branche
         ]);
     }
+
+    public function storeImagePoint(Request $request)
+{
+    $request->validate([
+        'branche_id' => 'required|exists:branches,id',
+        'image_index' => 'required|integer',
+        'x' => 'required|numeric',
+        'y' => 'required|numeric',
+        'link_type' => 'required|in:room,corridor'
+    ]);
+
+    // For now, just flash the data. You should store this in a new model or JSON column in the Branche.
+    // Example: save to `plan_links` array in Branche
+    $branche = Branche::find($request->branche_id);
+    $links = $branche->plan_links ?? []; // plan_links: a JSON column
+
+    $links[] = [
+        'image_index' => $request->image_index,
+        'x' => $request->x,
+        'y' => $request->y,
+        'type' => $request->link_type,
+        'url' => route('view.material', ['type' => $request->link_type])
+    ];
+
+    $branche->plan_links = $links;
+    $branche->save();
+
+    return back()->with('success', 'Link added to image successfully.');
+}
+
 }

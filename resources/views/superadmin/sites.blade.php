@@ -41,7 +41,13 @@
      alt="Plan Image {{ $index + 1 }}"
      class="w-full h-auto rounded-lg">
                     <h2 class="text-lg font-bold text-blue-800 mt-4 text-center">Plan – {{ $index + 1 }}</h2>
-                    
+                    <!-- Add Link Button -->
+
+<button 
+    onclick="openImageModal('{{ Storage::url($image) }}', {{ $index }})"
+    class="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">
+    Select Action Point
+</button>
                     <!-- Delete Button -->
                     <form action="{{ route('branches.delete.plan', ['branche' => $branche->id, 'imageIndex' => $index]) }}" method="POST" class="absolute top-4 right-4">
                         @csrf
@@ -61,3 +67,73 @@
 </div>
 
 @endsection
+<!-- Modal for Image Selection -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 hidden">
+    <div class="relative bg-white rounded-lg overflow-hidden max-w-3xl w-full p-4">
+
+        <!-- Close Button -->
+        <button onclick="closeImageModal()" class="absolute top-2 right-2 text-gray-700 hover:text-black text-2xl font-bold">
+            ✕
+        </button>
+
+        <h2 class="text-xl font-semibold text-center text-blue-900 mb-4">
+            Click on the Image to Select a Point
+        </h2>
+
+        <!-- Image Container -->
+        <!-- Image Container -->
+<div class="relative overflow-auto border border-gray-300 max-h-[50vh]">
+    <img id="modalImage" src="" alt="Plan" 
+         class="mx-auto cursor-crosshair max-h-[60vh] object-contain"
+         onclick="selectPoint(event)">
+    <div id="pointMarker" class="absolute w-4 h-4 bg-red-600 rounded-full hidden" style="transform: translate(-50%, -50%);"></div>
+</div>
+
+
+        <!-- Form for Saving Link -->
+        <form action="{{ route('superadmin.sites.store') }}" method="POST" class="mt-4 text-center">
+            @csrf
+            <input type="hidden" name="x" id="pointX">
+            <input type="hidden" name="y" id="pointY">
+            <input type="text" name="label" placeholder="Label (Room or Corridor)" class="border p-2 rounded w-1/2">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ml-2">
+                Save Link
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- JS for Modal and Point Selection -->
+<script>
+    function openImageModal(imageUrl) {
+        const modal = document.getElementById('imageModal');
+        const img = document.getElementById('modalImage');
+        const pointMarker = document.getElementById('pointMarker');
+
+        img.src = imageUrl;
+        pointMarker.style.display = 'none';
+        modal.classList.remove('hidden');
+    }
+
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+    }
+
+    function selectPoint(event) {
+        const img = event.target;
+        const marker = document.getElementById('pointMarker');
+
+        const rect = img.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        // Position the marker (centered)
+        marker.style.left = `${x}px`;
+        marker.style.top = `${y}px`;
+        marker.style.display = 'block';
+
+        // Store coordinates
+        document.getElementById('pointX').value = x;
+        document.getElementById('pointY').value = y;
+    }
+</script>

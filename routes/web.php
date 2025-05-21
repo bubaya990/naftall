@@ -389,4 +389,12 @@ Route::get('/sites/{site}/{brancheType}', [SiteController::class, 'show'])->name
 Route::post('/branches/{branche}/upload-plans', [SiteController::class, 'uploadPlans'])->name('branches.upload.plans');
 Route::post('/branches/{branche}/upload-plans', [SiteController::class, 'uploadPlans'])->name('branches.upload.plans');
 Route::delete('/branches/{branche}/delete-plan/{imageIndex}', [SiteController::class, 'deletePlan'])->name('branches.delete.plan');
+
+
+Route::post('/branches/link-point', [SiteController::class, 'storeImagePoint'])->name('branches.link.point');
+Route::get('/superadmin/sites/{site}/branche/{brancheType}', [SiteController::class, 'show'])->name('superadmin.sites.branche');
+Route::post('/superadmin/sites', [SiteController::class, 'store'])->name('superadmin.sites.store');
+
+
+
 require __DIR__.'/auth.php';
