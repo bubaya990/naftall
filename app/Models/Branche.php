@@ -11,9 +11,13 @@ class Branche extends Model
 
     protected $fillable = ['name', 'site_id', 'parent_id'];
     protected $casts = [
-        'plan_images' => 'array'
+        'plan_images' => 'array',
+        'plan_links' => 'array'
     ];
-
+ protected $attributes = [
+        'plan_images' => '[]', // Default empty JSON array
+        'plan_links' => '[]',  // Default empty JSON array
+    ];
     public function site()
     {
         return $this->belongsTo(Site::class);
