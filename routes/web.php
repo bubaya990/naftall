@@ -394,7 +394,35 @@ Route::delete('/branches/{branche}/delete-plan/{imageIndex}', [SiteController::c
 Route::post('/branches/link-point', [SiteController::class, 'storeImagePoint'])->name('branches.link.point');
 Route::get('/superadmin/sites/{site}/branche/{brancheType}', [SiteController::class, 'show'])->name('superadmin.sites.branche');
 Route::post('/superadmin/sites', [SiteController::class, 'store'])->name('superadmin.sites.store');
+Route::post('/branches/store-point', [SiteController::class, 'storeImagePoint'])->name('branches.store.point');
+
+// Room materials
+Route::get('/superadmin/locations/{location}/rooms/{room}/materials', [LocationController::class, 'viewMaterials'])
+    ->name('superadmin.locations.rooms.materials');
+
+// Corridor materials
+Route::get('/superadmin/locations/{location}/corridors/{corridor}/materials', [LocationController::class, 'viewMaterials'])
+    ->name('superadmin.locations.corridors.materials');
+Route::post('/branches/{branche}/upload-plans', [SiteController::class, 'uploadPlans'])->name('branches.upload.plans');
+Route::delete('/branches/{branche}/delete-plan/{imageIndex}', [SiteController::class, 'deletePlan'])->name('branches.delete.plan');
+Route::post('/branches/store-point', [SiteController::class, 'storeImagePoint'])->name('branches.store.point');
+
+// Replace the problematic route with these two routes:
+Route::get('/superadmin/locations/{location}/rooms/{room}', 
+    [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewRoomMaterials'])
+    ->name('superadmin.locations.rooms.view');
+
+Route::get('/superadmin/locations/{location}/corridors/{corridor}', 
+    [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewCorridorMaterials'])
+    ->name('superadmin.locations.corridors.view');
 
 
+ // Change these routes to match your existing controller methods
+Route::get('/superadmin/locations/{location}/rooms/{room}/materials', 
+    [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewRoomMaterials'])
+    ->name('superadmin.locations.rooms.view');
 
+Route::get('/superadmin/locations/{location}/corridors/{corridor}/materials', 
+    [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewCorridorMaterials'])
+    ->name('superadmin.locations.corridors.view');
 require __DIR__.'/auth.php';
