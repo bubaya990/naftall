@@ -417,12 +417,12 @@ Route::get('/superadmin/locations/{location}/corridors/{corridor}',
     ->name('superadmin.locations.corridors.view');
 
 
- // Change these routes to match your existing controller methods
-Route::get('/superadmin/locations/{location}/rooms/{room}/materials', 
+   Route::get('/superadmin/locations/{location}/rooms/{room}', 
     [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewRoomMaterials'])
     ->name('superadmin.locations.rooms.view');
 
-Route::get('/superadmin/locations/{location}/corridors/{corridor}/materials', 
+// For viewing corridor materials
+Route::get('/superadmin/locations/{location}/corridors/{corridor}', 
     [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewCorridorMaterials'])
     ->name('superadmin.locations.corridors.view');
 require __DIR__.'/auth.php';
