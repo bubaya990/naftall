@@ -18,23 +18,21 @@
                     <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800">Gestion des Couloirs</h1>
                     <p class="text-gray-600 mt-2">{{ $location->site->name }} - {{ $location->name ?? 'Localité' }}</p>
                 </div>
-                <a href="{{ route('superadmin.locations.gestion-localite') }}" 
-                   class="text-yellow-700 hover:text-yellow-900 transition-colors duration-200 bg-yellow-100 hover:bg-yellow-200 px-4 py-2 rounded-lg font-medium border border-yellow-200">
-                    <i class="fas fa-arrow-left mr-2"></i> Retour
-                </a>
+                
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('superadmin.locations.gestion-localite') }}" 
+                       class="text-yellow-700 hover:text-yellow-900 transition-colors duration-200 bg-yellow-100 hover:bg-yellow-200 px-4 py-2 rounded-lg font-medium border border-yellow-200">
+                        <i class="fas fa-arrow-left mr-2"></i> Retour
+                    </a>
+                    
+                    @if(auth()->user()->role === 'superadmin')
+                    <a href="{{ route('superadmin.locations.addcorridor', $location->id) }}" 
+                       class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus-circle mr-2"></i> Ajouter un couloir
+                    </a>
+                    @endif
+                </div>
             </div>
-
-            <!-- Add corridor button (Only for SuperAdmin) -->
-            @auth
-                @if(auth()->user()->role === 'superadmin')
-                    <div class="mb-8 animate-slideInRight">
-                        <a href="{{ route('superadmin.locations.addcorridor', $location->id) }}" 
-                           class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
-                            <i class="fas fa-plus-circle mr-2"></i> Ajouter un couloir
-                        </a>
-                    </div>
-                @endif
-            @endauth
 
             <!-- Success/Error messages -->
             @if(session('success'))
@@ -73,15 +71,13 @@
                                                 <span class="hidden md:inline">Matériel</span>
                                             </a>
                                             
-                                            @auth
-                                                @if(auth()->user()->role === 'superadmin')
-                                                    <button onclick="openDeleteModal('{{ $corridor->id }}', '{{ $corridor->name }}')"
-                                                            class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold border border-red-200">
-                                                        <i class="fas fa-trash-alt mr-1"></i>
-                                                        <span class="hidden md:inline">Supprimer</span>
-                                                    </button>
-                                                @endif
-                                            @endauth
+                                            @if(auth()->user()->role === 'superadmin')
+                                                <button onclick="openDeleteModal('{{ $corridor->id }}', '{{ $corridor->name }}')"
+                                                        class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold border border-red-200">
+                                                    <i class="fas fa-trash-alt mr-1"></i>
+                                                    <span class="hidden md:inline">Supprimer</span>
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -153,12 +149,10 @@ document.addEventListener('DOMContentLoaded', function() {
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
 .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
 .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
 .animate-slideInLeft { animation: slideInLeft 0.6s ease-out forwards; }
-.animate-slideInRight { animation: slideInRight 0.6s ease-out forwards; }
 
 /* Modal styles */
 .hidden { display: none !important; }

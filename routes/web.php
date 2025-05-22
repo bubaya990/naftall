@@ -67,6 +67,8 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
     // Locations
     Route::get('/locations', [LocationController::class, 'gestionLocalite'])->name('locations.gestion-localite');
+Route::get('/locations/{location}/{entityType}/{entity}/materials', [LocationController::class, 'viewEntityMaterials'])
+    ->name('locations.view');
 
     // Materials
     Route::get('/materials', [MaterialController::class, 'index'])->name('materials.gestion-material');
@@ -421,8 +423,11 @@ Route::get('/superadmin/locations/{location}/corridors/{corridor}',
     [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewRoomMaterials'])
     ->name('superadmin.locations.rooms.view');
 
-// For viewing corridor materials
-Route::get('/superadmin/locations/{location}/corridors/{corridor}', 
-    [\App\Http\Controllers\SuperAdmin\LocationController::class, 'viewCorridorMaterials'])
-    ->name('superadmin.locations.corridors.view');
+
+Route::delete('/materials/{type}/{material}', [MaterialController::class, 'destroy'])->name('superadmin.materials.destroy');
+Route::get('/locations/{location}/{entityType}/{entity}/add-material/{type?}', [LocationController::class, 'addMaterial'])->name('locations.addMaterial');
+Route::post('/locations/{location}/{entityType}/{entity}/store-material', [LocationController::class, 'storeMaterial'])->name('locations.storeMaterial');
+
+
+    
 require __DIR__.'/auth.php';

@@ -410,6 +410,16 @@ public function storeMaterial(Request $request, $locationId, $entityType, $entit
     }
 }
 
+public function viewEntityMaterials(Location $location, $entityType, $entityId)
+{
+    $entity = $entityType === 'room'
+        ? Room::findOrFail($entityId)
+        : Corridor::findOrFail($entityId);
+
+    $materials = $entity->materials()->with('materialable')->get();
+
+    return view('superadmin.locations.view', compact('location', 'entity', 'materials', 'entityType'));
+}
 
 
 }

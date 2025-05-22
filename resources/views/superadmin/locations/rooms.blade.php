@@ -14,17 +14,24 @@
         <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-yellow-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
             <!-- Header with actions -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div>
-                    <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800 animate-fadeIn">Gestion des Salles</h1>
-                    <p class="text-gray-600 mt-1">Localité: {{ $rooms->first()->location->name ?? 'N/A' }}</p>
+                <div class="animate-slideInLeft">
+                    <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800">Gestion des Salles</h1>
+                    <p class="text-gray-600 mt-2">{{ $rooms->first()->location->site->name ?? 'N/A' }} - {{ $rooms->first()->location->name ?? 'N/A' }}</p>
                 </div>
                 
-                @if(auth()->user()->role === 'superadmin')
-                <a href="{{ route('superadmin.locations.addroom', ['location' => $locationId]) }}" 
-                   class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
-                    <i class="fas fa-plus-circle mr-2"></i>Nouvelle salle
-                </a>
-                @endif
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('superadmin.locations.gestion-localite') }}" 
+                       class="text-yellow-700 hover:text-yellow-900 transition-colors duration-200 bg-yellow-100 hover:bg-yellow-200 px-4 py-2 rounded-lg font-medium border border-yellow-200">
+                        <i class="fas fa-arrow-left mr-2"></i> Retour
+                    </a>
+                    
+                    @if(auth()->user()->role === 'superadmin')
+                    <a href="{{ route('superadmin.locations.addroom', ['location' => $locationId]) }}" 
+                       class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus-circle mr-2"></i>Nouvelle salle
+                    </a>
+                    @endif
+                </div>
             </div>
 
             @if(session('success'))
@@ -263,9 +270,11 @@ document.addEventListener('DOMContentLoaded', function() {
 <style>
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
 .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
 .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
+.animate-slideInLeft { animation: slideInLeft 0.6s ease-out forwards; }
 
 /* Modal styles */
 .hidden { display: none !important; }
