@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <div class="relative">
@@ -15,10 +14,23 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800 animate-fadeIn">Liste des Réclamations</h1>
                
-                <a href="{{ route('superadmin.reclamations.addreclamation') }}" 
-                   class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
-                    <i class="fas fa-plus-circle mr-2"></i>Nouvelle Réclamation
-                </a>
+                <div class="flex flex-col md:flex-row gap-3">
+                     <a href="{{ route('superadmin.dashboard') }}" 
+                       class="text-purple-600 hover:text-purple-800 font-medium flex items-center transition-colors duration-300">
+                        <i class="fas fa-arrow-left mr-2"></i> Retour
+                    </a>
+                   
+                    
+                    <button onclick="openDeleteMonthModal()"
+                            class="btn btn-danger transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
+                        <i class="fas fa-calendar-times mr-2"></i>Nettoyer anciennes
+                    </button>
+
+                     <a href="{{ route('superadmin.reclamations.addreclamation') }}" 
+                       class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus-circle mr-2"></i>Nouvelle Réclamation
+                    </a>
+                </div>
             </div>
 
             @if(session('success'))
@@ -137,6 +149,39 @@
     </div>
 </div>
 
+<!-- Delete Month Confirmation Modal -->
+<div id="deleteMonthModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border-2 border-purple-200">
+        <h3 class="text-xl font-bold text-red-600 mb-4">Nettoyage mensuel</h3>
+        <p class="text-gray-700 mb-2">Êtes-vous sûr de vouloir supprimer toutes les réclamations <span class="font-bold">Traitée</span> du mois précédent ?</p>
+        
+        <div class="bg-purple-50 p-3 rounded-lg mb-4">
+            <p class="font-semibold">Cette action supprimera :</p>
+            <ul class="list-disc pl-5 mt-2 text-sm">
+                <li>Toutes les réclamations avec statut "Traitée"</li>
+                <li>Créées entre le 1er et le dernier jour du mois précédent</li>
+                <li>Cette action est irréversible</li>
+            </ul>
+        </div>
+        
+        <form id="deleteMonthForm" method="POST" action="{{ route('superadmin.reclamations.delete-month') }}">
+            @csrf
+            @method('DELETE')
+           
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteMonthModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    Confirmer le nettoyage
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Delete Modal Functions
@@ -158,6 +203,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('deleteModal');
         if (modal) modal.classList.add('hidden');
     };
+
+    // Delete Month Modal Functions
+    window.openDeleteMonthModal = function() {
+        const modal = document.getElementById('deleteMonthModal');
+        if (!modal) {
+            console.error('Delete month modal element not found');
+            return;
+        }
+        modal.classList.remove('hidden');
+    };
+
+    window.closeDeleteMonthModal = function() {
+        const modal = document.getElementById('deleteMonthModal');
+        if (modal) modal.classList.add('hidden');
+    };
 });
 </script>
 
@@ -170,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Modal styles */
 .hidden { display: none !important; }
-#deleteModal { 
+#deleteModal, #deleteMonthModal { 
     transition: opacity 0.3s ease;
     z-index: 9999;
 }
@@ -223,6 +283,23 @@ button, a {
 .bg-purple-600 { background-color: #9333ea; }
 .hover\:from-purple-600:hover { --tw-gradient-from: #9333ea; }
 .hover\:to-purple-700:hover { --tw-gradient-to: #7e22ce; }
+
+/* Danger button colors */
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+}
+
+.from-red-500 { --tw-gradient-from: #ef4444; }
+.to-red-600 { --tw-gradient-to: #dc2626; }
+.hover\:from-red-600:hover { --tw-gradient-from: #dc2626; }
+.hover\:to-red-700:hover { --tw-gradient-to: #b91c1c; }
 </style>
 
 @endsection

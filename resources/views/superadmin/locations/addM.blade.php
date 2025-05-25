@@ -13,19 +13,23 @@
         <!-- Glass morphism container -->
         <div class="backdrop-blur-md bg-white/30 shadow-2xl rounded-2xl p-6 md:p-8 w-full max-w-3xl border-2 border-white/20 transition-all duration-500 transform hover:scale-[1.005] hover:shadow-xl">
             <!-- Header with floating animation -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 animate-float">
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 drop-shadow-lg">
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800">
-                        {{ isset($material) ? 'Modifier' : 'Ajouter' }} un matériel
-                    </span>
-                </h1>
-                <a href="{{ $entityType === 'room' ?
-                    route('superadmin.locations.rooms.materials', ['location' => $location->id, 'room' => $entity->id]) :
-                    route('superadmin.locations.corridors.materials', ['location' => $location->id, 'corridor' => $entity->id]) }}" 
-                   class="btn btn-primary transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
-                   <i class="fas fa-arrow-left mr-2"></i>Retour
-                </a>
-            </div>
+           <!-- Update the header section in the materials form view -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 drop-shadow-lg">
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800">
+            {{ isset($material) ? 'Modifier' : 'Ajouter' }} un matériel
+        </span>
+    </h1>
+    
+    <div class="flex items-center gap-4">
+        <a href="{{ $entityType === 'room' ?
+            route('superadmin.locations.rooms.materials', ['location' => $location->id, 'room' => $entity->id]) :
+            route('superadmin.locations.corridors.materials', ['location' => $location->id, 'corridor' => $entity->id]) }}" 
+           class="text-gray-700 hover:text-gray-900 transition-colors duration-200 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium border border-gray-200">
+            <i class="fas fa-arrow-left mr-2"></i> Retour
+        </a>
+    </div>
+</div>
 
             @if ($errors->any())
                 <div class="mb-6 p-4 bg-red-100/90 backdrop-blur-sm border-l-4 border-red-500 text-red-700 rounded-lg animate-shake">

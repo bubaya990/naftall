@@ -20,11 +20,7 @@ class SuperAdminController extends Controller
     /**
      * Display the SuperAdmin dashboard.
      */
-    public function dashboard()
-    {
-        return view('superadmin.dashboard');
-    }
-
+  
     /**
      * Display a listing of the users.
      */
@@ -312,23 +308,104 @@ public function destroyReclamation($id)
                      ->with('error', 'Reclamation not found.');
 }
 
-/**
- * Add a message to a reclamation.
- */
 
-public function showReclamations()
+
+public function getUnreadCount()
 {
-    $reclamations = Reclamation::with('user')->latest()->paginate(10);
-    return view('superadmin.reclamations.reclamations', compact('reclamations'));
+    $user = auth()->user();
+    $unreadCount = $user ? $user->unreadMessages()->count() : 0;
+    return response()->json(['count' => $unreadCount]);
 }
-/**
- * Mark a message as seen.
- */
 
-/**
- * Display the specified reclamation.
- */
-public function showReclamation($id)
+public function markAsSeen(Request $request)
+{
+    // Mark all messages as seen or a specific one if messageId is provided
+    $messageId = $request->input('messageId');
+    
+    if ($messageId === 'all') {
+        auth()->user()->unreadMessages()->update(['seen' => true]);
+    } else {
+        auth()->user()->unreadMessages()->where('id', $messageId)->update(['seen' => true]);
+    }
+    
+    return response()->json(['success' => true]);
+}
+
+public function updateRole(Request $request, User $user)
+{
+    $request->validate([
+        'role' => 'required|in:superadmin,admin,leader,utilisateur'
+    ]);
+
+    $user->update(['role' => $request->role]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Role updated successfully'
+    ]);
+}
+
+
+
+
+
+
+
+ public function dashboard()
+    {
+        // Count new (unread) reclamations (state = 'nouvelle')
+        $newReclamationsCount = Reclamation::where('state', 'nouvelle')->count();
+
+        // Latest 3 reclamations for dropdown
+        $latestReclamations = Reclamation::with('user')
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        return view('superadmin.dashboard', [
+            'newReclamationsCount' => $newReclamationsCount,
+            'latestReclamations' => $latestReclamations,
+            // ... (other existing data)
+        ]);
+    }
+
+    /**
+     * Get count of new reclamations (for AJAX polling).
+     */
+    public function getNewReclamationsCount()
+    {
+        $count = Reclamation::where('state', 'nouvelle')->count();
+        return response()->json(['count' => $count]);
+    }
+
+  
+
+    /**
+     * API: Mark a reclamation as read (for AJAX).
+     */
+    public function markAsRead($id)
+    {
+        $reclamation = Reclamation::findOrFail($id);
+        
+        if ($reclamation->state === 'nouvelle') {
+            $reclamation->update([
+                'state' => 'en_cours',
+                'handler_id' => auth()->id(),
+                'handled_at' => now()
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+
+
+
+
+
+
+
+    public function showReclamation($id)
 {
     $reclamation = Reclamation::with(['user', 'messages', 'messages.sender', 'handler'])
         ->findOrFail($id);
@@ -394,38 +471,23 @@ public function storeMessage(Request $request, $reclamationId)
     return redirect()->back()->with('success', 'Message envoyé avec succès');
 }
 
-public function getUnreadCount()
+
+
+/**
+ * Delete treated reclamations from last month
+ */
+public function deleteMonth()
 {
-    $user = auth()->user();
-    $unreadCount = $user ? $user->unreadMessages()->count() : 0;
-    return response()->json(['count' => $unreadCount]);
-}
+    // Get first and last day of previous month
+    $firstDayLastMonth = now()->subMonth()->startOfMonth()->toDateString();
+    $lastDayLastMonth = now()->subMonth()->endOfMonth()->toDateString();
 
-public function markAsSeen(Request $request)
-{
-    // Mark all messages as seen or a specific one if messageId is provided
-    $messageId = $request->input('messageId');
-    
-    if ($messageId === 'all') {
-        auth()->user()->unreadMessages()->update(['seen' => true]);
-    } else {
-        auth()->user()->unreadMessages()->where('id', $messageId)->update(['seen' => true]);
-    }
-    
-    return response()->json(['success' => true]);
-}
+    // Delete treated reclamations from last month
+    $deletedCount = Reclamation::where('state', 'traitée')
+        ->whereBetween('date_R', [$firstDayLastMonth, $lastDayLastMonth])
+        ->delete();
 
-public function updateRole(Request $request, User $user)
-{
-    $request->validate([
-        'role' => 'required|in:superadmin,admin,leader,utilisateur'
-    ]);
-
-    $user->update(['role' => $request->role]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Role updated successfully'
-    ]);
+    return redirect()->route('superadmin.reclamations')
+        ->with('success', "$deletedCount réclamations traitées du mois précédent ont été supprimées.");
 }
 }

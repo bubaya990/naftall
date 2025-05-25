@@ -7,6 +7,11 @@
     <div class="relative z-10 min-h-screen p-6 pb-16">
         <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-7xl mx-auto mt-8 transition-all duration-500 transform hover:scale-[1.01]">
             <div class="mb-8">
+  <a href="{{ route('superadmin.dashboard') }}" 
+                       class="text-purple-600 hover:text-purple-800 font-medium flex items-center transition-colors duration-300">
+                        <i class="fas fa-arrow-left mr-2"></i> Retour
+                    </a>
+            
                 <h1 class="text-2xl md:text-3xl font-bold text-blue-900">
                     Sites Groupés par Branche – <span class="text-yellow-600">Carburant</span>
                 </h1>

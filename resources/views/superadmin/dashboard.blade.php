@@ -23,40 +23,42 @@
     <!-- Notification bell + dropdown wrapper -->
     <div class="fixed top-4 right-10 z-20 animate-slideInRight">
         <div class="relative inline-block">
-            <!-- Notification Bell -->
-            <button id="notification-btn" class="relative p-3 rounded-full hover:bg-white/30 text-gray-700 hover:text-blue-900 transition-all duration-300 transform hover:rotate-12 bg-white/80 backdrop-blur-sm shadow-lg">
-                <i class="fas fa-bell text-xl"></i>
-                @if($unreadCount > 0)
-                    <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center animate-bounce">
-                        {{ $unreadCount }}
-                    </span>
-                @endif
-            </button>
+          <!-- Notification Bell -->
+<button id="notification-btn" class="relative p-3 rounded-full hover:bg-white/30 text-gray-700 hover:text-blue-900 transition-all duration-300 transform hover:rotate-12 bg-white/80 backdrop-blur-sm shadow-lg">
+    <i class="fas fa-bell text-xl"></i>
+    @if($newReclamationsCount > 0)
+        <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center animate-bounce">
+            {{ $newReclamationsCount }}
+        </span>
+    @endif
+</button>
 
             <!-- Notification dropdown -->
             <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-white backdrop-blur-lg rounded-xl shadow-xl z-10 border border-gray-200/50 transform origin-top transition-all duration-300 scale-95 opacity-0">
-                <div class="p-3 border-b border-gray-200/50 bg-white/80 flex justify-between items-center">
-                    <h3 class="font-medium text-blue-900">Notifications ({{ $unreadCount }})</h3>
-                    <a href="{{ route('superadmin.reclamations.addreclamation') }}" class="text-xs text-yellow-600 hover:text-yellow-700">Ajouter une réclamation</a>
+                <div class="p-2 border-b border-gray-200/50 bg-white/80 flex justify-between items-center">
+ <h3 class="font- text-blue-900">Notifications ({{ $newReclamationsCount }})                    <a href="{{ route('superadmin.reclamations.addreclamation') }}" class="text-xs text-yellow-600 hover:text-yellow-700">Ajouter une réclamation</a>
                 </div>
 
+
                 <div class="max-h-60 overflow-y-auto">
-                    @forelse($latestReclamations as $reclamation)
-                        <a href="#" class="block px-4 py-3 hover:bg-white/50 border-b border-gray-200/50 transition-all duration-200 hover:pl-5">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 text-yellow-500 mt-1 animate-pulse">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-blue-900">Reclamation #{{ $reclamation->num_R }}</p>
-                                    <p class="text-xs text-gray-600 truncate">{{ Str::limit($reclamation->message, 30) }}</p>
-                                    <p class="text-xs text-gray-500 mt-1">{{ $reclamation->created_at->diffForHumans() }}</p>
-                                </div>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="px-4 py-3 text-center text-gray-500">Aucune notification</div>
-                    @endforelse
+                    <!-- In your dashboard.blade.php -->
+@forelse($latestReclamations as $reclamation)
+    <a href="{{ route('superadmin.reclamations.show', $reclamation->id) }}" 
+       class="block px-4 py-3 hover:bg-white/50 border-b border-gray-200/50 transition-all duration-200 hover:pl-5">
+        <div class="flex items-start">
+            <div class="flex-shrink-0 text-yellow-500 mt-1 animate-pulse">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-blue-900">Reclamation #{{ $reclamation->num_R }}</p>
+                <p class="text-xs text-gray-600 truncate">{{ Str::limit($reclamation->message, 30) }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ $reclamation->created_at->diffForHumans() }}</p>
+            </div>
+        </div>
+    </a>
+@empty
+    <div class="px-4 py-3 text-center text-gray-500">Aucune notification</div>
+@endforelse
                 </div>
 
                 <div class="p-2 border-t border-gray-200/50 bg-white/50 text-center">

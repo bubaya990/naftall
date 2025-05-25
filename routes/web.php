@@ -77,6 +77,8 @@ Route::get('/locations/{location}/{entityType}/{entity}/materials', [LocationCon
     Route::get('/materials/hotspots', [MaterialController::class, 'hotspots'])->name('materials.hotspots');
     Route::get('/materials/ip-phones', [MaterialController::class, 'ipPhones'])->name('materials.ip-phones');
     Route::get('/materials/site/{site}/{type}', [MaterialController::class, 'siteMaterials'])->name('materials.site');
+   Route::get('/materials/{type}/{id}/edit', [MaterialController::class, 'edit'])->name('superadmin.materials.edit');
+
     Route::get('/materials/list/{type}', [MaterialController::class, 'list'])->name('superadmin.materials.list');
     // Reclamations
     Route::get('/reclamations/reclamations', [SuperAdminController::class, 'reclamations'])->name('superadmin.reclamations');   
@@ -84,6 +86,11 @@ Route::get('/locations/{location}/{entityType}/{entity}/materials', [LocationCon
      Route::post('/superadmin/reclamations', [SuperAdminController::class, 'storeReclamation'])->name('storeReclamation');
      Route::get('/reclamations/{id}', [SuperAdminController::class, 'showReclamation'])->name('reclamations');
     Route::delete('/superadmin/reclamations/{id}', [SuperAdminController::class, 'destroyReclamation'])->name('superadmin.reclamations.destroy');
+ Route::get('/materials/{type}/{id}/edit', [MaterialController::class, 'edit'])->name('materials.edit');
+Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])->name('materials.update');
+
+  
+  
     // Reclamation Messaging
     Route::post('/reclamations/{reclamationId}/messages', [SuperAdminController::class, 'storeMessage'])->name('messages.store');
 
@@ -372,7 +379,6 @@ Route::put('/superadmin/utilisateurs/{user}', [SuperAdminController::class, 'upd
     ->name('superadmin.utilisateurs.updateRole');
 
     // Edit route
-Route::get('/materials/{type}/{id}/edit', [MaterialController::class, 'edit'])->name('superadmin.materials.edit');
 
 // Update route
 Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])->name('superadmin.materials.update');
@@ -428,6 +434,27 @@ Route::delete('/materials/{type}/{material}', [MaterialController::class, 'destr
 Route::get('/locations/{location}/{entityType}/{entity}/add-material/{type?}', [LocationController::class, 'addMaterial'])->name('locations.addMaterial');
 Route::post('/locations/{location}/{entityType}/{entity}/store-material', [LocationController::class, 'storeMaterial'])->name('locations.storeMaterial');
 
+// Dashboard & Notifications
+Route::get('/superadmin/dashboard', [SuperAdminController::class, 'dashboard'])
+    ->name('superadmin.dashboard');
 
+// Reclamation Routes
+Route::prefix('superadmin/reclamations')->group(function () {
+    Route::get('/', [SuperAdminController::class, 'reclamations'])
+        ->name('superadmin.reclamations');
     
+    Route::get('/{id}', [SuperAdminController::class, 'showReclamation'])
+        ->name('superadmin.reclamations.show');
+    
+    Route::post('/{id}/mark-as-read', [SuperAdminController::class, 'markAsRead'])
+        ->name('superadmin.reclamations.mark-as-read');
+    
+    Route::get('/new-count', [SuperAdminController::class, 'getNewReclamationsCount'])
+        ->name('superadmin.reclamations.new-count');
+});
+
+
+
+Route::delete('/reclamations/delete-month', [SuperAdminController::class, 'deleteMonth'])
+    ->name('superadmin.reclamations.delete-month');
 require __DIR__.'/auth.php';

@@ -33,6 +33,7 @@ class SiteController extends Controller
      */
     public function uploadPlans(Request $request, Branche $branche)
     {
+         $superadmin = auth()->user(); 
         $request->validate([
             'plans.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096'
         ]);
@@ -55,7 +56,8 @@ class SiteController extends Controller
      * Delete a plan image by index.
      */
     public function deletePlan(Branche $branche, $imageIndex)
-    {
+    {         $superadmin = auth()->user(); 
+
         $planImages = $branche->plan_images ?? [];
 
         if (isset($planImages[$imageIndex])) {

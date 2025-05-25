@@ -10,29 +10,29 @@
         <!-- Materials Section with green gradient -->
         <div class="bg-gradient-to-br from-green-50 to-green-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-green-500">
             
-            <!-- Header with actions -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div>
-                    <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800">
-                        Matériels dans {{ $entityType === 'room' ? 'la salle' : 'le couloir' }}: {{ $entity->name }}
-                    </h1>
-                    <p class="text-gray-600 mt-1 text-sm md:text-base">Localité: {{ $location->name }}</p>
-                </div>
-                
-                <div>
-                    <a href="{{ $entityType === 'room' ? route('superadmin.locations.rooms', $location) : route('superadmin.locations.corridors', $location) }}" 
-                       class="btn btn-primary shadow-md hover:shadow-lg flex items-center">
-                        <i class="fas fa-arrow-left mr-2"></i> Retour
-                    </a>
+       <!-- Update the header actions section in materials.blade.php -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div class="animate-slideInLeft">
+        <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800">
+            Matériels dans {{ $entityType === 'room' ? 'la salle' : 'le couloir' }}: {{ $entity->name }}
+        </h1>
+        <p class="text-gray-600 mt-2">{{ $location->site->name }} - {{ $location->name }}</p>
+    </div>
+    
+    <div class="flex items-center gap-4">
+        <a href="{{ $entityType === 'room' ? route('superadmin.locations.rooms', $location) : route('superadmin.locations.corridors', $location) }}" 
+           class="text-green-700 hover:text-green-900 transition-colors duration-200 bg-green-100 hover:bg-green-200 px-4 py-2 rounded-lg font-medium border border-green-200">
+            <i class="fas fa-arrow-left mr-2"></i> Retour
+        </a>
 
-                    @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
-                    <a href="{{ route('locations.addMaterial', ['location' => $location->id, 'entityType' => $entityType, 'entity' => $entity->id]) }}" 
-                       class="btn btn-primary shadow-md hover:shadow-lg flex items-center ml-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                        <i class="fas fa-plus-circle mr-2"></i> Ajouter
-                    </a>
-                    @endif
-                </div>
-            </div>
+        @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
+        <a href="{{ route('locations.addMaterial', ['location' => $location->id, 'entityType' => $entityType, 'entity' => $entity->id]) }}" 
+           class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
+            <i class="fas fa-plus-circle mr-2"></i> Ajouter
+        </a>
+        @endif
+    </div>
+</div>
 
             @if(session('success'))
                 <div class="mb-6 p-4 bg-green-100 text-green-800 rounded-lg border-l-4 border-green-500">

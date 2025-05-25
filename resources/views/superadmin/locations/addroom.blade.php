@@ -1,23 +1,34 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- CSRF Token Meta Tag -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="relative">
     <!-- Background with blur effect -->
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
     
     <!-- Main content container -->
-    <div class="relative z-10 min-h-screen p-6 pb-16">
-        <!-- Dashboard content with glassmorphism effect -->
-        <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-2xl mx-auto mt-8 transition-all duration-500 transform hover:scale-[1.01]">
-            <!-- Header -->
-            <div class="mb-8">
-                <h1 class="text-2xl md:text-3xl font-bold text-blue-900">Add New Room</h1>
-                <p class="text-gray-600 mt-1">Location: {{ $location->name }}</p>
+    <div class="relative z-10 min-h-screen p-4 md:p-6 pb-16 flex items-center justify-center">
+        <!-- Glass morphism container (removed bg-white/20) -->
+        <div class="backdrop-blur-xl shadow-2xl rounded-2xl p-6 md:p-8 w-full max-w-3xl border-2 border-white/20">
+            <!-- Header with gradient text -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 drop-shadow-lg">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800">
+                        Nouvelle Salle
+                    </span>
+                </h1>
+                <a href="{{ route('superadmin.locations.rooms', $location) }}" 
+                   class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Retour
+                </a>
             </div>
 
             @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg">
-                    <ul class="list-disc pl-5">
+                <div class="mb-6 p-4 bg-red-100/90 backdrop-blur-sm border-l-4 border-red-500 text-red-700 rounded-lg">
+                    <div class="font-bold">Veuillez corriger les erreurs suivantes :</div>
+                    <ul class="mt-2 list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -25,45 +36,156 @@
                 </div>
             @endif
 
-            <!-- Form -->
-            <form action="{{ route('superadmin.locations.storeRoom', $location) }}" method="POST" class="space-y-6">
-                @csrf
+            <!-- Form container (removed bg-white/40) -->
+            <div class="backdrop-blur-lg rounded-xl shadow-inner border-2 border-white/30 p-6">
+                <form action="{{ route('superadmin.locations.storeRoom', $location) }}" method="POST">
+                    @csrf
 
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Room Name</label>
-                    <input type="text" name="name" id="name" required value="{{ old('name') }}"
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Room Name Field - removed backdrop-blur-sm div wrapper -->
+                        <div>
+                            <label class="block text-sm md:text-base font-bold text-gray-800 mb-2" for="name">Nom de la salle *</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-blue-600/80">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <input class="block w-full pl-10 pr-4 py-3 border-2 border-blue-300/50 rounded-full bg-white/70 focus:bg-white/90 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 font-medium text-gray-800 placeholder-gray-500/70 shadow-sm"
+                                       id="name"
+                                       type="text"
+                                       name="name"
+                                       value="{{ old('name') }}"
+                                       required
+                                       placeholder="Nom de la salle">
+                            </div>
+                        </div>
 
-                <div>
-                    <label for="code" class="block text-sm font-medium text-gray-700 mb-1">Room Code</label>
-                    <input type="text" name="code" id="code" required value="{{ old('code') }}"
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
+                        <!-- Room Code Field - removed backdrop-blur-sm div wrapper -->
+                        <div>
+                            <label class="block text-sm md:text-base font-bold text-gray-800 mb-2" for="code">Code de la salle *</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-blue-600/80">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                                <input class="block w-full pl-10 pr-4 py-3 border-2 border-blue-300/50 rounded-full bg-white/70 focus:bg-white/90 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 font-medium text-gray-800 placeholder-gray-500/70 shadow-sm"
+                                       id="code"
+                                       type="text"
+                                       name="code"
+                                       value="{{ old('code') }}"
+                                       required
+                                       placeholder="Code de la salle">
+                            </div>
+                        </div>
 
-                <div>
-                    <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
-                    <select name="type" id="type" required
-                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Select Type</option>
-                        <option value="Bureau" @selected(old('type') == 'Bureau')>Bureau</option>
-    <option value="Salle reunion" @selected(old('type') == 'Salle reunion')>Salle réunion</option>
-    <option value="Salle reseau" @selected(old('type') == 'Salle reseau')>Salle Réseau</option>
-                    </select>
-                </div>
+                        <!-- Room Type Field - removed backdrop-blur-sm div wrapper -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm md:text-base font-bold text-gray-800 mb-2" for="type">Type de salle *</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-blue-600/80">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <select id="type" name="type"
+                                        class="block w-full pl-10 pr-8 py-3 border-2 border-blue-300/50 rounded-full bg-white/70 focus:bg-white/90 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 font-medium text-gray-800 appearance-none shadow-sm"
+                                        required>
+                                    <option value="">-- Sélectionnez un type --</option>
+                                    <option value="Bureau" @selected(old('type') == 'Bureau')>Bureau</option>
+                                    <option value="Salle reunion" @selected(old('type') == 'Salle reunion')>Salle réunion</option>
+                                    <option value="Salle reseau" @selected(old('type') == 'Salle reseau')>Salle Réseau</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-blue-600/80">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="flex justify-end space-x-4 pt-4">
-                    <a href="{{ route('superadmin.locations.rooms', $location) }}"
-                       class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                        Cancel
-                    </a>
-                    <button type="submit" 
-                            class="px-6 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg shadow hover:shadow-md transition">
-                        Save Room
-                    </button>
-                </div>
-            </form>
+                    <!-- Submit Button - removed backdrop-blur-sm div wrapper -->
+                    <div class="flex justify-end mt-8">
+                        <button type="submit"
+                                class="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold rounded-full shadow-lg transition-all duration-300 hover:shadow-xl flex items-center backdrop-blur-md">
+                            <i class="fas fa-plus-circle mr-2"></i> 
+                            <span>Créer la salle</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Enhanced blur effects */
+.backdrop-blur-xl {
+    backdrop-filter: blur(24px);
+}
+.backdrop-blur-lg {
+    backdrop-filter: blur(16px);
+}
+.backdrop-blur-md {
+    backdrop-filter: blur(12px);
+}
+
+/* Background transparency levels */
+.bg-white\/70 {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+.bg-white\/90 {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Border transparency */
+.border-white\/20 {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.border-white\/30 {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+.border-blue-300\/50 {
+    border-color: rgba(147, 197, 253, 0.5);
+}
+
+/* Gradient text effect */
+.bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+.from-blue-600 {
+    --tw-gradient-from: #2563eb;
+}
+.to-indigo-700 {
+    --tw-gradient-to: #4338ca;
+}
+.to-indigo-800 {
+    --tw-gradient-to: #3730a3;
+}
+
+/* Button hover states */
+.hover\:from-blue-700:hover {
+    --tw-gradient-from: #1d4ed8;
+}
+.hover\:to-indigo-800:hover {
+    --tw-gradient-to: #3730a3;
+}
+
+/* Transition effects */
+.transition-all {
+    transition-property: all;
+}
+.duration-300 {
+    transition-duration: 300ms;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .backdrop-blur-xl {
+        backdrop-filter: blur(16px);
+    }
+    .backdrop-blur-lg {
+        backdrop-filter: blur(12px);
+    }
+    
+    /* Make inputs slightly less rounded on mobile */
+    .rounded-full {
+        border-radius: 0.75rem;
+    }
+}
+</style>
 @endsection

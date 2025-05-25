@@ -45,14 +45,13 @@
                     </div>
                 </div>
 
-                <!-- Reclamation Content -->
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold text-gray-800 mb-2">{{ $reclamation->definition }}</h2>
-                    <div class="bg-gray-50/80 rounded-lg p-4 border border-gray-200 backdrop-blur-sm">
-                        <p class="text-gray-800 whitespace-pre-line">{{ $reclamation->message }}</p>
-                    </div>
-                </div>
-
+              <!-- Reclamation Content -->
+<div class="mb-8">
+    <h2 class="text-lg font-bold text-gray-800 mb-2">{{ $reclamation->definition }}</h2>
+    <div class="bg-gray-50/80 rounded-lg p-4 border-2 border-purple-400 backdrop-blur-sm transition-all duration-300 hover:border-purple-500 hover:shadow-md">
+        <p class="text-gray-800 whitespace-pre-line">{{ $reclamation->message }}</p>
+    </div>
+</div>
                 <!-- Status Actions -->
                 @if($reclamation->state === 'nouvelle')
                     <form action="{{ route('superadmin.reclamations.update-status', ['id' => $reclamation->id, 'status' => 'en_cours']) }}" method="POST" class="mb-6">
@@ -73,29 +72,29 @@
                 @endif
 
                 <!-- Messages Section -->
-                <div class="mt-8">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Conversation</h3>
+<div class="mt-8">
+    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b border-purple-200 pb-2">Conversation</h3>
 
-                    <div class="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
-                        @forelse($reclamation->messages as $message)
-                            <div class="flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
-                                <div class="max-w-xs md:max-w-md rounded-lg p-3 transition-all duration-300
-                                    {{ $message->sender_id === Auth::id() 
-                                        ? 'bg-purple-600 text-white rounded-br-none hover:shadow-md' 
-                                        : 'bg-gray-50/80 border border-gray-200 text-gray-800 rounded-bl-none hover:shadow-md' }}">
-                                    <div class="text-sm font-semibold">
-                                        {{ $message->sender->name }}
-                                        <span class="text-xs opacity-70 ml-2">
-                                            {{ $message->created_at->format('d/m/Y H:i') }}
-                                        </span>
-                                    </div>
-                                    <p class="mt-1 whitespace-pre-line">{{ $message->message }}</p>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="text-center text-gray-500 py-4">Aucun message pour cette réclamation</div>
-                        @endforelse
+    <div class="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+        @forelse($reclamation->messages as $message)
+            <div class="flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
+                <div class="max-w-xs md:max-w-md rounded-lg p-3 transition-all duration-300
+                    {{ $message->sender_id === Auth::id() 
+                        ? 'bg-purple-600 text-white rounded-br-none hover:shadow-md ' 
+                        : 'bg-gray-50/80 border-2 border-purple-400 text-gray-800 rounded-bl-none hover:shadow-md hover:border-purple-500' }}">
+                    <div class="text-sm font-semibold">
+                        {{ $message->sender->name }}
+                        <span class="text-xs opacity-70 ml-2">
+                            {{ $message->created_at->format('d/m/Y H:i') }}
+                        </span>
                     </div>
+                    <p class="mt-1 whitespace-pre-line">{{ $message->message }}</p>
+                </div>
+            </div>
+        @empty
+            <div class="text-center text-gray-500 py-4">Aucun message pour cette réclamation</div>
+        @endforelse
+    </div>
 
                     @if($reclamation->state !== 'traitée')
                         <form action="{{ route('superadmin.reclamations.store-message', $reclamation->id) }}" method="POST">
