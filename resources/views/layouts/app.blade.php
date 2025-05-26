@@ -9,6 +9,15 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+
+          #dashboard-button {
+        transition: all 0.3s ease;
+        z-index: 50;
+    }
+    
+    #dashboard-button.hidden {
+        display: none;
+    }
         :root {
             --naftal-blue: #001a33;
             --naftal-blue-light: #00264d;
@@ -77,7 +86,9 @@
 
 <body class="bg-gray-100 font-sans antialiased">
 <div class="flex h-screen overflow-hidden">
-
+    <button id="dashboard-button" class="fixed top-4 left-16 z-50 p-2 rounded-md text-white bg-naftal-blue shadow-md hover:bg-naftal-blue-light transition-all duration-200">
+        <i class="fas fa-home"></i>
+    </button>
     <!-- Sidebar -->
     <div id="sidebar" class="w-64 fixed sidebar-container text-white flex flex-col flex-shrink-0 h-full sidebar-hidden">
         <div class="p-5 flex items-center border-b border-gray-700">
@@ -216,12 +227,12 @@
     </div>
 </div>
 <script src="//unpkg.com/alpinejs" defer></script>
-
 <script>
     const toggleBtn = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
     const pageContainer = document.getElementById('page-container');
     const mainContent = document.getElementById('main-content');
+    const dashboardBtn = document.getElementById('dashboard-button');
 
     // Hide sidebar by default and show toggle button
     sidebar.classList.add('sidebar-hidden');
@@ -231,6 +242,12 @@
         e.stopPropagation();
         sidebar.classList.toggle('sidebar-hidden');
         toggleBtn.classList.toggle('toggle-btn-hidden');
+        dashboardBtn.classList.toggle('hidden'); // Toggle dashboard button visibility
+    });
+
+    // Click handler for dashboard button
+    dashboardBtn.addEventListener('click', () => {
+        window.location.href = "{{ route('superadmin.dashboard') }}";
     });
 
     // Click handler for main content to hide sidebar
@@ -238,6 +255,7 @@
         if (!sidebar.classList.contains('sidebar-hidden')) {
             sidebar.classList.add('sidebar-hidden');
             toggleBtn.classList.remove('toggle-btn-hidden');
+            dashboardBtn.classList.remove('hidden'); // Show dashboard button when sidebar hides
         }
     });
 
@@ -251,5 +269,6 @@
         });
     });
 </script>
+
 </body>
 </html>

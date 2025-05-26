@@ -153,7 +153,7 @@
                                                 <div x-show="isOpen" x-transition class="p-4 bg-purple-50">
                                                     <div class="flex flex-col gap-2">
                                                         @foreach($subChild->children as $station)
-                                                            <a href="{{ route('superadmin.sites.branche.detail', ['site' => $commercialBranche->site_id, 'brancheType' => 'GD', 'branche' => $station->id]) }}" class="block">
+                                                            <a href="#" class="block">
                                                                 <div class="bg-white text-purple-600 rounded-lg p-2 text-center text-sm shadow-sm">
                                                                     {{ $station->name }}
                                                                 </div>
