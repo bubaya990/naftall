@@ -200,7 +200,7 @@ private function incrementMaterialCount(&$counts, $materialableType)
         }
     }
     // List materials based on type
-  public function list($type)
+ public function list($type)
 {
     $modelClass = $this->getModelFromType($type);
     if (!$modelClass) {
@@ -210,11 +210,8 @@ private function incrementMaterialCount(&$counts, $materialableType)
     $materials = Material::with([
             'materialable', 
             'room.location.site', 
-            'room.location',  // Add this
-            'room',          // Add this
             'corridor.location.site',
-            'corridor.location',  // Add this
-            'corridor'           // Add this
+            'corridor'  // Make sure corridor is loaded
         ])
         ->where('materialable_type', $modelClass)
         ->orderBy('created_at', 'desc')
@@ -222,7 +219,6 @@ private function incrementMaterialCount(&$counts, $materialableType)
 
     return view('superadmin.materials.list', compact('materials', 'type'));
 }
- 
  
   
     // Helper method to map the material type to the model class
@@ -394,10 +390,10 @@ public function edit($type, $id)
         
         // Update material
         $material->update([
-            'state' => $validatedData['state'],
-            'room_id' => isset($validatedData['room_id']) ? $validatedData['room_id'] : $material->room_id,
-            'corridor_id' => isset($validatedData['corridor_id']) ? $validatedData['corridor_id'] : $material->corridor_id,
-        ]);
+    'state' => $validatedData['state'],
+    'room_id' => $request->location_type === 'room' ? $validatedData['room_id'] : null,
+    'corridor_id' => $request->location_type === 'corridor' ? $validatedData['corridor_id'] : null,
+]);
         
         // Update type-specific fields
         switch ($type) {

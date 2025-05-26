@@ -219,11 +219,11 @@
         {{ $material->room->location->name }} > 
         Salle: {{ $material->room->name }} ({{ $material->room->code }})
     @elseif($material->corridor)
-        <i class="fas fa-arrows-alt-h text-blue-600 mr-1"></i>
-        {{ $material->corridor->location->site->name }} > 
-        {{ $material->corridor->location->name }} > 
-        Couloir: {{ $material->corridor->name }}
-    @else
+    <i class="fas fa-arrows-alt-h text-blue-600 mr-1"></i>
+    {{ $material->corridor->location->site->name ?? 'N/A' }} > 
+    {{ $material->corridor->location->name ?? 'N/A' }} > 
+    Couloir: {{ $material->corridor->name ?? 'N/A' }}
+@else
         <i class="fas fa-question-circle text-gray-400 mr-1"></i>
         N/A
     @endif
