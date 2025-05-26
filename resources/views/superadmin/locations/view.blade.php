@@ -251,96 +251,7 @@
 </div>
 @endif
 
-<script>
-// Delete Modal Functions
-function openDeleteModal(type, id, inventoryNumber) {
-    const modal = document.getElementById('deleteModal');
-    const typeInput = document.getElementById('delete-material-type');
-    const idInput = document.getElementById('delete-material-id');
-    const numberSpan = document.getElementById('material-to-delete-number');
-    
-    typeInput.value = type;
-    idInput.value = id;
-    numberSpan.textContent = inventoryNumber;
-    
-    // Set the form action
-    document.getElementById('deleteForm').action = `/superadmin/materials/${type}/${id}`;
-    
-    modal.classList.remove('hidden');
-}
 
-function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.add('hidden');
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Get all search inputs
-    const searchInputs = document.querySelectorAll('input[id^="search-"], select[id^="search-"]');
-    const rows = document.querySelectorAll('#materialsTable tr');
-
-    // Function to filter rows based on all search criteria
-    function filterRows() {
-        const filters = {};
-        
-        // Collect all filter values
-        searchInputs.forEach(input => {
-            const column = input.getAttribute('data-column');
-            filters[column] = input.value.toLowerCase();
-        });
-
-        rows.forEach(row => {
-            if (row.cells.length <= 1) return; // Skip the "no results" row
-            
-            let visible = true;
-            const cells = row.cells;
-
-            // Check each filter
-            for (const [column, value] of Object.entries(filters)) {
-                if (value === '') continue;
-                
-                const cell = cells[column];
-                let cellText = cell.textContent.toLowerCase();
-                
-                // Special handling for state column (span content)
-                if (column === '2') {
-                    const span = cell.querySelector('span');
-                    if (span) {
-                        cellText = span.textContent.toLowerCase();
-                    }
-                }
-                
-                if (!cellText.includes(value)) {
-                    visible = false;
-                    break;
-                }
-            }
-
-            // Apply visibility
-            if (visible) {
-                row.classList.remove('hidden');
-            } else {
-                row.classList.add('hidden');
-            }
-        });
-    }
-
-    // Add event listeners to all search inputs
-    searchInputs.forEach(input => {
-        input.addEventListener('input', filterRows);
-    });
-
-    // Responsive data labels
-    const headers = document.querySelectorAll('thead th');
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        cells.forEach((cell, index) => {
-            if (index < headers.length) {
-                cell.setAttribute('data-label', headers[index].textContent);
-            }
-        });
-    });
-});
-</script>
 
 <style>
 /* Green color scheme matching locations view */
@@ -403,4 +314,209 @@ button, a {
 .border-green-500 { border-color: #22c55e; }
 .border-red-500 { border-color: #ef4444; }
 </style>
+
+
+<script>
+// Store the initial data from PHP
+const sitesData = @json($sites);
+const initialLocationId = {{ $material->room ? $material->room->location_id : ($material->corridor ? $material->corridor->location_id : 'null') }};
+const initialRoomId = {{ $material->room_id ?? 'null' }};
+const initialCorridorId = {{ $material->corridor_id ?? 'null' }};
+
+// Function to populate locations dropdown based on selected site
+function populateLocations(siteId) {
+    const locationSelect = document.getElementById('locationSelect');
+    locationSelect.innerHTML = '';
+    
+    // Find the selected site
+    const selectedSite = sitesData.find(site => site.id == siteId);
+    if (!selectedSite) return;
+    
+    // Add default option
+    const defaultOption = new Option('Sélectionner un emplacement', '');
+    locationSelect.add(defaultOption);
+    
+    // Add location options
+    selectedSite.locations.forEach(location => {
+        const option = new Option(location.type, location.id);
+        locationSelect.add(option);
+    });
+    
+    // If this is the initial load and we have a location ID, select it
+    if (initialLocationId && selectedSite.locations.some(l => l.id == initialLocationId)) {
+        locationSelect.value = initialLocationId;
+    }
+    
+    // Trigger change event to populate rooms/corridors
+    locationSelect.dispatchEvent(new Event('change'));
+}
+
+// Function to populate rooms or corridors based on selected location
+function populateRoomsOrCorridors(locationId, locationType) {
+    const selectedSite = sitesData.find(site => 
+        site.locations.some(location => location.id == locationId)
+    );
+    
+    if (!selectedSite) return;
+    
+    const selectedLocation = selectedSite.locations.find(l => l.id == locationId);
+    if (!selectedLocation) return;
+    
+    if (locationType === 'room') {
+        const roomSelect = document.getElementById('roomSelect');
+        roomSelect.innerHTML = '';
+        
+        // Add default option
+        const defaultOption = new Option('Sélectionner une salle', '');
+        roomSelect.add(defaultOption);
+        
+        // Add room options
+        selectedLocation.rooms.forEach(room => {
+            const option = new Option(`${room.name} (${room.code})`, room.id);
+            roomSelect.add(option);
+        });
+        
+        // Select initial room if available
+        if (initialRoomId && selectedLocation.rooms.some(r => r.id == initialRoomId)) {
+            roomSelect.value = initialRoomId;
+        }
+    } else {
+        const corridorSelect = document.getElementById('corridorSelect');
+        corridorSelect.innerHTML = '';
+        
+        // Add default option
+        const defaultOption = new Option('Sélectionner un couloir', '');
+        corridorSelect.add(defaultOption);
+        
+        // Add corridor options
+        selectedLocation.corridors.forEach(corridor => {
+            const option = new Option(`Couloir ${corridor.id}`, corridor.id);
+            corridorSelect.add(option);
+        });
+        
+        // Select initial corridor if available
+        if (initialCorridorId && selectedLocation.corridors.some(c => c.id == initialCorridorId)) {
+            corridorSelect.value = initialCorridorId;
+        }
+    }
+}
+
+// Toggle between room and corridor fields
+function toggleLocationType() {
+    const roomRadio = document.querySelector('input[name="location_type"][value="room"]');
+    document.getElementById('roomField').classList.toggle('hidden', !roomRadio.checked);
+    document.getElementById('corridorField').classList.toggle('hidden', roomRadio.checked);
+    
+    // Trigger change to load appropriate rooms/corridors
+    const locationSelect = document.getElementById('locationSelect');
+    if (locationSelect.value) {
+        locationSelect.dispatchEvent(new Event('change'));
+    }
+}
+
+// Initialize the form when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up event listeners
+    document.getElementById('siteSelect').addEventListener('change', function() {
+        populateLocations(this.value);
+    });
+    
+    document.getElementById('locationSelect').addEventListener('change', function() {
+        const locationType = document.querySelector('input[name="location_type"]:checked').value;
+        populateRoomsOrCorridors(this.value, locationType);
+    });
+    
+    document.querySelectorAll('input[name="location_type"]').forEach(radio => {
+        radio.addEventListener('change', toggleLocationType);
+    });
+    
+    // Initialize the form
+    const initialSiteId = {{ $material->room ? $material->room->location->site_id : ($material->corridor ? $material->corridor->location->site_id : 'null') }};
+    if (initialSiteId) {
+        document.getElementById('siteSelect').value = initialSiteId;
+        populateLocations(initialSiteId);
+    }
+    
+    // Set initial location type
+    toggleLocationType();
+});
+
+// Handle form submission with modern fetch API
+document.getElementById('editForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    
+    // Show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Enregistrement...
+    `;
+    
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw errorData;
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show success notification
+            showNotification('Modifications enregistrées avec succès!', 'success');
+            setTimeout(() => window.location.reload(), 1500);
+        } else {
+            throw new Error(data.message || 'Une erreur est survenue');
+        }
+    } catch (error) {
+        let errorMessage = 'Une erreur est survenue';
+        if (error.errors) {
+            errorMessage = Object.values(error.errors).join('<br>');
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        showNotification(errorMessage, 'error');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+    }
+});
+
+// Notification function
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white font-medium flex items-center ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+</script>
 @endsection

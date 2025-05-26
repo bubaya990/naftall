@@ -336,18 +336,22 @@ private function incrementMaterialCount(&$counts, $materialableType)
         abort(404, "Type de matériel non trouvé");
     }
 
-    $material = Material::with(['materialable', 'room.location.site', 'corridor.location.site'])
-        ->where('materialable_type', $modelClass)
-        ->findOrFail($id);
+    $material = Material::with([
+        'materialable', 
+        'room.location.site.locations.rooms', 
+        'room.location.site.locations.corridors',
+        'corridor.location.site.locations.rooms',
+        'corridor.location.site.locations.corridors'
+    ])
+    ->where('materialable_type', $modelClass)
+    ->findOrFail($id);
 
-    $sites = Site::all();
+    $sites = Site::with(['locations.rooms', 'locations.corridors'])->get();
     $states = ['bon', 'défectueux', 'hors_service'];
     $rams = Ram::all();
     
-    // Get the referrer URL
-    $referrer = request()->headers->get('referer');
     $source = request()->input('source', 'list');
-    return view('superadmin.materials.edit', compact('material', 'type', 'sites', 'states', 'rams', 'referrer','source'));
+    return view('superadmin.materials.edit', compact('material', 'type', 'sites', 'states', 'rams', 'source'));
 }
 
     /**

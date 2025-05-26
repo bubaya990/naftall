@@ -5,17 +5,23 @@
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
 
     <div class="relative z-10 min-h-screen p-6 pb-16">
-        <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-7xl mx-auto mt-8 transition-all duration-500 transform hover:scale-[1.01]">
-            <div class="mb-8">
+      <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 max-w-7xl mx-auto mt-8 transition-all duration-500 transform hover:scale-[1.01]">
+    <!-- Button aligned right -->
+    <div class="mb-4 flex justify-end">
+        <a href="{{ route('superadmin.dashboard') }}" 
+           class="text-yellow-700 hover:text-yellow-900 transition-colors duration-200 bg-yellow-100 hover:bg-yellow-200 px-4 py-2 rounded-lg font-medium border border-yellow-200">
+            <i class="fas fa-arrow-left mr-2"></i> Retour
+        </a>
+    </div>
 
-              <a href="{{ route('superadmin.dashboard') }}" 
-                       class="text-purple-600 hover:text-purple-800 font-medium flex items-center transition-colors duration-300">
-                        <i class="fas fa-arrow-left mr-2"></i> Retour
-                    </a>
-                <h1 class="text-2xl md:text-3xl font-bold text-blue-900">
-                    Structure Commerciale
-                </h1>
-            </div>
+    <!-- Centered title -->
+    <div class="mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-blue-900 text-center">
+            Structure Commerciale
+        </h1>
+    </div>
+
+
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Main Cards Section -->
