@@ -21,10 +21,10 @@
     </div>
     
     <div class="flex items-center gap-4">
-        <a href="{{ $entityType === 'room' ? route('superadmin.locations.rooms', $location) : route('superadmin.locations.corridors', $location) }}" 
-           class="text-green-700 hover:text-green-900 transition-colors duration-200 bg-green-100 hover:bg-green-200 px-4 py-2 rounded-lg font-medium border border-green-200">
-            <i class="fas fa-arrow-left mr-2"></i> Retour
-        </a>
+        <a href="#" onclick="window.history.back(); return false;"
+   class="text-green-700 hover:text-green-900 transition-colors duration-200 bg-green-100 hover:bg-green-200 px-4 py-2 rounded-lg font-medium border border-green-200">
+    <i class="fas fa-arrow-left mr-2"></i> Retour
+</a>
 
         @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
         <a href="{{ route('locations.addMaterial', ['location' => $location->id, 'entityType' => $entityType, 'entity' => $entity->id]) }}" 
