@@ -454,6 +454,25 @@ Route::prefix('superadmin/reclamations')->group(function () {
 });
 
 
+Route::prefix('superadmin/locations')->group(function() {
+    // ... other routes ...
+    
+    // For rooms
+    Route::get('/{location}/rooms/{room}/materials', [LocationController::class, 'viewRoomMaterials'])
+        ->name('superadmin.locations.rooms.materials');
+    
+    // For corridors
+    Route::get('/{location}/corridors/{corridor}/materials', [LocationController::class, 'viewCorridorMaterials'])
+        ->name('superadmin.locations.corridors.materials');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/messages/unread-count', [SuperAdminDashboardController::class, 'getUnreadMessagesCount'])->name('messages.unread-count');
+    Route::post('/messages/mark-as-seen', [SuperAdminDashboardController::class, 'markMessagesAsSeen'])->name('messages.mark-as-seen');
+});
+
+
+
+Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'superadmindashboard'])->name('superadmin.dashboard');
 
 Route::delete('/reclamations/delete-month', [SuperAdminController::class, 'deleteMonth'])
     ->name('superadmin.reclamations.delete-month');

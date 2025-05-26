@@ -417,8 +417,16 @@ public function viewEntityMaterials(Location $location, $entityType, $entityId)
         : Corridor::findOrFail($entityId);
 
     $materials = $entity->materials()->with('materialable')->get();
+  $materials->each(function($material) {
+        $material->type = strtolower(class_basename($material->materialable_type));
+    });
 
-    return view('superadmin.locations.view', compact('location', 'entity', 'materials', 'entityType'));
+    return view('superadmin.locations.view', [
+        'location' => $location,
+        'entity' => $entity,
+        'materials' => $materials,
+        'entityType' => $entityType
+    ]);
 }
 
 

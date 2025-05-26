@@ -21,10 +21,10 @@
                             <i class="fas fa-laptop mr-3"></i>
                             Détails du Matériel
                         </h1>
-                        <a href="{{ route('superadmin.materials.list', $type) }}" 
-                           class="btn btn-outline-light flex items-center px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 border-white/30 transition-all">
-                            <i class="fas fa-arrow-left mr-2"></i> Retour
-                        </a>
+ <a href="{{ $source === 'view' ? route('superadmin.locations.view', ['location' => $material->room->location->id ?? $material->corridor->location->id, 'entityType' => $material->room_id ? 'room' : 'corridor', 'entity' => $material->room_id ?? $material->corridor_id]) : route('superadmin.materials.list', $type) }}" 
+   class="btn btn-outline-light flex items-center px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 border-white/30 transition-all">
+    <i class="fas fa-arrow-left mr-2"></i> Retour
+</a>
                     </div>
                     <div class="mt-2 flex items-center text-green-100">
                         <span class="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">

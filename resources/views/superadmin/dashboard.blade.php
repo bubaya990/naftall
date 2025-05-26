@@ -93,11 +93,10 @@
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-700 mt-2">
-                        <span class="{{ $userGrowth >= 0 ? 'text-green-600' : 'text-red-600' }} font-medium">
-                            {{ $userGrowth >= 0 ? '+' : '' }}{{ $userGrowth }}%
-                        </span> ce mois
-                    </p>
+                  <p class="text-xs text-gray-700 mt-1">
+    <span class="text-green-600 font-medium">{{ $newUsers }}</span> nouveaux utilisateurs ce mois
+</p>
+
                     <div class="mt-2 h-1 bg-gray-200/50 rounded-full overflow-hidden">
                         <div class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full animate-progress" style="width: {{ min(abs($userGrowth), 100) }}%"></div>
                     </div>
@@ -114,11 +113,10 @@
                             <i class="fas fa-laptop"></i>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-700 mt-2">
-                        <span class="{{ $materialGrowth >= 0 ? 'text-green-600' : 'text-red-600' }} font-medium">
-                            {{ $materialGrowth >= 0 ? '+' : '' }}{{ $materialGrowth }}%
-                        </span> ce mois
-                    </p>
+                 <p class="text-xs text-gray-700 mt-1">
+    <span class="text-green-600 font-medium">{{ $newMaterials }}</span> nouveaux matériels ce mois
+</p>
+
                     <div class="mt-2 h-1 bg-gray-200/50 rounded-full overflow-hidden">
                         <div class="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full animate-progress" style="width: {{ min(abs($materialGrowth), 100) }}%"></div>
                     </div>

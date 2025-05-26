@@ -227,7 +227,7 @@
                                     @if(auth()->user()->role === 'superadmin' || auth()->user()->role === 'admin')
                                     <td class="px-4 py-3 text-right space-x-2 md:space-x-3 border-b border-gray-200">
                                         <!-- Edit Button -->
-                                        <a href="{{ route('superadmin.materials.edit', ['type' => $type, 'id' => $material->id]) }}"
+                                        <a href="{{ route('superadmin.materials.edit', ['type' => $type, 'id' => $material->id, 'source' => 'list']) }}"
                                            class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
                                            <i class="fas fa-edit mr-1"></i>
                                            <span class="hidden md:inline">Modifier</span>

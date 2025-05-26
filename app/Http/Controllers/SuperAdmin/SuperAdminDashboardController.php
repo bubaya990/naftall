@@ -11,41 +11,45 @@ use App\Models\Location;
 use App\Models\Reclamation;
 use Carbon\Carbon;
 
-
 class SuperAdminDashboardController extends Controller
 {
-    public function superadmindashboard()
-    {
-        // Total counts
-        $userCount = User::count();
-        $materialCount = Material::count();
-        $locationCount = Location::count();
-        
-        // Calculate growth percentages (last 30 days vs previous 30 days)
-        $userGrowth = $this->calculateGrowth(User::class);
-        $materialGrowth = $this->calculateGrowth(Material::class);
-        
-        // New locations in the last 30 days
-        $newLocations = Location::where('created_at', '>=', now()->subDays(30))->count();
-        $user = Auth::user();
+    
+public function superadmindashboard()
+{
+    $userCount = User::count();
+    $materialCount = Material::count();
+    $locationCount = Location::count();
 
-        // Get unread messages count for the current user
-        $unreadCount = $user ? $user->unreadMessages()->count() : 0;
-        
-        // Get latest 3 reclamations
-        $latestReclamations = Reclamation::latest()->take(3)->get();
+    $newUsers = User::where('created_at', '>=', now()->subDays(30))->count();
+    $newMaterials = Material::where('created_at', '>=', now()->subDays(30))->count();
+    $newLocations = Location::where('created_at', '>=', now()->subDays(30))->count();
 
-        return view('superadmin.dashboard', [
-            'userCount' => $userCount,
-            'materialCount' => $materialCount,
-            'locationCount' => $locationCount,
-            'userGrowth' => $userGrowth,
-            'materialGrowth' => $materialGrowth,
-            'newLocations' => $newLocations,
-            'unreadCount' => $unreadCount,
-            'latestReclamations' => $latestReclamations
-        ]);
-    }
+    $userGrowth = $this->calculateGrowth(User::class);
+    $materialGrowth = $this->calculateGrowth(Material::class);
+
+    $user = Auth::user();
+    $unreadCount = $user ? $user->unreadMessages()->count() : 0;
+
+    $latestReclamations = Reclamation::latest()->take(3)->get();
+
+    // ✅ Add this line
+    $newReclamationsCount = Reclamation::where('state', 'nouvelle')->count();
+
+    return view('superadmin.dashboard', [
+        'userCount' => $userCount,
+        'materialCount' => $materialCount,
+        'locationCount' => $locationCount,
+        'userGrowth' => $userGrowth,
+        'materialGrowth' => $materialGrowth,
+        'newLocations' => $newLocations,
+        'newUsers' => $newUsers,
+        'newMaterials' => $newMaterials,
+        'unreadCount' => $unreadCount,
+        'latestReclamations' => $latestReclamations,
+        // ✅ Pass it to the view
+        'newReclamationsCount' => $newReclamationsCount,
+    ]);
+}
     
     private function calculateGrowth($model)
     {

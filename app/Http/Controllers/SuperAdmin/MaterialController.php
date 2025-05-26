@@ -329,23 +329,26 @@ private function incrementMaterialCount(&$counts, $materialableType)
 
 
 
-    public function edit($type, $id)
-    {
-        $modelClass = $this->getModelFromType($type);
-        if (!$modelClass) {
-            abort(404, "Type de matériel non trouvé");
-        }
-
-        $material = Material::with(['materialable', 'room.location.site', 'corridor.location.site'])
-            ->where('materialable_type', $modelClass)
-            ->findOrFail($id);
-
-        $sites = Site::all();
-        $states = ['bon', 'défectueux', 'hors_service'];
-        $rams = Ram::all();
-        
-        return view('superadmin.materials.edit', compact('material', 'type', 'sites', 'states', 'rams'));
+   public function edit($type, $id)
+{
+    $modelClass = $this->getModelFromType($type);
+    if (!$modelClass) {
+        abort(404, "Type de matériel non trouvé");
     }
+
+    $material = Material::with(['materialable', 'room.location.site', 'corridor.location.site'])
+        ->where('materialable_type', $modelClass)
+        ->findOrFail($id);
+
+    $sites = Site::all();
+    $states = ['bon', 'défectueux', 'hors_service'];
+    $rams = Ram::all();
+    
+    // Get the referrer URL
+    $referrer = request()->headers->get('referer');
+    $source = request()->input('source', 'list');
+    return view('superadmin.materials.edit', compact('material', 'type', 'sites', 'states', 'rams', 'referrer','source'));
+}
 
     /**
      * Update the specified resource in storage.

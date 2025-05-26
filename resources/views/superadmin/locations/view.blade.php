@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -150,7 +151,7 @@
                             </tr>
                         @else
                             @foreach($materials as $material)
-                            @php
+                      @php
                                 $materialType = strtolower(class_basename($material->materialable_type));
                                 $typeName = match($materialType) {
                                     'computer' => 'ordinateur',
@@ -182,12 +183,25 @@
                                 
                                 @if(Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
                                 <td class="px-4 py-3 text-right space-x-2 md:space-x-3 border-b border-gray-200" data-label="Actions">
-                                    <!-- Edit Button -->
-                                    <a href="{{ route('superadmin.materials.edit', ['type' => $materialType, 'id' => $material->id]) }}"
-                                       class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
-                                       <i class="fas fa-edit mr-1"></i>
-                                       <span class="hidden md:inline">Modifier</span>
-                                    </a>
+                                
+                                                                                      @php
+    $materialType = strtolower(class_basename($material->materialable_type));
+    // Convert to the correct format used in routes
+    $materialType = match($materialType) {
+        'computer' => 'computers',
+        'printer' => 'printers',
+        'ipphone' => 'ip-phones',
+        'hotspot' => 'hotspots',
+        default => $materialType,
+    };
+@endphp
+        
+                                <!-- Edit Button -->
+                                  <a href="{{ route('superadmin.materials.edit', ['type' => $materialType, 'id' => $material->id, 'source' => 'view']) }}"
+   class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
+   <i class="fas fa-edit mr-1"></i>
+   <span class="hidden md:inline">Modifier</span>
+</a>
                                     
                                     <!-- Delete Button -->
                                     <button onclick="openDeleteModal('{{ $materialType }}', '{{ $material->id }}', '{{ $material->inventory_number }}')" 
