@@ -22,7 +22,6 @@ public function material()
 
 
 
-    // Définir la relation avec le modèle Room
     
 
 

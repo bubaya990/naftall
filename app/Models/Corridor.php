@@ -14,7 +14,6 @@ class Corridor extends Model
         'location_id',   
     ];
 
-    // Relation avec la table printers
    
     public function materials()
     {

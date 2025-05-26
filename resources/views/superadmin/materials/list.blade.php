@@ -212,13 +212,22 @@
                                     <td class="px-4 py-3 text-gray-800 border-b border-gray-200">
                                         {{ $material->room->location->site->name ?? $material->corridor->location->site->name ?? 'N/A' }}
                                     </td>
-                                    <td class="px-4 py-3 text-gray-800 border-b border-gray-200">
-                                        @if($material->room)
-                                        Salle: {{ $material->room->name }}
-                                        @elseif($material->corridor)
-                                        Couloir
-                                        @endif
-                                    </td>
+    <td class="px-4 py-3 text-gray-800 border-b border-gray-200">
+    @if($material->room)
+        <i class="fas fa-door-open text-green-600 mr-1"></i>
+        {{ $material->room->location->site->name }} > 
+        {{ $material->room->location->name }} > 
+        Salle: {{ $material->room->name }} ({{ $material->room->code }})
+    @elseif($material->corridor)
+        <i class="fas fa-arrows-alt-h text-blue-600 mr-1"></i>
+        {{ $material->corridor->location->site->name }} > 
+        {{ $material->corridor->location->name }} > 
+        Couloir: {{ $material->corridor->name }}
+    @else
+        <i class="fas fa-question-circle text-gray-400 mr-1"></i>
+        N/A
+    @endif
+</td>
                                     
                                     @if($type == 'computers')
                                     <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $material->materialable->computer_brand }}</td>

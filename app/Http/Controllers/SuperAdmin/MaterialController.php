@@ -17,75 +17,79 @@ use Illuminate\Support\Facades\Log;
 class MaterialController extends Controller
 {
     // Display dashboard
-    public function index()
-    {
-        // Global totals
-        $totalComputers = Material::where('materialable_type', Computer::class)->count();
-        $totalPrinters = Material::where('materialable_type', Printer::class)->count();
-        $totalIpPhones = Material::where('materialable_type', IpPhone::class)->count();
-        $totalHotspots = Material::where('materialable_type', Hotspot::class)->count();
-    
-        $materialableType = Material::first()?->materialable_type;
-        $type = $materialableType;
-        $materials = Material::paginate(10);
-    
-        // Load sites with nested relationships
-        $sites = Site::with('locations.rooms.materials', 'locations.corridors.materials')->get();
-    
-        $siteMaterialCounts = [];
-    
-        foreach ($sites as $site) {
-            $counts = [
-                'computers' => 0,
-                'printers' => 0,
-                'ipPhones' => 0,
-                'hotspots' => 0
-            ];
-    
-            $seenMaterialIds = [];
-    
-            foreach ($site->locations as $location) {
-                // Rooms
-                foreach ($location->rooms as $room) {
-                    foreach ($room->materials as $material) {
-                        if (!in_array($material->id, $seenMaterialIds)) {
-                            $seenMaterialIds[] = $material->id;
-                            $this->incrementMaterialCount($counts, $material->materialable_type);
-                        }
-                    }
-                }
-    
-                // Corridors
-                foreach ($location->corridors as $corridor) {
-                    foreach ($corridor->materials as $material) {
-                        if (!in_array($material->id, $seenMaterialIds)) {
-                            $seenMaterialIds[] = $material->id;
-                            $this->incrementMaterialCount($counts, $material->materialable_type);
-                        }
+   public function index()
+{
+    // Global totals
+    $totalComputers = Material::where('materialable_type', Computer::class)->count();
+    $totalPrinters = Material::where('materialable_type', Printer::class)->count();
+    $totalIpPhones = Material::where('materialable_type', IpPhone::class)->count();
+    $totalHotspots = Material::where('materialable_type', Hotspot::class)->count();
+
+    // Load all materials with their relationships
+    $materials = Material::with([
+            'materialable',
+            'room.location.site',
+            'corridor.location.site'
+        ])
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+    // Load sites with nested relationships
+    $sites = Site::with('locations.rooms.materials', 'locations.corridors.materials')->get();
+
+    $siteMaterialCounts = [];
+
+    foreach ($sites as $site) {
+        $counts = [
+            'computers' => 0,
+            'printers' => 0,
+            'ipPhones' => 0,
+            'hotspots' => 0
+        ];
+
+        $seenMaterialIds = [];
+
+        foreach ($site->locations as $location) {
+            // Rooms
+            foreach ($location->rooms as $room) {
+                foreach ($room->materials as $material) {
+                    if (!in_array($material->id, $seenMaterialIds)) {
+                        $seenMaterialIds[] = $material->id;
+                        $this->incrementMaterialCount($counts, $material->materialable_type);
                     }
                 }
             }
-    
-            $siteMaterialCounts[$site->id] = [
-                'site_name' => $site->name,
-                'computers' => $counts['computers'],
-                'printers' => $counts['printers'],
-                'ipPhones' => $counts['ipPhones'],
-                'hotspots' => $counts['hotspots'],
-            ];
+
+            // Corridors
+            foreach ($location->corridors as $corridor) {
+                foreach ($corridor->materials as $material) {
+                    if (!in_array($material->id, $seenMaterialIds)) {
+                        $seenMaterialIds[] = $material->id;
+                        $this->incrementMaterialCount($counts, $material->materialable_type);
+                    }
+                }
+            }
         }
-    
-        return view('superadmin.materials.gestion-material', compact(
-            'totalComputers',
-            'totalPrinters',
-            'totalIpPhones',
-            'totalHotspots',
-            'sites',
-            'siteMaterialCounts',
-            'type',
-            'materials'
-        ));
+
+        $siteMaterialCounts[$site->id] = [
+            'site_name' => $site->name,
+            'computers' => $counts['computers'],
+            'printers' => $counts['printers'],
+            'ipPhones' => $counts['ipPhones'],
+            'hotspots' => $counts['hotspots'],
+        ];
     }
+
+    return view('superadmin.materials.gestion-material', compact(
+        'totalComputers',
+        'totalPrinters',
+        'totalIpPhones',
+        'totalHotspots',
+        'sites',
+        'siteMaterialCounts',
+        'materials'
+    ));
+}
     
 // Helper method to increment the correct counter
 private function incrementMaterialCount(&$counts, $materialableType)
@@ -196,40 +200,31 @@ private function incrementMaterialCount(&$counts, $materialableType)
         }
     }
     // List materials based on type
-    public function list($type)
-    {
-        $modelClass = $this->getModelFromType($type);
-        if (!$modelClass) {
-            abort(404, "Type de matériel non trouvé");
-        }
-        $materials = Material::with([
-                'materialable', 
-                'room.location.site', 
-                'corridor.location.site'
-            ])
-            ->where('materialable_type', $modelClass)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-        return view('superadmin.materials.list', compact('materials', 'type'));
+  public function list($type)
+{
+    $modelClass = $this->getModelFromType($type);
+    if (!$modelClass) {
+        abort(404, "Type de matériel non trouvé");
     }
-    // AJAX: Get locations by site
-    public function getLocationsBySite($siteId)
-    {
-        $locations = Location::where('site_id', $siteId)->get();
-        return response()->json($locations);
-    }
-    // AJAX: Get rooms by location
-    public function getRoomsByLocation($locationId)
-    {
-        $rooms = Room::where('location_id', $locationId)->get();
-        return response()->json($rooms);
-    }
-    // AJAX: Get corridors by location
-    public function getCorridorsByLocation($locationId)
-    {
-        $corridors = Corridor::where('location_id', $locationId)->get();
-        return response()->json($corridors);
-    }
+
+    $materials = Material::with([
+            'materialable', 
+            'room.location.site', 
+            'room.location',  // Add this
+            'room',          // Add this
+            'corridor.location.site',
+            'corridor.location',  // Add this
+            'corridor'           // Add this
+        ])
+        ->where('materialable_type', $modelClass)
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+    return view('superadmin.materials.list', compact('materials', 'type'));
+}
+ 
+ 
+  
     // Helper method to map the material type to the model class
     private function getModelFromType($type)
     {
@@ -329,7 +324,7 @@ private function incrementMaterialCount(&$counts, $materialableType)
 
 
 
-   public function edit($type, $id)
+public function edit($type, $id)
 {
     $modelClass = $this->getModelFromType($type);
     if (!$modelClass) {
@@ -339,14 +334,22 @@ private function incrementMaterialCount(&$counts, $materialableType)
     $material = Material::with([
         'materialable', 
         'room.location.site.locations.rooms', 
-        'room.location.site.locations.corridors',
+        'room.location.site.locations.corridors', // Make sure corridors are loaded
         'corridor.location.site.locations.rooms',
         'corridor.location.site.locations.corridors'
     ])
     ->where('materialable_type', $modelClass)
     ->findOrFail($id);
 
-    $sites = Site::with(['locations.rooms', 'locations.corridors'])->get();
+    // Load sites with locations and corridors including names
+    $sites = Site::with(['locations' => function($query) {
+        $query->select('id', 'name', 'type', 'site_id');
+    }, 
+    'locations.rooms',
+    'locations.corridors' => function($query) {
+        $query->select('id', 'name', 'location_id'); // Make sure to include name
+    }])->get();
+    
     $states = ['bon', 'défectueux', 'hors_service'];
     $rams = Ram::all();
     
@@ -431,5 +434,29 @@ private function incrementMaterialCount(&$counts, $materialableType)
             'message' => 'Erreur lors de la mise à jour: ' . $e->getMessage()
         ], 500);
     }
+}
+
+public function getLocationsBySite($siteId)
+{
+    $locations = Location::where('site_id', $siteId)
+        ->select('id', 'name', 'type', 'site_id')
+        ->get();
+    return response()->json($locations);
+}
+
+public function getCorridorsByLocation($locationId)
+{
+    $corridors = Corridor::where('location_id', $locationId)
+        ->select('id', 'name', 'location_id')
+        ->get();
+    return response()->json($corridors);
+}
+
+public function getRoomsByLocation($locationId)
+{
+    $rooms = Room::where('location_id', $locationId)
+        ->select('id', 'name', 'code', 'location_id')
+        ->get();
+    return response()->json($rooms);
 }
 }

@@ -33,7 +33,6 @@ public function rooms()
 {
     return $this->hasMany(Room::class);
 }
-// App\Models\Location.php
 public static function getTypes()
 {
     return ['Poste police', 'Rez-de-chaussee', 'Étage'];

@@ -13,7 +13,7 @@ class Computer extends Model
         'computer_brand',
         'computer_model',
         'OS',
-        'ram_id', // Keeping as ram_id to match your model
+        'ram_id', 
     ];
 
     protected $appends = ['total_ram'];
@@ -25,7 +25,7 @@ class Computer extends Model
 
     public function rams()
     {
-        return $this->belongsTo(Ram::class, 'ram_id'); // Fixed typo from brlongto to belongsTo
+        return $this->belongsTo(Ram::class, 'ram_id'); 
     }
 
     public function getTotalRamAttribute()

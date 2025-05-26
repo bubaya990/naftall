@@ -348,14 +348,129 @@
 </div>
 
 <script>
+// Store the initial data from PHP
+const sitesData = @json($sites);
+const initialLocationId = {{ $material->room ? $material->room->location_id : ($material->corridor ? $material->corridor->location_id : 'null') }};
+const initialRoomId = {{ $material->room_id ?? 'null' }};
+const initialCorridorId = {{ $material->corridor_id ?? 'null' }};
+
+// Function to populate locations dropdown based on selected site
+function populateLocations(siteId) {
+    const locationSelect = document.getElementById('locationSelect');
+    locationSelect.innerHTML = '';
+    
+    // Find the selected site
+    const selectedSite = sitesData.find(site => site.id == siteId);
+    if (!selectedSite) return;
+    
+    // Add default option
+    const defaultOption = new Option('Sélectionner un emplacement', '');
+    locationSelect.add(defaultOption);
+    
+    // Add location options
+    selectedSite.locations.forEach(location => {
+        const option = new Option(location.name, location.id);
+        locationSelect.add(option);
+    });
+    
+    // If this is the initial load and we have a location ID, select it
+    if (initialLocationId && selectedSite.locations.some(l => l.id == initialLocationId)) {
+        locationSelect.value = initialLocationId;
+    }
+    
+    // Trigger change event to populate rooms/corridors
+    locationSelect.dispatchEvent(new Event('change'));
+}
+
+// Function to populate rooms or corridors based on selected location
+function populateRoomsOrCorridors(locationId, locationType) {
+    const selectedSite = sitesData.find(site => 
+        site.locations.some(location => location.id == locationId)
+    );
+    
+    if (!selectedSite) return;
+    
+    const selectedLocation = selectedSite.locations.find(l => l.id == locationId);
+    if (!selectedLocation) return;
+    
+    if (locationType === 'room') {
+        const roomSelect = document.getElementById('roomSelect');
+        roomSelect.innerHTML = '';
+        
+        // Add default option
+        const defaultOption = new Option('Sélectionner une salle', '');
+        roomSelect.add(defaultOption);
+        
+        // Add room options
+        selectedLocation.rooms.forEach(room => {
+            const option = new Option(`${room.name} (${room.code})`, room.id);
+            roomSelect.add(option);
+        });
+        
+        // Select initial room if available
+        if (initialRoomId && selectedLocation.rooms.some(r => r.id == initialRoomId)) {
+            roomSelect.value = initialRoomId;
+        }
+    } else {
+        const corridorSelect = document.getElementById('corridorSelect');
+        corridorSelect.innerHTML = '';
+        
+        // Add default option
+        const defaultOption = new Option('Sélectionner un couloir', '');
+        corridorSelect.add(defaultOption);
+        
+        // Add corridor options
+        selectedLocation.corridors.forEach(corridor => {
+            const option = new Option(corridor.name, corridor.id);
+            corridorSelect.add(option);
+        });
+        
+        // Select initial corridor if available
+        if (initialCorridorId && selectedLocation.corridors.some(c => c.id == initialCorridorId)) {
+            corridorSelect.value = initialCorridorId;
+        }
+    }
+}
+
+// Toggle between room and corridor fields
 function toggleLocationType() {
     const roomRadio = document.querySelector('input[name="location_type"][value="room"]');
     document.getElementById('roomField').classList.toggle('hidden', !roomRadio.checked);
     document.getElementById('corridorField').classList.toggle('hidden', roomRadio.checked);
     
     // Trigger change to load appropriate rooms/corridors
-    document.getElementById('locationSelect').dispatchEvent(new Event('change'));
+    const locationSelect = document.getElementById('locationSelect');
+    if (locationSelect.value) {
+        locationSelect.dispatchEvent(new Event('change'));
+    }
 }
+
+// Initialize the form when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up event listeners
+    document.getElementById('siteSelect').addEventListener('change', function() {
+        populateLocations(this.value);
+    });
+    
+    document.getElementById('locationSelect').addEventListener('change', function() {
+        const locationType = document.querySelector('input[name="location_type"]:checked').value;
+        populateRoomsOrCorridors(this.value, locationType);
+    });
+    
+    document.querySelectorAll('input[name="location_type"]').forEach(radio => {
+        radio.addEventListener('change', toggleLocationType);
+    });
+    
+    // Initialize the form
+    const initialSiteId = {{ $material->room ? $material->room->location->site_id : ($material->corridor ? $material->corridor->location->site_id : 'null') }};
+    if (initialSiteId) {
+        document.getElementById('siteSelect').value = initialSiteId;
+        populateLocations(initialSiteId);
+    }
+    
+    // Set initial location type
+    toggleLocationType();
+});
 
 // Handle form submission with modern fetch API
 document.getElementById('editForm').addEventListener('submit', async function(e) {
@@ -412,66 +527,6 @@ document.getElementById('editForm').addEventListener('submit', async function(e)
     } finally {
         submitButton.disabled = false;
         submitButton.innerHTML = originalText;
-    }
-});
-
-// AJAX for dynamic location loading
-document.getElementById('siteSelect')?.addEventListener('change', async function() {
-    const siteId = this.value;
-    try {
-        const response = await fetch(`/api/sites/${siteId}/locations`);
-        const locations = await response.json();
-        
-        const locationSelect = document.getElementById('locationSelect');
-        locationSelect.innerHTML = '';
-        locations.forEach(location => {
-            const option = document.createElement('option');
-            option.value = location.id;
-            option.textContent = location.type;
-            locationSelect.appendChild(option);
-        });
-        
-        if (locations.length > 0) {
-            locationSelect.value = locations[0].id;
-            locationSelect.dispatchEvent(new Event('change'));
-        }
-    } catch (error) {
-        console.error('Error loading locations:', error);
-    }
-});
-
-document.getElementById('locationSelect')?.addEventListener('change', async function() {
-    const locationId = this.value;
-    const locationType = document.querySelector('input[name="location_type"]:checked').value;
-    
-    try {
-        if (locationType === 'room') {
-            const response = await fetch(`/api/locations/${locationId}/rooms`);
-            const rooms = await response.json();
-            
-            const roomSelect = document.getElementById('roomSelect');
-            roomSelect.innerHTML = '';
-            rooms.forEach(room => {
-                const option = document.createElement('option');
-                option.value = room.id;
-                option.textContent = `${room.name} (${room.code})`;
-                roomSelect.appendChild(option);
-            });
-        } else {
-            const response = await fetch(`/api/locations/${locationId}/corridors`);
-            const corridors = await response.json();
-            
-            const corridorSelect = document.getElementById('corridorSelect');
-            corridorSelect.innerHTML = '';
-            corridors.forEach(corridor => {
-                const option = document.createElement('option');
-                option.value = corridor.id;
-                option.textContent = `Couloir ${corridor.id}`;
-                corridorSelect.appendChild(option);
-            });
-        }
-    } catch (error) {
-        console.error('Error loading rooms/corridors:', error);
     }
 });
 

@@ -7,6 +7,7 @@
 
     <!-- Main content container -->
     <div class="relative z-10 min-h-screen p-4 pb-12">
+
         <!-- Dashboard content with glassmorphism effect -->
         <div class="bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-6 max-w-4xl mx-auto mt-6 transition-all duration-500 transform hover:scale-[1.01]"> <!-- Changed max-w-6xl to max-w-4xl -->
             <!-- Header -->
@@ -19,6 +20,7 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3"> <!-- Changed gap from 4 to 3 and removed lg:grid-cols-2 -->
+                
                 <!-- Computers Card -->
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 backdrop-blur-sm rounded-xl shadow-lg p-4 border-l-4 border-blue-500 transform hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
                     <div class="flex items-center justify-between">

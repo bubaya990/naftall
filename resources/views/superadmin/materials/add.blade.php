@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     locationSelect.innerHTML = '<option value="">Sélectionnez un emplacement</option>';
                     data.forEach(location => {
-                        locationSelect.innerHTML += `<option value="${location.id}">${location.type}</option>`;
+                    locationSelect.innerHTML += `<option value="${location.id}">${location.name} (${location.type})</option>`;
                     });
                 });
         } else {
@@ -558,12 +558,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
             // Load corridors
-            fetch(`/superadmin/materials/get-corridors/${locationId}`)
-                .then(response => response.json())
-                .then(data => {
-                    corridorSelect.innerHTML = '<option value="">Sélectionnez un couloir</option>';
-                    data.forEach(corridor => {
-                        corridorSelect.innerHTML += `<option value="${corridor.id}">Couloir ${corridor.id}</option>`;
+                        
+        
+        fetch(`/superadmin/materials/get-corridors/${locationId}`)
+            .then(response => response.json())
+            .then(data => {
+                corridorSelect.innerHTML = '<option value="">Sélectionnez un couloir</option>';
+                data.forEach(corridor => {
+                    // Use corridor.name if available, otherwise fall back to ID
+                    const displayName = corridor.name || `Couloir ${corridor.id}`;
+                    corridorSelect.innerHTML += `<option value="${corridor.id}">${displayName}</option>`;
+
                     });
                 });
         } else {
