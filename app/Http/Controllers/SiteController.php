@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Site;
 use App\Models\Branche;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Support\Facades\Storage;
+
 
 class SiteController extends Controller
 {
@@ -14,6 +16,7 @@ class SiteController extends Controller
      */
     public function show(Site $site, $brancheType)
     {
+        
         $branche = Branche::where('site_id', $site->id)
                           ->where('name', $brancheType)
                           ->first();
@@ -33,6 +36,10 @@ class SiteController extends Controller
      */
     public function uploadPlans(Request $request, Branche $branche)
     {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
          $superadmin = auth()->user(); 
         $request->validate([
             'plans.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096'
@@ -52,11 +59,14 @@ class SiteController extends Controller
         return back()->with('success', 'Plans uploaded successfully.');
     }
 
-    /**
-     * Delete a plan image by index.
-     */
+    /* Delete a plan image by index */
+
+    
     public function deletePlan(Branche $branche, $imageIndex)
     {         $superadmin = auth()->user(); 
+if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
 
         $planImages = $branche->plan_images ?? [];
 
@@ -81,53 +91,65 @@ class SiteController extends Controller
     /**
      * Store a link point on a plan image.
      */
-   public function storeImagePoint(Request $request)
+public function storeImagePoint(Request $request)
 {
     $request->validate([
         'branche_id' => 'required|exists:branches,id',
         'image_index' => 'required|integer',
-        'x' => 'required|numeric|between:0,100', // Percentage values
+        'x' => 'required|numeric|between:0,100',
         'y' => 'required|numeric|between:0,100',
         'link_type' => 'required|in:room,corridor',
+        'location_id' => 'required|exists:locations,id',
         'room_id' => 'required_if:link_type,room|exists:rooms,id',
         'corridor_id' => 'required_if:link_type,corridor|exists:corridors,id'
     ]);
 
-    $branche = Branche::findOrFail($request->branche_id);
-    $links = $branche->plan_links ?? [];
+    // Add debug logging
+    \Log::debug('StoreImagePoint Request:', $request->all());
 
-    // Get the first location (you may need to adjust this)
-    $location = $branche->site->locations->first();
-    if (!$location) {
-        return back()->with('error', 'No location found for this site');
+    try {
+        $branche = Branche::findOrFail($request->branche_id);
+        $links = $branche->plan_links ?? [];
+
+        $entityId = $request->link_type === 'room' 
+            ? $request->room_id
+            : $request->corridor_id;
+
+        if (!$entityId) {
+            throw new \Exception('ID d\'entité manquant');
+        }
+
+        $url = route('superadmin.locations.view', [
+            'location' => $request->location_id,
+            'entityType' => $request->link_type,
+            'entity' => $entityId
+        ]);
+
+        $links[] = [
+            'image_index' => $request->image_index,
+            'x' => $request->x,
+            'y' => $request->y,
+            'type' => $request->link_type,
+            'entity_id' => $entityId,
+            'url' => $url
+        ];
+
+        $branche->plan_links = $links;
+        $branche->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Point enregistré avec succès'
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('StoreImagePoint Error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur serveur: ' . $e->getMessage()
+        ], 500);
     }
-
-    // Create URL based on your existing routes
-    $url = $request->link_type === 'room'
-        ? route('superadmin.locations.rooms.view', [
-            'location' => $location->id,
-            'room' => $request->room_id
-          ])
-        : route('superadmin.locations.corridors.view', [
-            'location' => $location->id,
-            'corridor' => $request->corridor_id
-          ]);
-
-    $links[] = [
-        'image_index' => $request->image_index,
-        'x' => $request->x,
-        'y' => $request->y,
-        'type' => $request->link_type,
-        'entity_id' => $request->link_type === 'room' ? $request->room_id : $request->corridor_id,
-        'url' => $url
-    ];
-
-    $branche->plan_links = $links;
-    $branche->save();
-
-    return back()->with('success', 'Point saved successfully. Click the marker to visit.');
 }
-
     /**
      * Load carburant branch.
      */
@@ -173,5 +195,32 @@ class SiteController extends Controller
     }
 
 
+    /*  Delet link */
+
+
+    public function deleteLink(Branche $branche, $linkIndex)
+    {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
+        // Only superadmin can delete links
+        if (auth()->user()->role !== 'superadmin') {
+            abort(403, 'Unauthorized action.');
+        }
     
+        $planLinks = $branche->plan_links ?? [];
+    
+        if (isset($planLinks[$linkIndex])) {
+            unset($planLinks[$linkIndex]);
+            $branche->plan_links = array_values($planLinks); // Re-index the array
+            $branche->save();
+    
+            return back()->with('success', 'Link deleted successfully.');
+        }
+    
+        return back()->with('error', 'Link not found.');
+    }
+
+
 }

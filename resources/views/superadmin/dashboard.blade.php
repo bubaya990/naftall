@@ -23,7 +23,9 @@
     <!-- Notification bell + dropdown wrapper -->
     <div class="fixed top-4 right-10 z-20 animate-slideInRight">
         <div class="relative inline-block">
-          <!-- Notification Bell -->
+
+        
+        <!-- Notification Bell -->
 <button id="notification-btn" class="relative p-3 rounded-full hover:bg-white/30 text-gray-700 hover:text-blue-900 transition-all duration-300 transform hover:rotate-12 bg-white/80 backdrop-blur-sm shadow-lg">
     <i class="fas fa-bell text-xl"></i>
     @if($newReclamationsCount > 0)

@@ -20,12 +20,12 @@
                         <i class="fas fa-arrow-left mr-2"></i> Retour
                     </a>
                    
-                    
+                     @if(auth()->user()->role === 'superadmin')
                     <button onclick="openDeleteMonthModal()"
                             class="btn btn-danger transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
                         <i class="fas fa-calendar-times mr-2"></i>Nettoyer anciennes
                     </button>
-
+@endif
                      <a href="{{ route('superadmin.reclamations.addreclamation') }}" 
                        class="btn btn-primary transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl">
                         <i class="fas fa-plus-circle mr-2"></i>Nouvelle Réclamation
@@ -89,12 +89,13 @@
                                                         <i class="fas fa-eye mr-1"></i>
                                                         <span class="hidden md:inline">Voir</span>
                                                     </a>
-                                                    
+                                                      @if(auth()->user()->role === 'superadmin')
                                                     <button onclick="openDeleteModal('{{ $reclamation->id }}', '{{ $reclamation->num_R }}', '{{ $reclamation->user->name }}')"
                                                             class="text-red-600 hover:text-red-800 transform hover:scale-110 transition duration-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold border border-red-200">
                                                         <i class="fas fa-trash-alt mr-1"></i>
                                                         <span class="hidden md:inline">Supprimer</span>
                                                     </button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -152,22 +153,29 @@
 <!-- Delete Month Confirmation Modal -->
 <div id="deleteMonthModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border-2 border-purple-200">
-        <h3 class="text-xl font-bold text-red-600 mb-4">Nettoyage mensuel</h3>
-        <p class="text-gray-700 mb-2">Êtes-vous sûr de vouloir supprimer toutes les réclamations <span class="font-bold">Traitée</span> du mois précédent ?</p>
-        
-        <div class="bg-purple-50 p-3 rounded-lg mb-4">
-            <p class="font-semibold">Cette action supprimera :</p>
-            <ul class="list-disc pl-5 mt-2 text-sm">
-                <li>Toutes les réclamations avec statut "Traitée"</li>
-                <li>Créées entre le 1er et le dernier jour du mois précédent</li>
-                <li>Cette action est irréversible</li>
-            </ul>
-        </div>
-        
-        <form id="deleteMonthForm" method="POST" action="{{ route('superadmin.reclamations.delete-month') }}">
+        <h3 class="text-xl font-bold text-red-600 mb-4">Nettoyage des réclamations</h3>
+        <form id="deleteMonthForm" method="POST" action="{{ route('superadmin.reclamations.delete-treated') }}">
             @csrf
             @method('DELETE')
-           
+            
+            <div class="bg-purple-50 p-3 rounded-lg mb-4">
+                <p class="font-semibold mb-2">Choisir la portée de suppression :</p>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="scope" value="last_month" checked 
+                               class="form-radio text-purple-600 focus:ring-purple-500">
+                        <span class="text-gray-700">Mois précédent (Traitée)</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="scope" value="all" 
+                               class="form-radio text-purple-600 focus:ring-purple-500">
+                        <span class="text-gray-700">Toutes les réclamations traitées</span>
+                    </label>
+                </div>
+            </div>
+            
+            <p class="text-red-500 text-sm mb-6">Attention: Cette action est irréversible.</p>
+            
             <div class="flex justify-end space-x-3">
                 <button type="button" onclick="closeDeleteMonthModal()"
                         class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
@@ -175,7 +183,7 @@
                 </button>
                 <button type="submit"
                         class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                    Confirmer le nettoyage
+                    Confirmer la suppression
                 </button>
             </div>
         </form>

@@ -21,8 +21,9 @@ use App\Http\Controllers\SuperAdmin\SuperAdminDashboardController;
 use App\Http\Controllers\StatistiqueController;
 use App\Models\ActivityLog;
 use App\Http\Controllers\SiteController;
-
+use App\Http\Controllers\EmailController;
 use App\Models\Floor;
+
 
 
 // Public Route
@@ -67,8 +68,8 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
     // Locations
     Route::get('/locations', [LocationController::class, 'gestionLocalite'])->name('locations.gestion-localite');
-Route::get('/locations/{location}/{entityType}/{entity}/materials', [LocationController::class, 'viewEntityMaterials'])
-    ->name('locations.view');
+
+
 
     // Materials
     Route::get('/materials', [MaterialController::class, 'index'])->name('materials.gestion-material');
@@ -81,6 +82,8 @@ Route::get('/locations/{location}/{entityType}/{entity}/materials', [LocationCon
 
     Route::get('/materials/list/{type}', [MaterialController::class, 'list'])->name('superadmin.materials.list');
     // Reclamations
+    Route::delete('/reclamations/delete-treated', [SuperAdminController::class, 'deleteTreated'])
+     ->name('superadmin.reclamations.delete-treated');
     Route::get('/reclamations/reclamations', [SuperAdminController::class, 'reclamations'])->name('superadmin.reclamations');   
      Route::get('/reclamations/addreclamation', [SuperAdminController::class, 'addreclamation'])->name('reclamations.addreclamation');
      Route::post('/superadmin/reclamations', [SuperAdminController::class, 'storeReclamation'])->name('storeReclamation');
@@ -88,8 +91,10 @@ Route::get('/locations/{location}/{entityType}/{entity}/materials', [LocationCon
     Route::delete('/superadmin/reclamations/{id}', [SuperAdminController::class, 'destroyReclamation'])->name('superadmin.reclamations.destroy');
  Route::get('/materials/{type}/{id}/edit', [MaterialController::class, 'edit'])->name('materials.edit');
 Route::put('/materials/{type}/{id}', [MaterialController::class, 'update'])->name('materials.update');
+Route::post('/email/send', [EmailController::class, 'sendEmail'])->name('email.send');
 
-  
+      Route::get('/email', [EmailController::class, 'showEmailForm'])->name('email');
+
   
     // Reclamation Messaging
     Route::post('/reclamations/{reclamationId}/messages', [SuperAdminController::class, 'storeMessage'])->name('messages.store');
@@ -292,6 +297,8 @@ Route::prefix('sites')->group(function () {
     Route::get('/{site}/commercial', [SiteController::class, 'showCommercial'])->name('sites.commercial');
     Route::get('/{site}/agence', [SiteController::class, 'showAgence'])->name('sites.agence');
     Route::get('/{site}/carburant', [SiteController::class, 'showCarburant'])->name('sites.carburant');
+    Route::delete('/branches/{branche}/links/{linkIndex}', [SiteController::class, 'deleteLink'])
+     ->name('branches.delete.link');
     Route::get('/{site}/commercial', [SiteController::class, 'showCommercial'])->name('sites.commercial');
     Route::get('/{site}/agence', [SiteController::class, 'showAgence'])->name('sites.agence');
     Route::get('/{site}', [SiteController::class, 'showSite'])->name('sites.show');
@@ -472,8 +479,23 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+Route::get('/superadmin/email', [EmailController::class, 'showEmailForm'])->name('superadmin.email');
+
 Route::get('/superadmin/dashboard', [SuperAdminDashboardController::class, 'superadmindashboard'])->name('superadmin.dashboard');
 
 Route::delete('/reclamations/delete-month', [SuperAdminController::class, 'deleteMonth'])
     ->name('superadmin.reclamations.delete-month');
+
+;
+
+  Route::get('/superadmin/locations/{location}/rooms-json', [LocationController::class, 'getRoomsJson'])->name('locations.rooms.json');
+
+Route::get('/superadmin/locations/{location}/corridors-json', [LocationController::class, 'getCorridorsJson'])->name('locations.corridors.json');
+
+   // For deleting treated reclamations
+Route::delete('/superadmin/reclamations/delete-treated', [SuperAdminController::class, 'deleteTreated'])
+     ->name('superadmin.reclamations.delete-treated');
+   Route::get('/superadmin/locations/{location}', [LocationController::class, 'show'])
+    ->name('superadmin.locations.view');
+
 require __DIR__.'/auth.php';

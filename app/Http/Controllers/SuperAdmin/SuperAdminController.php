@@ -36,6 +36,10 @@ class SuperAdminController extends Controller
      */
     public function create()
     {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
         $sites = Site::all(); // Get all sites from the database
         
         // Get only 'Commercial' and 'Carburant' branches
@@ -51,6 +55,10 @@ class SuperAdminController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -81,6 +89,10 @@ class SuperAdminController extends Controller
      */
     public function edit($id)
     {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
         $user = User::findOrFail($id);
         $sites = Site::all(); // Get all sites to populate the dropdown
         return view('superadmin.utilisateurs.edit', compact('user', 'sites'));
@@ -91,6 +103,10 @@ class SuperAdminController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
         // Validate the incoming data
         $request->validate([
             'name' => 'required|string|max:255',
@@ -118,6 +134,10 @@ class SuperAdminController extends Controller
      */
     public function destroy($id)
     {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
         $user = User::find($id);
 
         if ($user) {
@@ -135,6 +155,8 @@ class SuperAdminController extends Controller
      */
     public function gestionMaterial()
     {
+
+
         // Use consistent field name: material_type
         $totalComputers = Material::where('materials_type', 'computer')->count();
         $totalPrinters = Material::where('materials_type', 'printer')->count();
@@ -188,19 +210,8 @@ class SuperAdminController extends Controller
     }
     
  
-    /**
-     * Display the localite management view.
-     */
-    public function gestionLocalite()
-    {
-    
-        $sites = \App\Models\Site::with(['locations' => function($query) {
-            $query->with('floor');
-        }])->get();
-    
-        return view('superadmin.locations.gestion-localite', compact('sites'));
-        
-    }
+  
+
 
     //the site in dashboard
    // For Commercial page
@@ -255,7 +266,7 @@ public function cbr()
  */
 public function reclamations()
 {
-    $reclamations = Reclamation::with('user')->latest()->paginate(10);
+    $reclamations = Reclamation::with('user')->latest()->paginate(100);
     return view('superadmin.reclamations.reclamations', compact('reclamations'));
 }
 
@@ -297,6 +308,9 @@ public function storeReclamation(Request $request)
 
 public function destroyReclamation($id)
 {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
     $reclamation = Reclamation::find($id);
 
     if ($reclamation) {
@@ -479,6 +493,9 @@ public function storeMessage(Request $request, $reclamationId)
  */
 public function deleteMonth()
 {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
     // Get first and last day of previous month
     $firstDayLastMonth = now()->subMonth()->startOfMonth()->toDateString();
     $lastDayLastMonth = now()->subMonth()->endOfMonth()->toDateString();
@@ -490,5 +507,31 @@ public function deleteMonth()
 
     return redirect()->route('superadmin.reclamations')
         ->with('success', "$deletedCount réclamations traitées du mois précédent ont été supprimées.");
+}
+
+public function deleteTreated(Request $request)
+{
+    if (auth()->user()->role !== 'superadmin') {
+        abort(403, 'Unauthorized access.');
+    }
+
+    $scope = $request->input('scope');
+    $query = Reclamation::where('state', 'traitée');
+
+    if ($scope === 'last_month') {
+        $firstDayLastMonth = now()->subMonth()->startOfMonth()->toDateString();
+        $lastDayLastMonth = now()->subMonth()->endOfMonth()->toDateString();
+        $query->whereBetween('date_R', [$firstDayLastMonth, $lastDayLastMonth]);
+    }
+
+    $deletedCount = $query->delete();
+
+    $message = match($scope) {
+        'last_month' => "$deletedCount réclamations traitées du mois précédent supprimées.",
+        'all' => "$deletedCount réclamations traitées supprimées.",
+        default => "Suppression effectuée."
+    };
+
+    return redirect()->route('superadmin.reclamations')->with('success', $message);
 }
 }

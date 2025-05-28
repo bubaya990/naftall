@@ -25,7 +25,10 @@ class LocationController extends Controller
 
 public function gestionLocalite()
 {
-   
+      $user = auth()->user();
+      if ($user->role === 'utilisateur') {
+        abort(403, 'Unauthorized access.');
+    }
 
     $sites = \App\Models\Site::with(['locations.floor'])->get();
 
@@ -33,14 +36,24 @@ public function gestionLocalite()
 }
 public function editType($id)
 {
+
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
     $location = Location::findOrFail($id);
-    // Or whatever logic you want to edit the type of a location
+   
 
     return view('superadmin.locations.edit-type', compact('location'));
 
 }
 public function destroy(Location $location)
 {
+
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
     if (Auth::user()->role !== 'superadmin') {
         abort(403, 'Unauthorized action.');
     }
@@ -57,7 +70,11 @@ public function destroy(Location $location)
 
 public function create()
 {
-    $sites = Site::all();  // Removed fully qualified name
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
+    $sites = Site::all();  
     $types = Location::getTypes();
 
     return view('superadmin.locations.create', compact('sites', 'types'));
@@ -65,6 +82,10 @@ public function create()
 
 public function store(Request $request)
 {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
     $request->validate([
         'site_id' => 'required|exists:sites,id',
         'type' => 'required|string|in:'.implode(',', Location::getTypes()),
@@ -111,6 +132,10 @@ public function showStore()
 
 public function updateType(Request $request, $id)
 {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
     $request->validate([
         'type' => 'required|string|max:255',
     ]);
@@ -121,15 +146,16 @@ public function updateType(Request $request, $id)
 
     return redirect()->route('locations.index')->with('success', 'Location type updated successfully.');
 }
- // Room Management Methods
-
+ 
+//miss auth
  public function rooms($location)
  {
+    
      $rooms = \App\Models\Room::where('location_id', $location)->with('location')->get();
 
      return view('superadmin.locations.rooms', [
          'rooms' => $rooms,
-         'locationId' => $location // ✅ this is what you need for the view
+         'locationId' => $location 
      ]);
  }
 
@@ -137,11 +163,19 @@ public function updateType(Request $request, $id)
 
  public function addroom(Location $location)
     {
+        if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
         return view('superadmin.locations.addroom', compact('location'));
     }
 
     public function storeRoom(Request $request, Location $location)
 {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
     // Debug: show all input + location ID
     \Log::debug('Room creation attempt', [
         'input' => $request->all(),
@@ -187,10 +221,16 @@ public function updateType(Request $request, $id)
 
  public function destroyRoom(Location $location, Room $room)
  {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
      $room->delete();
      return back()->with('success', 'Room deleted successfully.');
  }
- // Add these methods to your LocationController
+
+
+ //miss auth
  public function corridors($locationId)
  {
      $location = Location::with(['site', 'corridors'])->findOrFail($locationId);
@@ -203,11 +243,19 @@ public function updateType(Request $request, $id)
 
  public function addcorridor(Location $location)
  {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
      return view('superadmin.locations.addcorridor', compact('location'));
  }
 
  public function storeCorridor(Request $request, Location $location)
  {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
      $request->validate([
          'name' => 'nullable|string|max:255',
      ]);
@@ -223,6 +271,10 @@ public function updateType(Request $request, $id)
 
  public function destroyCorridor(Location $location, Corridor $corridor)
  {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
      $corridor->delete();
 
      return back()->with('success', 'Couloir supprimé avec succès!');
@@ -230,6 +282,10 @@ public function updateType(Request $request, $id)
 
  public function updateRoomType(Request $request, Location $location, Room $room)
  {
+    if (auth()->user()->role !== 'superadmin') {
+    abort(403, 'Unauthorized access.');
+}
+
      $request->validate([
          'type' => 'required|string|in:Bureau,Salle reunion,Salle reseau',
      ]);
@@ -239,20 +295,57 @@ public function updateType(Request $request, $id)
      return response()->json(['success' => true]);
  }
 
- public function viewRoomMaterials(Location $location, Room $room)
+public function viewRoomMaterials(Location $location, Room $room)
 {
+    $user = auth()->user();
+
+    if ($room->location_id !== $location->id) {
+        abort(404, 'Room does not belong to the specified location.');
+    }
+
+   
+    if ($user->role !== 'superadmin') {
+        if ($user->role === 'admin') {
+            if ($user->site_id !== $location->site_id) {
+                abort(403, 'Unauthorized access.');
+            }
+        } else {
+            abort(403, 'Unauthorized access.');
+        }
+    }
+
     $materials = $room->materials()->with('materialable')->get();
 
     return view('superadmin.locations.view', [
         'location' => $location,
         'entity' => $room,
         'materials' => $materials,
-        'entityType' => 'room'
+        'entityType' => 'room',
     ]);
 }
 
+
 public function viewCorridorMaterials(Location $location, Corridor $corridor)
 {
+
+     $user = auth()->user();
+
+    // Superadmin always has access
+    if ($user->role !== 'superadmin') {
+        // Check if user is admin and has access to this site's ID
+        if ($user->role === 'admin') {
+            // Get site ID of the location
+            $siteId = $location->site_id;
+
+            // Compare with the user's allowed site_id
+            if ($user->site_id !== $siteId) {
+                abort(403, 'Unauthorized access.');
+            }
+        } else {
+            // Not superadmin or admin — deny access
+            abort(403, 'Unauthorized access.');
+        }
+    }
     $materials = $corridor->materials()->with('materialable')->get();
 
     return view('superadmin.locations.view', [
@@ -268,6 +361,24 @@ public function viewCorridorMaterials(Location $location, Corridor $corridor)
 
 public function addMaterial(Request $request, $locationId, $entityType, $entityId, $type = 'computers')
 {
+     $user = auth()->user();
+$location = Location::findOrFail($locationId);
+    // Superadmin always has access
+    if ($user->role !== 'superadmin') {
+        // Check if user is admin and has access to this site's ID
+        if ($user->role === 'admin') {
+            // Get site ID of the location
+            $siteId = $location->site_id;
+
+            // Compare with the user's allowed site_id
+            if ($user->site_id !== $siteId) {
+                abort(403, 'Unauthorized access.');
+            }
+        } else {
+            // Not superadmin or admin — deny access
+            abort(403, 'Unauthorized access.');
+        }
+    }
     $location = Location::findOrFail($locationId);
 
     if ($entityType === 'room') {
@@ -297,6 +408,24 @@ public function addMaterial(Request $request, $locationId, $entityType, $entityI
 
 public function storeMaterial(Request $request, $locationId, $entityType, $entityId)
 {
+     $user = auth()->user();
+
+    // Superadmin always has access
+    if ($user->role !== 'superadmin') {
+        // Check if user is admin and has access to this site's ID
+        if ($user->role === 'admin') {
+            // Get site ID of the location
+            $siteId = $location->site_id;
+
+            // Compare with the user's allowed site_id
+            if ($user->site_id !== $siteId) {
+                abort(403, 'Unauthorized access.');
+            }
+        } else {
+            // Not superadmin or admin — deny access
+            abort(403, 'Unauthorized access.');
+        }
+    }
     // Find the location and entity (room/corridor)
     $location = Location::findOrFail($locationId);
     $entity = $entityType === 'room' 
@@ -412,6 +541,24 @@ public function storeMaterial(Request $request, $locationId, $entityType, $entit
 
 public function viewEntityMaterials(Location $location, $entityType, $entityId)
 {
+     $user = auth()->user();
+     
+    // Superadmin always has access
+    if ($user->role !== 'superadmin') {
+        // Check if user is admin and has access to this site's ID
+        if ($user->role === 'admin') {
+            // Get site ID of the location
+            $siteId = $location->site_id;
+
+            // Compare with the user's allowed site_id
+            if ($user->site_id !== $siteId) {
+                abort(403, 'Unauthorized access.');
+            }
+        } else {
+            // Not superadmin or admin — deny access
+            abort(403, 'Unauthorized access.');
+        }
+    }
     $entity = $entityType === 'room'
         ? Room::findOrFail($entityId)
         : Corridor::findOrFail($entityId);
@@ -429,5 +576,46 @@ public function viewEntityMaterials(Location $location, $entityType, $entityId)
     ]);
 }
 
+
+ public function getRoomsJson(Location $location)
+{
+    return response()->json(
+        $location->rooms()->select('id', 'name', 'code')->get()
+    );
+}
+
+public function getCorridorsJson(Location $location)
+{
+    return response()->json(
+        $location->corridors()->select('id', 'name')->get()
+    );
+}
+
+// Add this method to your LocationController class
+public function show(Location $location)
+{
+    $user = auth()->user();
+    
+    // Authorization check
+    if ($user->role !== 'superadmin') {
+        if ($user->role === 'admin' && $user->site_id !== $location->site_id) {
+            abort(403, 'Unauthorized access.');
+        } elseif ($user->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+    }
+
+    // Check if entityType and entity parameters are present
+    $entityType = request()->input('entityType', 'room');
+    $entityId = request()->input('entity');
+
+    if ($entityType === 'room') {
+        $room = Room::findOrFail($entityId);
+        return $this->viewRoomMaterials($location, $room);
+    } else {
+        $corridor = Corridor::findOrFail($entityId);
+        return $this->viewCorridorMaterials($location, $corridor);
+    }
+}
 
 }

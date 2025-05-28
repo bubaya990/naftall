@@ -71,6 +71,10 @@ public function superadmindashboard()
     // Gestion Localité
     public function gestionLocalite()
     {
+           $user = auth()->user();
+      if ($user->role === 'utilisateur') {
+        abort(403, 'Unauthorized access.');
+    }
         return view('superadmin.gestion_localite');
     }
 

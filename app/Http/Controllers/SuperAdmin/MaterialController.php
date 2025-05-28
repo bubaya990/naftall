@@ -32,7 +32,7 @@ class MaterialController extends Controller
             'corridor.location.site'
         ])
         ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        ->paginate(1000);
 
     // Load sites with nested relationships
     $sites = Site::with('locations.rooms.materials', 'locations.corridors.materials')->get();
@@ -215,7 +215,7 @@ private function incrementMaterialCount(&$counts, $materialableType)
         ])
         ->where('materialable_type', $modelClass)
         ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        ->paginate(1000);
 
     return view('superadmin.materials.list', compact('materials', 'type'));
 }
