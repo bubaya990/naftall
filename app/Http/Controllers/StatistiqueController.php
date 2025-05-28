@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 
 class StatistiqueController extends Controller
 {
+
+    //display statistique
     public function index()
     {
         // User Statistics

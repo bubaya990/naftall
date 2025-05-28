@@ -13,7 +13,9 @@ use Carbon\Carbon;
 
 class SuperAdminDashboardController extends Controller
 {
+ 
     
+    //
 public function superadmindashboard()
 {
     $userCount = User::count();
@@ -32,7 +34,7 @@ public function superadmindashboard()
 
     $latestReclamations = Reclamation::latest()->take(3)->get();
 
-    // ✅ Add this line
+   
     $newReclamationsCount = Reclamation::where('state', 'nouvelle')->count();
 
     return view('superadmin.dashboard', [
@@ -46,11 +48,10 @@ public function superadmindashboard()
         'newMaterials' => $newMaterials,
         'unreadCount' => $unreadCount,
         'latestReclamations' => $latestReclamations,
-        // ✅ Pass it to the view
         'newReclamationsCount' => $newReclamationsCount,
     ]);
 }
-    
+
     private function calculateGrowth($model)
     {
         // Current period (last 30 days)

@@ -6,7 +6,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <div class="relative">
-    <!-- Background with blur effect -->
+    <!-- Background im using  blur effect -->
     <div class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('/image/background.webp'); filter: blur(6px);"></div>
 
     <!-- Main content container -->
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add subtle parallax effect to background
+  
    
 });
 </script>

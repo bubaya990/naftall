@@ -28,7 +28,7 @@ class Branche extends Model
         return $this->belongsTo(Branche::class, 'parent_id');
     }
 
-   // Branche.php
+
 
 public function children()
 {

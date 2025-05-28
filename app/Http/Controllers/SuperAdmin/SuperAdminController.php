@@ -18,57 +18,53 @@ use Illuminate\Support\Str;
 
 class SuperAdminController extends Controller
 {
-    /**
-     * Display the SuperAdmin dashboard.
-     */
+   
   
-    /**
-     * Display a listing of the users.
-     */
+   //utilisateurs list
     public function utilisateurs()
     {
-        $users = User::all(); // You can add pagination or filters if needed
+        $users = User::all(); 
         return view('superadmin.utilisateurs.utilisateurs', compact('users'));
     }
 
-    /**
-     * Show the form for creating a new user.
-     */
+   //cree user page 
     public function create()
     {
-        if (auth()->user()->role !== 'superadmin') {
-    abort(403, 'Unauthorized access.');
-}
 
-        $sites = Site::all(); // Get all sites from the database
-        
-        // Get only 'Commercial' and 'Carburant' branches
+        //Authtefication superadmin only
+        if (auth()->user()->role !== 'superadmin') 
+            {
+             abort(403, 'Unauthorized access.');
+            }
+
+        $sites = Site::all(); 
         $branches = Branche::whereIn('name', ['Commercial', 'Carburant'])->get();
         
         return view('superadmin.utilisateurs.create', compact('sites', 'branches'));
     }
     
 
-    /**
-     * Store a newly created user in storage.
-     */
+    //stor and creat user  
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'superadmin') {
-    abort(403, 'Unauthorized access.');
-}
+        if (auth()->user()->role !== 'superadmin')
+         {
+         abort(403, 'Unauthorized access.');
+        }
+
+        //verifier si est correct
 
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'role' => 'required|in:admin,utilisateur,superadmin,leader',
             'site_id' => 'required|exists:sites,id',
-            'branche_id' => 'required|exists:branches,id', // Validate branche_id
+            'branche_id' => 'required|exists:branches,id', 
             'password' => 'required|string|min:8|confirmed',
         ]);
     
-        // Create the user with the selected branche_id
+        
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -84,30 +80,30 @@ class SuperAdminController extends Controller
 
  
 
-    /**
-     * Show the form for editing the specified user.
-     */
+    //page edit user
+
     public function edit($id)
     {
-        if (auth()->user()->role !== 'superadmin') {
-    abort(403, 'Unauthorized access.');
-}
+        if (auth()->user()->role !== 'superadmin')
+        {
+             abort(403, 'Unauthorized access.');
+        }
 
         $user = User::findOrFail($id);
         $sites = Site::all(); // Get all sites to populate the dropdown
         return view('superadmin.utilisateurs.edit', compact('user', 'sites'));
     }
 
-    /**
-     * Update the specified user in storage.
-     */
+    //update user function (role)
+
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role !== 'superadmin') {
-    abort(403, 'Unauthorized access.');
-}
+        if (auth()->user()->role !== 'superadmin')
+        {
+            abort(403, 'Unauthorized access.');
+        }
 
-        // Validate the incoming data
+        // validate 
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id, // Ignore current email for uniqueness check
@@ -129,15 +125,15 @@ class SuperAdminController extends Controller
                          ->with('success', 'User updated successfully.');
     }
 
-    /**
-     * Remove the specified user from storage.
-     */
+    //delet user 
     public function destroy($id)
     {
-        if (auth()->user()->role !== 'superadmin') {
-    abort(403, 'Unauthorized access.');
-}
-
+        if (auth()->user()->role !== 'superadmin')
+        {
+             abort(403, 'Unauthorized access.');
+        }
+        
+        //find user
         $user = User::find($id);
 
         if ($user) {
@@ -150,9 +146,7 @@ class SuperAdminController extends Controller
                          ->with('error', 'User not found.');
     }
 
-    /**
-     * Display the material management view.
-     */
+    //material festion (old)
     public function gestionMaterial()
     {
 
@@ -213,7 +207,6 @@ class SuperAdminController extends Controller
   
 
 
-    //the site in dashboard
    // For Commercial page
 public function com()
 {
@@ -261,18 +254,14 @@ public function cbr()
 
 
 
-/**
- * Display a listing of reclamations.
- */
+//list reclamation page
 public function reclamations()
 {
     $reclamations = Reclamation::with('user')->latest()->paginate(100);
     return view('superadmin.reclamations.reclamations', compact('reclamations'));
 }
 
-/**
- * Show the form for creating a new reclamation.
- */
+//add reclamation
 public function addreclamation()
 {
     $users = User::all();
@@ -281,9 +270,7 @@ public function addreclamation()
   
 }
 
-/**
- * Store a newly created reclamation in storage.
- */
+//add reclamation and stor it function
 public function storeReclamation(Request $request)
 {
     // Assuming 'state' is an optional field and you want to default it to a value like 'pending'
@@ -302,9 +289,7 @@ public function storeReclamation(Request $request)
     return redirect()->route('superadmin.reclamations')->with('success', 'Reclamation created successfully!');
 }
 
-/**
- * Display the specified reclamation.
- */
+//delet reclamation
 
 public function destroyReclamation($id)
 {
@@ -324,17 +309,16 @@ public function destroyReclamation($id)
 }
 
 
-
+//nadd
 public function getUnreadCount()
 {
     $user = auth()->user();
     $unreadCount = $user ? $user->unreadMessages()->count() : 0;
     return response()->json(['count' => $unreadCount]);
 }
-
+//nadd
 public function markAsSeen(Request $request)
 {
-    // Mark all messages as seen or a specific one if messageId is provided
     $messageId = $request->input('messageId');
     
     if ($messageId === 'all') {
@@ -346,6 +330,7 @@ public function markAsSeen(Request $request)
     return response()->json(['success' => true]);
 }
 
+//user role update
 public function updateRole(Request $request, User $user)
 {
     $request->validate([
@@ -365,7 +350,7 @@ public function updateRole(Request $request, User $user)
 
 
 
-
+//count notification (nouvell reclcmation)& drop down reclamation(3only)
  public function dashboard()
     {
         // Count new (unread) reclamations (state = 'nouvelle')
@@ -380,13 +365,11 @@ public function updateRole(Request $request, User $user)
         return view('superadmin.dashboard', [
             'newReclamationsCount' => $newReclamationsCount,
             'latestReclamations' => $latestReclamations,
-            // ... (other existing data)
+            
         ]);
     }
 
-    /**
-     * Get count of new reclamations (for AJAX polling).
-     */
+    
     public function getNewReclamationsCount()
     {
         $count = Reclamation::where('state', 'nouvelle')->count();
@@ -395,9 +378,8 @@ public function updateRole(Request $request, User $user)
 
   
 
-    /**
-     * API: Mark a reclamation as read (for AJAX).
-     */
+    // API: Mark a reclamation as read (for AJAX).
+     
     public function markAsRead($id)
     {
         $reclamation = Reclamation::findOrFail($id);
@@ -427,11 +409,10 @@ public function updateRole(Request $request, User $user)
     
     return view('superadmin.reclamations.view', compact('reclamation'));
 }
-/**
- * Update the status of a reclamation.
- */
-// In app/Http/Controllers/SuperAdmin/SuperAdminController.php
 
+
+//Update the status of a reclamation.
+ 
 public function updateStatus(Request $request, $id, $status)
 {
     $validStatuses = ['nouvelle', 'en_cours', 'traitée'];
@@ -460,9 +441,9 @@ public function updateStatus(Request $request, $id, $status)
 
     return redirect()->back()->with('success', 'Statut mis à jour avec succès');
 }
-/**
- * Store a message for a reclamation.
- */
+
+ //Store a message for a reclamation.
+ 
 public function storeMessage(Request $request, $reclamationId)
 {
     $reclamation = Reclamation::findOrFail($reclamationId);
@@ -488,26 +469,8 @@ public function storeMessage(Request $request, $reclamationId)
 
 
 
-/**
- * Delete treated reclamations from last month
- */
-public function deleteMonth()
-{
-    if (auth()->user()->role !== 'superadmin') {
-    abort(403, 'Unauthorized access.');
-}
-    // Get first and last day of previous month
-    $firstDayLastMonth = now()->subMonth()->startOfMonth()->toDateString();
-    $lastDayLastMonth = now()->subMonth()->endOfMonth()->toDateString();
 
-    // Delete treated reclamations from last month
-    $deletedCount = Reclamation::where('state', 'traitée')
-        ->whereBetween('date_R', [$firstDayLastMonth, $lastDayLastMonth])
-        ->delete();
-
-    return redirect()->route('superadmin.reclamations')
-        ->with('success', "$deletedCount réclamations traitées du mois précédent ont été supprimées.");
-}
+ //Delete treated reclamations from last month ou treter
 
 public function deleteTreated(Request $request)
 {

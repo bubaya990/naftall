@@ -66,10 +66,10 @@
                                         <td class="px-4 py-3 text-gray-800 border-b border-gray-200">{{ $corridor->name ?? 'Non spécifié' }}</td>
                                         <td class="px-4 py-3 text-right space-x-2 md:space-x-3 border-b border-gray-200">
                                             <a href="{{route('superadmin.locations.view', [
-    'location' => $location->id,
-    'entityType' => 'corridor',
-    'entity' => $corridor->id
-]) }}" 
+                                                                                             'location' => $location->id,
+                                                                                             'entityType' => 'corridor',
+                                                                                              'entity' => $corridor->id
+                                                                                        ]) }}" 
                                                class="text-blue-600 hover:text-blue-800 transform hover:scale-110 transition duration-200 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold border border-blue-200">
                                                 <i class="fas fa-eye mr-1"></i>
                                                 <span class="hidden md:inline">Matériel</span>

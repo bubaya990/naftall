@@ -22,7 +22,7 @@ use App\Models\IpPhone;
 class LocationController extends Controller
 {
 
-
+//display location page
 public function gestionLocalite()
 {
       $user = auth()->user();
@@ -34,12 +34,15 @@ public function gestionLocalite()
 
     return view('superadmin.locations.gestion-localite', compact('sites'));
 }
+
+
 public function editType($id)
 {
 
-    if (auth()->user()->role !== 'superadmin') {
-    abort(403, 'Unauthorized access.');
-}
+    if (auth()->user()->role !== 'superadmin')
+    {
+        abort(403, 'Unauthorized access.');
+    }
 
     $location = Location::findOrFail($id);
    
@@ -47,6 +50,8 @@ public function editType($id)
     return view('superadmin.locations.edit-type', compact('location'));
 
 }
+
+//delet location
 public function destroy(Location $location)
 {
 
@@ -67,7 +72,7 @@ public function destroy(Location $location)
     return redirect()->route('superadmin.locations.gestion-localite')
         ->with('success', 'Location deleted successfully!');
 }
-
+//creat display
 public function create()
 {
     if (auth()->user()->role !== 'superadmin') {
@@ -79,7 +84,7 @@ public function create()
 
     return view('superadmin.locations.create', compact('sites', 'types'));
 }
-
+//creat and stor
 public function store(Request $request)
 {
     if (auth()->user()->role !== 'superadmin') {
@@ -295,6 +300,8 @@ public function updateType(Request $request, $id)
      return response()->json(['success' => true]);
  }
 
+
+ //location view dispaly
 public function viewRoomMaterials(Location $location, Room $room)
 {
     $user = auth()->user();
@@ -324,7 +331,7 @@ public function viewRoomMaterials(Location $location, Room $room)
     ]);
 }
 
-
+//corridor list
 public function viewCorridorMaterials(Location $location, Corridor $corridor)
 {
 
@@ -357,7 +364,7 @@ public function viewCorridorMaterials(Location $location, Corridor $corridor)
 }
 
 
-
+//addM display
 
 public function addMaterial(Request $request, $locationId, $entityType, $entityId, $type = 'computers')
 {
@@ -406,6 +413,7 @@ $location = Location::findOrFail($locationId);
     ]);
 }
 
+//add and stor material
 public function storeMaterial(Request $request, $locationId, $entityType, $entityId)
 {
      $user = auth()->user();
@@ -539,6 +547,7 @@ public function storeMaterial(Request $request, $locationId, $entityType, $entit
     }
 }
 
+
 public function viewEntityMaterials(Location $location, $entityType, $entityId)
 {
      $user = auth()->user();
@@ -576,14 +585,14 @@ public function viewEntityMaterials(Location $location, $entityType, $entityId)
     ]);
 }
 
-
+//get room jason for plan
  public function getRoomsJson(Location $location)
 {
     return response()->json(
         $location->rooms()->select('id', 'name', 'code')->get()
     );
 }
-
+//get corridor jason for plan
 public function getCorridorsJson(Location $location)
 {
     return response()->json(
@@ -591,7 +600,7 @@ public function getCorridorsJson(Location $location)
     );
 }
 
-// Add this method to your LocationController class
+
 public function show(Location $location)
 {
     $user = auth()->user();

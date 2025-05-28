@@ -25,7 +25,7 @@ class MaterialController extends Controller
     $totalIpPhones = Material::where('materialable_type', IpPhone::class)->count();
     $totalHotspots = Material::where('materialable_type', Hotspot::class)->count();
 
-    // Load all materials with their relationships
+    // Load all materials 
     $materials = Material::with([
             'materialable',
             'room.location.site',
@@ -34,7 +34,7 @@ class MaterialController extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(1000);
 
-    // Load sites with nested relationships
+    // Load sites 
     $sites = Site::with('locations.rooms.materials', 'locations.corridors.materials')->get();
 
     $siteMaterialCounts = [];
@@ -91,7 +91,7 @@ class MaterialController extends Controller
     ));
 }
     
-// Helper method to increment the correct counter
+//  method to increment the correct counter
 private function incrementMaterialCount(&$counts, $materialableType)
 {
     switch ($materialableType) {
@@ -221,7 +221,7 @@ private function incrementMaterialCount(&$counts, $materialableType)
 }
  
   
-    // Helper method to map the material type to the model class
+    //  method to map the material type to the model class
     private function getModelFromType($type)
     {
         $models = [
@@ -319,7 +319,7 @@ private function incrementMaterialCount(&$counts, $materialableType)
     }
 
 
-
+//edit from
 public function edit($type, $id)
 {
     $modelClass = $this->getModelFromType($type);
@@ -337,7 +337,7 @@ public function edit($type, $id)
     ->where('materialable_type', $modelClass)
     ->findOrFail($id);
 
-    // Load sites with locations and corridors including names
+    
     $sites = Site::with(['locations' => function($query) {
         $query->select('id', 'name', 'type', 'site_id');
     }, 
@@ -353,9 +353,7 @@ public function edit($type, $id)
     return view('superadmin.materials.edit', compact('material', 'type', 'sites', 'states', 'rams', 'source'));
 }
 
-    /**
-     * Update the specified resource in storage.
-     */
+   //update material
     public function update(Request $request, $type, $id)
 {
     try {
@@ -388,7 +386,7 @@ public function edit($type, $id)
         
         DB::beginTransaction();
         
-        // Update material
+        
         $material->update([
     'state' => $validatedData['state'],
     'room_id' => $request->location_type === 'room' ? $validatedData['room_id'] : null,
