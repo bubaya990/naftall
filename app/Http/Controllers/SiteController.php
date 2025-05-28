@@ -101,7 +101,7 @@ public function storeImagePoint(Request $request)
         'link_type' => 'required|in:room,corridor',
         'location_id' => 'required|exists:locations,id',
         'room_id' => 'required_if:link_type,room|exists:rooms,id',
-        'corridor_id' => 'required_if:link_type,corridor|exists:corridors,id'
+    'corridor_id' => 'nullable|required_if:link_type,corridor|exists:corridors,id',
     ]);
 
     // Add debug logging
